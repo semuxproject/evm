@@ -1,0 +1,52 @@
+language: java
+
+matrix:
+  include:
+    # License, formatter, and FindBugs check
+    - env: NAME="License, formatter, and FindBugs check"
+      os: linux
+      sudo: false
+      jdk: oraclejdk8
+      script:
+        - mvn license:check
+        - mvn formatter:validate
+        - mvn findbugs:check
+
+    # Coverage report
+    - env: NAME="Coverage report"
+      os: linux
+      sudo: false
+      jdk: oraclejdk8
+      script:
+        - mvn cobertura:cobertura -Denforcer.skip=true
+      after_success:
+        - mvn coveralls:report
+
+    # Linux tests (Java 8 LTS)
+    - env: NAME="Linux tests (Java 8)"
+      os: linux
+      sudo: false
+      jdk: oraclejdk8
+      script:
+        - mvn test -Denforcer.skip=true
+
+    # Linux tests (Java 9)
+    - env: NAME="Linux tests (Java 9)"
+      os: linux
+      sudo: false
+      jdk: oraclejdk9
+      script:
+        - mvn test -Denforcer.skip=true
+
+    # Linux tests (Java 10)
+    - env: NAME="Linux tests (Java 10)"
+      os: linux
+      sudo: false
+      script:
+        - wget https://github.com/sormuras/bach/raw/master/install-jdk.sh
+        - source ./install-jdk.sh -F 10 -L BCL
+        - mvn test -Denforcer.skip=true
+
+cache:
+  directories:
+    - $HOME/.m2
