@@ -18,10 +18,46 @@
  */
 package org.ethereum.vm.client;
 
-public class BlockStoreMockImpl implements BlockStore {
+import java.math.BigInteger;
+
+public class BlockMock implements Block {
+
+    private BigInteger gasLimit;
+    private byte[] parentHash;
+    private byte[] coinbase;
+    private long timestamp;
+    private long number;
+
+    public BlockMock(BigInteger gasLimit, byte[] parentHash, byte[] coinbase, long timestamp, long number) {
+        this.gasLimit = gasLimit;
+        this.parentHash = parentHash;
+        this.coinbase = coinbase;
+        this.timestamp = timestamp;
+        this.number = number;
+    }
 
     @Override
-    public byte[] getBlockHashByNumber(long index) {
-        return new byte[32];
+    public BigInteger getGasLimit() {
+        return gasLimit;
+    }
+
+    @Override
+    public byte[] getParentHash() {
+        return parentHash;
+    }
+
+    @Override
+    public byte[] getCoinbase() {
+        return coinbase;
+    }
+
+    @Override
+    public long getTimestamp() {
+        return timestamp;
+    }
+
+    @Override
+    public long getNumber() {
+        return number;
     }
 }

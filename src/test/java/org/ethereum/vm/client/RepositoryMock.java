@@ -25,16 +25,16 @@ import java.util.Map;
 import org.ethereum.vm.DataWord;
 import org.ethereum.vm.util.ByteArrayWrapper;
 
-public class RepositoryMockImpl implements Repository {
+public class RepositoryMock implements Repository {
 
     private Map<ByteArrayWrapper, Account> accounts = new HashMap<>();
-    private RepositoryMockImpl parent;
+    private RepositoryMock parent;
 
-    public RepositoryMockImpl() {
+    public RepositoryMock() {
         this(null);
     }
 
-    public RepositoryMockImpl(RepositoryMockImpl parent) {
+    public RepositoryMock(RepositoryMock parent) {
         this.parent = parent;
     }
 
@@ -141,8 +141,8 @@ public class RepositoryMockImpl implements Repository {
     }
 
     @Override
-    public RepositoryMockImpl startTracking() {
-        return new RepositoryMockImpl(this);
+    public RepositoryMock startTracking() {
+        return new RepositoryMock(this);
     }
 
     @Override

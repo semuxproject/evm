@@ -22,9 +22,9 @@ import java.math.BigInteger;
 import java.util.Arrays;
 
 import org.ethereum.vm.client.BlockStore;
-import org.ethereum.vm.client.BlockStoreMockImpl;
+import org.ethereum.vm.client.BlockStoreMock;
 import org.ethereum.vm.client.Repository;
-import org.ethereum.vm.client.RepositoryMockImpl;
+import org.ethereum.vm.client.RepositoryMock;
 import org.ethereum.vm.program.Program;
 import org.ethereum.vm.program.invoke.ProgramInvokeImpl;
 import org.junit.After;
@@ -58,8 +58,8 @@ public class TestBase {
 
     @Before
     public void setup() {
-        this.repository = new RepositoryMockImpl();
-        this.blockStore = new BlockStoreMockImpl();
+        this.repository = new RepositoryMock();
+        this.blockStore = new BlockStoreMock();
 
         this.invoke = new ProgramInvokeImpl(
                 new DataWord(address),
