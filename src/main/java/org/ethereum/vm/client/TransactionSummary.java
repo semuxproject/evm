@@ -19,6 +19,7 @@
 package org.ethereum.vm.client;
 
 import java.math.BigInteger;
+import java.util.Arrays;
 import java.util.List;
 
 import org.ethereum.vm.LogInfo;
@@ -33,14 +34,14 @@ public class TransactionSummary {
     private BigInteger gasPrice;
     private BigInteger gasUsed;
 
-    private boolean failed;
+    private boolean isFailed;
     private byte[] returnData;
     private List<InternalTransaction> internalTransactions;
     private List<ByteArrayWrapper> deletedAccounts;
     private List<LogInfo> logs;
 
     public TransactionSummary(Transaction tx, BigInteger value, BigInteger gas, BigInteger gasPrice,
-            BigInteger gasUsed, boolean failed, byte[] returnData,
+            BigInteger gasUsed, boolean isFailed, byte[] returnData,
             List<InternalTransaction> internalTransactions,
             List<ByteArrayWrapper> deletedAccounts,
             List<LogInfo> logs) {
@@ -49,7 +50,7 @@ public class TransactionSummary {
         this.gas = gas;
         this.gasPrice = gasPrice;
         this.gasUsed = gasUsed;
-        this.failed = failed;
+        this.isFailed = isFailed;
         this.returnData = returnData;
         this.internalTransactions = internalTransactions;
         this.deletedAccounts = deletedAccounts;
@@ -77,7 +78,7 @@ public class TransactionSummary {
     }
 
     public boolean isFailed() {
-        return failed;
+        return isFailed;
     }
 
     public byte[] getReturnData() {
@@ -94,5 +95,20 @@ public class TransactionSummary {
 
     public List<LogInfo> getLogs() {
         return logs;
+    }
+
+    @Override
+    public String toString() {
+        return "TransactionSummary{" +
+                "value=" + value +
+                ", gas=" + gas +
+                ", gasPrice=" + gasPrice +
+                ", gasUsed=" + gasUsed +
+                ", isFailed=" + isFailed +
+                ", returnData=" + Arrays.toString(returnData) +
+                ", internalTransactions=" + internalTransactions +
+                ", deletedAccounts=" + deletedAccounts +
+                ", logs=" + logs +
+                '}';
     }
 }

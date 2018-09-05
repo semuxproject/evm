@@ -62,7 +62,6 @@ public class TransactionExecutor {
     private final long gasUsedInTheBlock;
     private final boolean localCall;
 
-    private boolean readyToExecute = false;
     private VM vm;
     private Program program;
 
@@ -96,11 +95,12 @@ public class TransactionExecutor {
      * executor.
      *
      * The <code>ReadyToExecute</code> flag will be set to true on success.
+     *
+     * @return true if the transaction is ready to prepare; otherwise false.
      */
-    public void init() {
+    protected boolean init() {
         if (localCall) {
-            readyToExecute = true;
-            return;
+            return true;
         }
 
         BigInteger txGas = tx.getGas();
@@ -108,41 +108,37 @@ public class TransactionExecutor {
 
         if (txGas.add(BigInteger.valueOf(gasUsedInTheBlock)).compareTo(blockGasLimit) > 0) {
             logger.warn("Too much gas used in this block");
-            return;
+            return false;
         }
 
         if (txGas.compareTo(BigInteger.valueOf(basicTxCost)) < 0) {
             logger.warn("Not enough gas to cover basic transaction cost: required = {}, actual = {}", basicTxCost,
                     txGas);
-            return;
+            return false;
         }
 
         long reqNonce = repo.getNonce(tx.getFrom());
         long txNonce = tx.getNonce();
         if (reqNonce != txNonce) {
             logger.warn("Invalid nonce: required = {}, actual = {}", reqNonce, txNonce);
-            return;
+            return false;
         }
 
         BigInteger txGasCost = tx.getGasPrice().multiply(txGas);
         BigInteger totalCost = tx.getValue().add(txGasCost);
         BigInteger senderBalance = repo.getBalance(tx.getFrom());
         if (!isCovers(senderBalance, totalCost)) {
-            logger.warn("Not enough balance: required = {}, sender.balance = {}", totalCost, senderBalance);
-            return;
+            logger.warn("Not enough balance: required = {}, actual = {}", totalCost, senderBalance);
+            return false;
         }
 
-        readyToExecute = true;
+        return true;
     }
 
     /**
      * Executes the transaction.
      */
-    public void execute() {
-        if (!readyToExecute) {
-            return;
-        }
-
+    protected void prepare() {
         if (!localCall) {
             // increase nonce
             repo.increaseNonce(tx.getFrom());
@@ -161,13 +157,13 @@ public class TransactionExecutor {
     }
 
     protected void call() {
-        if (!readyToExecute) {
-            return;
-        }
-
         byte[] targetAddress = tx.getTo();
         PrecompiledContracts.PrecompiledContract precompiledContract = PrecompiledContracts
                 .getContractForAddress(new DataWord(targetAddress), config);
+
+        // transfer value
+        BigInteger endowment = tx.getValue();
+        transfer(track, tx.getFrom(), targetAddress, endowment);
 
         if (precompiledContract != null) {
             long requiredGas = precompiledContract.getGasForData(tx.getData());
@@ -190,7 +186,7 @@ public class TransactionExecutor {
                 }
             }
         } else {
-            byte[] code = repo.getCode(targetAddress);
+            byte[] code = track.getCode(targetAddress);
             if (isEmpty(code)) {
                 gasLeft = gasLeft.subtract(BigInteger.valueOf(basicTxCost));
                 result.spendGas(basicTxCost);
@@ -201,17 +197,13 @@ public class TransactionExecutor {
                 this.program = new Program(code, programInvoke, tx, config);
             }
         }
-
-        BigInteger endowment = tx.getValue();
-        transfer(track, tx.getFrom(), targetAddress, endowment);
     }
 
     protected void create() {
         byte[] newContractAddress = HashUtil.calcNewAddress(tx.getFrom(), tx.getNonce());
 
         if (track.exists(newContractAddress)) {
-            logger.warn("Trying to create a contract with existing contract address: 0x{}",
-                    toHexString(newContractAddress));
+            logger.warn("Contract already exists: address = 0x{}", toHexString(newContractAddress));
             gasLeft = BigInteger.ZERO;
             return;
         }
@@ -220,6 +212,10 @@ public class TransactionExecutor {
         BigInteger oldBalance = repo.getBalance(newContractAddress);
         track.addBalance(newContractAddress, oldBalance);
         track.increaseNonce(newContractAddress);
+
+        // transfer value
+        BigInteger endowment = tx.getValue();
+        transfer(track, tx.getFrom(), newContractAddress, endowment);
 
         if (isEmpty(tx.getData())) {
             gasLeft = gasLeft.subtract(BigInteger.valueOf(basicTxCost));
@@ -230,16 +226,9 @@ public class TransactionExecutor {
             this.vm = new VM(config);
             this.program = new Program(tx.getData(), programInvoke, tx, config);
         }
-
-        BigInteger endowment = tx.getValue();
-        transfer(track, tx.getFrom(), newContractAddress, endowment);
     }
 
-    protected void go() {
-        if (!readyToExecute) {
-            return;
-        }
-
+    protected void execute() {
         try {
             if (vm == null) { // no vm involved
                 track.commit();
@@ -296,7 +285,7 @@ public class TransactionExecutor {
             }
         } catch (Exception e) {
             rollback();
-            logger.error("Unexpected exception", e); // unexpected, careful check required
+            logger.error("Unexpected exception", e); // unexpected, double check required
         }
     }
 
@@ -306,9 +295,12 @@ public class TransactionExecutor {
      * @return a transaction summary, or NULL if the transaction fails the at
      *         {@link #init()}.
      */
-    public TransactionSummary finish() {
-        if (!readyToExecute) {
+    public TransactionSummary run() {
+        if (!init()) {
             return null;
+        } else {
+            prepare();
+            execute();
         }
 
         // accumulate refunds for suicides
@@ -324,7 +316,7 @@ public class TransactionExecutor {
         // refund
         BigInteger totalRefund = gasLeft.multiply(tx.getGasPrice());
         repo.addBalance(tx.getFrom(), gasLeft.multiply(tx.getGasPrice()));
-        logger.info("Pay total refund to sender: amount = {}", totalRefund);
+        logger.debug("Pay total refund to sender: amount = {}", totalRefund);
 
         return new TransactionSummary(tx, tx.getValue(), tx.getGas(), tx.getGasPrice(),
                 BigInteger.valueOf(getGasUsed()),
