@@ -317,9 +317,9 @@ public class TransactionExecutor {
         repo.addBalance(tx.getFrom(), gasLeft.multiply(tx.getGasPrice()));
         logger.debug("Pay total refund to sender: amount = {}", totalRefund);
 
-        return new TransactionSummary(tx, tx.getValue(), tx.getGas(), tx.getGasPrice(),
-                BigInteger.valueOf(getGasUsed()),
+        return new TransactionSummary(tx,
                 result.getException() != null,
+                getGasUsed(),
                 result.getReturnData(),
                 result.getInternalTransactions(),
                 new ArrayList<>(result.getDeleteAccounts()),

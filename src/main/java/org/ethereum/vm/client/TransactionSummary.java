@@ -17,7 +17,6 @@
  */
 package org.ethereum.vm.client;
 
-import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.List;
 
@@ -28,26 +27,19 @@ import org.ethereum.vm.util.ByteArrayWrapper;
 public class TransactionSummary {
 
     private Transaction tx;
-    private BigInteger value;
-    private BigInteger gas;
-    private BigInteger gasPrice;
-    private BigInteger gasUsed;
 
     private boolean isFailed;
+    private long gasUsed;
     private byte[] returnData;
     private List<InternalTransaction> internalTransactions;
     private List<ByteArrayWrapper> deletedAccounts;
     private List<LogInfo> logs;
 
-    public TransactionSummary(Transaction tx, BigInteger value, BigInteger gas, BigInteger gasPrice,
-            BigInteger gasUsed, boolean isFailed, byte[] returnData,
+    public TransactionSummary(Transaction tx, boolean isFailed, long gasUsed, byte[] returnData,
             List<InternalTransaction> internalTransactions,
             List<ByteArrayWrapper> deletedAccounts,
             List<LogInfo> logs) {
         this.tx = tx;
-        this.value = value;
-        this.gas = gas;
-        this.gasPrice = gasPrice;
         this.gasUsed = gasUsed;
         this.isFailed = isFailed;
         this.returnData = returnData;
@@ -60,24 +52,12 @@ public class TransactionSummary {
         return tx;
     }
 
-    public BigInteger getValue() {
-        return value;
-    }
-
-    public BigInteger getGas() {
-        return gas;
-    }
-
-    public BigInteger getGasPrice() {
-        return gasPrice;
-    }
-
-    public BigInteger getGasUsed() {
-        return gasUsed;
-    }
-
     public boolean isFailed() {
         return isFailed;
+    }
+
+    public long getGasUsed() {
+        return gasUsed;
     }
 
     public byte[] getReturnData() {
@@ -99,11 +79,8 @@ public class TransactionSummary {
     @Override
     public String toString() {
         return "TransactionSummary{" +
-                "value=" + value +
-                ", gas=" + gas +
-                ", gasPrice=" + gasPrice +
+                "isFailed=" + isFailed +
                 ", gasUsed=" + gasUsed +
-                ", isFailed=" + isFailed +
                 ", returnData=" + Arrays.toString(returnData) +
                 ", internalTransactions=" + internalTransactions +
                 ", deletedAccounts=" + deletedAccounts +

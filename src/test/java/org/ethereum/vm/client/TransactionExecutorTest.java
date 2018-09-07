@@ -47,7 +47,8 @@ public class TransactionExecutorTest extends TestBase {
                 System.currentTimeMillis(),
                 1);
         BigInteger premine = BigInteger.TEN.multiply(Unit.ETH);
-        BigInteger gasUsage = BigInteger.valueOf(21_000L);
+        long gasUsage = 21_000L;
+        BigInteger txFee = BigInteger.valueOf(gasUsage).multiply(tx.getGasPrice());
         repository.addBalance(address(1), premine);
 
         TransactionExecutor executor = new TransactionExecutor(tx, block, repository, blockStore, false);
@@ -62,7 +63,7 @@ public class TransactionExecutorTest extends TestBase {
         BigInteger balance1 = repository.getBalance(address(1));
         BigInteger balance2 = repository.getBalance(address(2));
         BigInteger balance3 = repository.getBalance(address(3));
-        assertEquals(premine.subtract(tx.getValue()).subtract(gasUsage.multiply(tx.getGasPrice())), balance1);
+        assertEquals(premine.subtract(tx.getValue()).subtract(txFee), balance1);
         assertEquals(tx.getValue(), balance2);
         // TODO: How is miner get paid
         // assertEquals(BigInteger.valueOf(21_000L).multiply(tx.getGasPrice()),
