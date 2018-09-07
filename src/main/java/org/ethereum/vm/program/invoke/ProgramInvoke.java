@@ -30,60 +30,163 @@ public interface ProgramInvoke {
     // Transaction context
     // ===========================
 
+    /**
+     * Returns the address of currently executing account.
+     *
+     * @return an address, right-aligned
+     */
     DataWord getOwnerAddress();
 
+    /**
+     * Returns the execution origination address.
+     *
+     * @return an address, right-aligned
+     */
     DataWord getOriginAddress();
 
+    /**
+     * Returns the caller address.
+     *
+     * @return an address, right-aligned
+     */
     DataWord getCallerAddress();
 
+    /**
+     * Returns the gas limit for the invocation.
+     *
+     * @return gas limit
+     */
     DataWord getGas();
 
     /**
-     * Returns the gas as a long integer.
+     * Returns the gas limit as a long integer.
      *
      * @return the gas value, or {@link Long#MAX_VALUE} in case of overflow
      */
     long getGasLong();
 
+    /**
+     * Returns the gas price.
+     *
+     * @return the gas price in {@link org.ethereum.vm.client.Unit#WEI} per gas
+     */
     DataWord getGasPrice();
 
+    /**
+     * Returns the deposited value by the instruction/transaction responsible for
+     * this execution.
+     * 
+     * @return the call value in {@link org.ethereum.vm.client.Unit#WEI}
+     */
     DataWord getValue();
 
+    /**
+     * Returns the size of call data.
+     *
+     * @return
+     */
     DataWord getDataSize();
 
-    DataWord getDataValue(DataWord index);
+    /**
+     * Returns the data at the given offset.
+     *
+     * @param offset
+     *            an offset
+     * @return a word starting from the offset; zeros are padded if out of range.
+     */
+    DataWord getDataValue(DataWord offset);
 
+    /**
+     * Returns the given number of bytes, starting from an offset.
+     *
+     * @param offset
+     *            the starting offset
+     * @param length
+     *            the number of bytes to copy
+     * @return a byte array copied from the call data; zeros are padded if out of
+     *         range.
+     */
     byte[] getDataCopy(DataWord offset, DataWord length);
 
     // ===========================
     // Block context
     // ===========================
 
+    /**
+     * Returns the hash of the previous block.
+     *
+     * @return a block hash.
+     */
     DataWord getPrevHash();
 
+    /**
+     * Returns the miner address of this block.
+     *
+     * @return an address, right-aligned.
+     */
     DataWord getCoinbase();
 
+    /**
+     * Returns the timestamp of this block.
+     *
+     * @return the timestamp.
+     */
     DataWord getTimestamp();
 
+    /**
+     * Returns the number of this block.
+     *
+     * @return the block number
+     */
     DataWord getNumber();
 
+    /**
+     * Returns the difficulty of this block.
+     *
+     * @return the block difficulty
+     */
     DataWord getDifficulty();
 
+    /**
+     * Returns the gas limit of this block.
+     *
+     * @return the block gas limit
+     */
     DataWord getGaslimit();
 
     // ===========================
     // Database context
     // ===========================
 
+    /**
+     * Returns the repository interface.
+     *
+     * @return repository implementation
+     */
     Repository getRepository();
 
+    /**
+     * Returns the block storage interface.
+     *
+     * @return block store implementation
+     */
     BlockStore getBlockStore();
 
     // ===========================
     // Miscellaneous
     // ===========================
 
+    /**
+     * Returns the current call depth. It should return 0 for a normal transaction.
+     *
+     * @return the call depth.
+     */
     int getCallDepth();
 
+    /**
+     * Returns whether this invocation is a static call.
+     *
+     * @return true if it's a static call; otherwise false.
+     */
     boolean isStaticCall();
 }
