@@ -68,18 +68,18 @@ public class ByzantiumConfig implements Config {
 
     }
 
-    private static DataWord maxAllowed(DataWord available) {
-        return new DataWord(available.value().subtract(available.value().divide(BigInteger.valueOf(64))));
+    private static long maxAllowed(long available) {
+        return available - available / 64;
     }
 
     @Override
-    public DataWord getCallGas(OpCode op, DataWord requestedGas, DataWord availableGas) throws OutOfGasException {
-        DataWord maxAllowed = maxAllowed(availableGas);
-        return requestedGas.compareTo(maxAllowed) > 0 ? maxAllowed : requestedGas;
+    public long getCallGas(OpCode op, long requestedGas, long availableGas) throws OutOfGasException {
+        long maxAllowed = maxAllowed(availableGas);
+        return requestedGas > maxAllowed ? maxAllowed : requestedGas;
     }
 
     @Override
-    public DataWord getCreateGas(DataWord availableGas) {
+    public long getCreateGas(long availableGas) {
         return maxAllowed(availableGas);
     }
 

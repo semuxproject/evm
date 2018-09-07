@@ -134,7 +134,7 @@ public class VM {
 
             long gasCost = op.getTier().asInt();
             FeeSchedule feeSchedule = config.getFeeSchedule();
-            DataWord adjustedCallGas = null;
+            long adjustedCallGas = 0;
 
             // Calculate fees and spend gas
             switch (op) {
@@ -240,14 +240,13 @@ public class VM {
                         stack.get(stack.size() - opOff - 3)); // out offset+size
                 gasCost += calcMemGas(feeSchedule, oldMemSize, in.max(out), 0);
 
-                if (gasCost > program.getGas().longValueSafe()) {
-                    throw ExceptionFactory.notEnoughOpGas(op, callGasWord, program.getGas());
+                if (gasCost > program.getAvailableGas()) {
+                    throw ExceptionFactory.notEnoughOpGas(op, gasCost, program.getAvailableGas());
                 }
 
-                DataWord gasLeft = program.getGas();
-                gasLeft = gasLeft.sub(new DataWord(gasCost));
-                adjustedCallGas = config.getCallGas(op, callGasWord, gasLeft);
-                gasCost += adjustedCallGas.longValueSafe();
+                long available = program.getAvailableGas();
+                adjustedCallGas = config.getCallGas(op, callGasWord.longValueSafe(), available - gasCost);
+                gasCost += adjustedCallGas;
                 break;
             case CREATE:
                 gasCost = feeSchedule.getCREATE() + calcMemGas(feeSchedule, oldMemSize,
@@ -262,8 +261,8 @@ public class VM {
 
                 BigInteger dataSize = stack.get(stack.size() - 2).value();
                 BigInteger dataCost = dataSize.multiply(BigInteger.valueOf(feeSchedule.getLOG_DATA_GAS()));
-                if (program.getGas().value().compareTo(dataCost) < 0) {
-                    throw ExceptionFactory.notEnoughOpGas(op, dataCost, program.getGas().value());
+                if (BigInteger.valueOf(program.getAvailableGas()).compareTo(dataCost) < 0) {
+                    throw ExceptionFactory.notEnoughOpGas(op, dataCost.longValue(), program.getAvailableGas());
                 }
 
                 gasCost = feeSchedule.getLOG_GAS() +
@@ -857,9 +856,9 @@ public class VM {
             }
                 break;
             case GAS: {
-                DataWord gas = program.getGas();
+                long gasLeft = program.getAvailableGas();
 
-                program.stackPush(gas);
+                program.stackPush(new DataWord(gasLeft));
                 program.step();
             }
                 break;
@@ -933,7 +932,7 @@ public class VM {
                     throw new StaticCallModificationException();
 
                 if (!value.isZero()) {
-                    adjustedCallGas = adjustedCallGas.add(new DataWord(feeSchedule.getSTIPEND_CALL()));
+                    adjustedCallGas += feeSchedule.getSTIPEND_CALL();
                 }
 
                 DataWord inDataOffs = program.stackPop();
@@ -944,8 +943,7 @@ public class VM {
 
                 program.memoryExpand(outDataOffs, outDataSize);
 
-                MessageCall msg = new MessageCall(
-                        op, adjustedCallGas, codeAddress, value, inDataOffs, inDataSize,
+                MessageCall msg = new MessageCall(op, adjustedCallGas, codeAddress, value, inDataOffs, inDataSize,
                         outDataOffs, outDataSize);
 
                 PrecompiledContracts.PrecompiledContract contract = PrecompiledContracts

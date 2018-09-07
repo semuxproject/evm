@@ -56,14 +56,7 @@ public interface ProgramInvoke {
      *
      * @return gas limit
      */
-    DataWord getGas();
-
-    /**
-     * Returns the gas limit as a long integer.
-     *
-     * @return the gas value, or {@link Long#MAX_VALUE} in case of overflow
-     */
-    long getGasLong();
+    long getGas();
 
     /**
      * Returns the gas price.

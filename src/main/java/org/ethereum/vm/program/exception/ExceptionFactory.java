@@ -31,14 +31,6 @@ public class ExceptionFactory {
                 opGas, programGas);
     }
 
-    public static OutOfGasException notEnoughOpGas(OpCode op, DataWord opGas, DataWord programGas) {
-        return notEnoughOpGas(op, opGas.longValue(), programGas.longValue());
-    }
-
-    public static OutOfGasException notEnoughOpGas(OpCode op, BigInteger opGas, BigInteger programGas) {
-        return notEnoughOpGas(op, opGas.longValue(), programGas.longValue());
-    }
-
     public static OutOfGasException notEnoughSpendingGas(String cause, long gasValue, Program program) {
         return new OutOfGasException("Not enough gas for '%s' cause spending: gas[%d], usedGas[%d];",
                 cause, gasValue, program.getResult().getGasUsed());

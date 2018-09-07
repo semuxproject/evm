@@ -39,12 +39,12 @@ public class InternalTransaction implements Transaction {
     private long nonce;
     private BigInteger value;
     private byte[] data;
-    private BigInteger gastLimit;
+    private long gas;
     private BigInteger gasPrice;
 
     public InternalTransaction(Transaction parentTx, int depth, int index, OpCode type,
             byte[] from, byte[] to, long nonce, BigInteger value, byte[] data,
-            BigInteger gas, BigInteger gasPrice) {
+            long gas, BigInteger gasPrice) {
         this.parentTx = parentTx;
         this.depth = depth;
         this.index = index;
@@ -55,7 +55,7 @@ public class InternalTransaction implements Transaction {
         this.nonce = nonce;
         this.value = value;
         this.data = data;
-        this.gastLimit = gas;
+        this.gas = gas;
         this.gasPrice = gasPrice;
     }
 
@@ -114,8 +114,8 @@ public class InternalTransaction implements Transaction {
     }
 
     @Override
-    public BigInteger getGas() {
-        return gastLimit;
+    public long getGas() {
+        return gas;
     }
 
     @Override

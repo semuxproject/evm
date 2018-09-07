@@ -112,7 +112,7 @@ public class Program {
     }
 
     private InternalTransaction addInternalTx(OpCode type, byte[] from, byte[] to, long nonce, BigInteger value,
-            byte[] data, BigInteger gas) {
+            byte[] data, long gas) {
 
         int depth = getCallDepth();
         int index = result.getInternalTransactions().size();
@@ -277,7 +277,7 @@ public class Program {
         BigInteger balance = getStorage().getBalance(owner);
 
         addInternalTx(OpCode.SUICIDE, owner, obtainer, getStorage().getNonce(owner), balance,
-                EMPTY_BYTE_ARRAY, BigInteger.ZERO);
+                EMPTY_BYTE_ARRAY, 0);
 
         if (Arrays.equals(owner, obtainer)) {
             // if owner == obtainer just zeroing account according to Yellow Paper
@@ -319,8 +319,8 @@ public class Program {
         byte[] programCode = memoryChunk(memStart.intValue(), memSize.intValue());
 
         // actual gas subtract
-        DataWord gas = config.getCreateGas(getGas());
-        spendGas(gas.longValue(), "internal call");
+        long gas = config.getCreateGas(getAvailableGas());
+        spendGas(gas, "internal call");
 
         // [2] CREATE THE CONTRACT ADDRESS
         long nonce = getStorage().getNonce(senderAddress);
@@ -345,7 +345,7 @@ public class Program {
 
         // [5] COOK THE INVOKE AND EXECUTE
         InternalTransaction internalTx = addInternalTx(OpCode.CREATE, senderAddress, EMPTY_BYTE_ARRAY,
-                getStorage().getNonce(senderAddress), endowment, programCode, gas.value());
+                getStorage().getNonce(senderAddress), endowment, programCode, gas);
         if (logger.isDebugEnabled()) {
             logger.debug("CREATE: {}", internalTx);
         }
@@ -378,7 +378,7 @@ public class Program {
         byte[] code = result.getReturnData();
 
         long storageCost = getLength(code) * config.getFeeSchedule().getCREATE_DATA();
-        long afterSpend = programInvoke.getGas().longValue() - storageCost - result.getGasUsed();
+        long afterSpend = programInvoke.getGas() - storageCost - result.getGasUsed();
         if (afterSpend < 0) {
             if (!config.getConstants().createEmptyContractOnOOG()) {
                 result.setException(ExceptionFactory.notEnoughSpendingGas("No gas to return just created contract",
@@ -422,7 +422,7 @@ public class Program {
         }
 
         // 5. REFUND THE REMAIN GAS
-        long refundGas = gas.longValue() - result.getGasUsed();
+        long refundGas = gas - result.getGasUsed();
         if (refundGas > 0) {
             refundGas(refundGas, "remaining gas from create");
         }
@@ -443,7 +443,7 @@ public class Program {
 
         if (getCallDepth() == MAX_DEPTH) {
             stackPushZero();
-            refundGas(msg.getGas().longValue(), "call deep limit reach");
+            refundGas(msg.getGas(), "call deep limit reach");
             return;
         }
 
@@ -460,7 +460,7 @@ public class Program {
         BigInteger senderBalance = track.getBalance(senderAddress);
         if (isNotCovers(senderBalance, endowment)) {
             stackPushZero();
-            refundGas(msg.getGas().longValue(), "refund gas from message call");
+            refundGas(msg.getGas(), "refund gas from message call");
             return;
         }
 
@@ -473,7 +473,7 @@ public class Program {
 
         // CREATE CALL INTERNAL TRANSACTION
         InternalTransaction internalTx = addInternalTx(msg.getType(), senderAddress, contextAddress,
-                getStorage().getNonce(senderAddress), endowment, data, msg.getGas().value());
+                getStorage().getNonce(senderAddress), endowment, data, msg.getGas());
         if (logger.isDebugEnabled()) {
             logger.debug("CALL: {}", internalTx);
         }
@@ -536,12 +536,12 @@ public class Program {
 
         // 5. REFUND THE REMAIN GAS
         if (result != null) {
-            BigInteger refundGas = msg.getGas().value().subtract(toBI(result.getGasUsed()));
-            if (isPositive(refundGas)) {
-                refundGas(refundGas.longValue(), "remaining gas from call");
+            long refundGas = msg.getGas() - result.getGasUsed();
+            if (refundGas > 0) {
+                refundGas(refundGas, "remaining gas from call");
             }
         } else {
-            refundGas(msg.getGas().longValue(), "remaining gas from call");
+            refundGas(msg.getGas(), "remaining gas from call");
         }
     }
 
@@ -550,7 +550,7 @@ public class Program {
 
         if (getCallDepth() == MAX_DEPTH) {
             stackPushZero();
-            this.refundGas(msg.getGas().longValue(), "call deep limit reach");
+            this.refundGas(msg.getGas(), "call deep limit reach");
             return;
         }
 
@@ -564,7 +564,7 @@ public class Program {
         BigInteger senderBalance = track.getBalance(senderAddress);
         if (senderBalance.compareTo(endowment) < 0) {
             stackPushZero();
-            this.refundGas(msg.getGas().longValue(), "refund gas from message call");
+            this.refundGas(msg.getGas(), "refund gas from message call");
             return;
         }
 
@@ -576,7 +576,7 @@ public class Program {
 
         long requiredGas = contract.getGasForData(data);
 
-        if (requiredGas > msg.getGas().longValue()) {
+        if (requiredGas > msg.getGas()) {
             this.refundGas(0, "refund gas from pre-compiled call");
             this.stackPushZero();
             track.rollback();
@@ -584,7 +584,7 @@ public class Program {
             Pair<Boolean, byte[]> out = contract.execute(data);
 
             if (out.getLeft()) {
-                this.refundGas(msg.getGas().longValue() - requiredGas, "refund gas from pre-compiled call");
+                this.refundGas(msg.getGas() - requiredGas, "refund gas from pre-compiled call");
                 this.stackPushOne();
                 returnDataBuffer = out.getRight();
                 track.commit();
@@ -601,14 +601,14 @@ public class Program {
     public void spendGas(long gasValue, String cause) {
         logger.debug("Spend: cause = [{}], gas = [{}]", cause, gasValue);
 
-        if (getGasLong() < gasValue) {
+        if (getAvailableGas() < gasValue) {
             throw ExceptionFactory.notEnoughSpendingGas(cause, gasValue, this);
         }
         getResult().spendGas(gasValue);
     }
 
     public void spendAllGas() {
-        spendGas(getGas().longValue(), "consume all");
+        spendGas(getAvailableGas(), "consume all");
     }
 
     public void refundGas(long gasValue, String cause) {
@@ -667,12 +667,8 @@ public class Program {
         return invoke.getGasPrice();
     }
 
-    public long getGasLong() {
-        return invoke.getGasLong() - getResult().getGasUsed();
-    }
-
-    public DataWord getGas() {
-        return new DataWord(invoke.getGasLong() - getResult().getGasUsed());
+    public long getAvailableGas() {
+        return invoke.getGas() - getResult().getGasUsed();
     }
 
     public DataWord getCallValue() {

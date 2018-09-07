@@ -30,9 +30,9 @@ public class ProgramInvokeImpl implements ProgramInvoke {
     /**
      * Transaction environment
      */
-    private final DataWord address, origin, caller, gas, gasPrice, value;
+    private final DataWord address, origin, caller, gasPrice, value;
     private final byte[] data;
-    private final long gasLong;
+    private final long gas;
 
     /**
      * Block environment
@@ -49,7 +49,7 @@ public class ProgramInvokeImpl implements ProgramInvoke {
     private boolean isStaticCall;
 
     public ProgramInvokeImpl(DataWord address, DataWord origin, DataWord caller,
-            DataWord gas, DataWord gasPrice, DataWord value, byte[] data, DataWord prevHash,
+            long gas, DataWord gasPrice, DataWord value, byte[] data, DataWord prevHash,
             DataWord coinbase, DataWord timestamp, DataWord number, DataWord difficulty,
             DataWord gasLimit, Repository repository, BlockStore blockStore,
             int callDepth, boolean isStaticCall) {
@@ -57,7 +57,6 @@ public class ProgramInvokeImpl implements ProgramInvoke {
         Objects.requireNonNull(address);
         Objects.requireNonNull(origin);
         Objects.requireNonNull(caller);
-        Objects.requireNonNull(gas);
         Objects.requireNonNull(gasPrice);
         Objects.requireNonNull(value);
         Objects.requireNonNull(data);
@@ -76,7 +75,6 @@ public class ProgramInvokeImpl implements ProgramInvoke {
         this.origin = origin;
         this.caller = caller;
         this.gas = gas;
-        this.gasLong = gas.longValueSafe();
         this.gasPrice = gasPrice;
         this.value = value;
         this.data = data;
@@ -111,13 +109,8 @@ public class ProgramInvokeImpl implements ProgramInvoke {
     }
 
     @Override
-    public DataWord getGas() {
+    public long getGas() {
         return gas;
-    }
-
-    @Override
-    public long getGasLong() {
-        return gasLong;
     }
 
     @Override
@@ -243,7 +236,6 @@ public class ProgramInvokeImpl implements ProgramInvoke {
                 ", gasPrice=" + gasPrice +
                 ", value=" + value +
                 ", data=" + HexUtil.toHexString(data) +
-                ", gasLong=" + gasLong +
                 ", prevHash=" + prevHash +
                 ", coinbase=" + coinbase +
                 ", timestamp=" + timestamp +

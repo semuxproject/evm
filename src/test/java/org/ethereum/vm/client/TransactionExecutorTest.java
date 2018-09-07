@@ -43,8 +43,7 @@ public class TransactionExecutorTest extends TestBase {
 
     @Before
     public void additionalSetup() {
-        transaction = new TransactionMock(false, caller, address, nonce, value, data, BigInteger.valueOf(gas),
-                gasPrice);
+        transaction = new TransactionMock(isCreate, caller, address, nonce, value, data, gas, gasPrice);
         block = new BlockMock(BigInteger.valueOf(gasLimit), prevHash, coinbase, timestamp, number);
         repository.addBalance(caller, premine);
     }
@@ -54,7 +53,7 @@ public class TransactionExecutorTest extends TestBase {
         // transfer 1 ETH
         transaction = spy(transaction);
         when(transaction.getValue()).thenReturn(Unit.ETH);
-        when(transaction.getGas()).thenReturn(BigInteger.valueOf(21_000L + 1000L));
+        when(transaction.getGas()).thenReturn(21_000L + 1000L);
 
         TransactionExecutor executor = new TransactionExecutor(transaction, block, repository, blockStore, false);
         TransactionReceipt receipt = executor.run();

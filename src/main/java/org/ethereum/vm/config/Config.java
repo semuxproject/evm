@@ -27,9 +27,9 @@ public interface Config {
 
     Config DEFAULT = new ByzantiumConfig();
 
-    DataWord getCallGas(OpCode op, DataWord requestedGas, DataWord availableGas) throws OutOfGasException;
+    long getCallGas(OpCode op, long requestedGas, long availableGas) throws OutOfGasException;
 
-    DataWord getCreateGas(DataWord availableGas);
+    long getCreateGas(long availableGas);
 
     long getTransactionCost(Transaction tx);
 

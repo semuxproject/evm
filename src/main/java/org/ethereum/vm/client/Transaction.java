@@ -70,13 +70,11 @@ public interface Transaction {
     byte[] getData();
 
     /**
-     * Returns the gas limit. Because an invalid internal transaction will set the
-     * gas limit larger than {@link Long#MAX_VALUE}, this value is represented in
-     * BigInt.
+     * Returns the gas limit.
      *
      * @return the specified gas for this transaction.
      */
-    BigInteger getGas();
+    long getGas();
 
     /**
      * Returns the gas price.

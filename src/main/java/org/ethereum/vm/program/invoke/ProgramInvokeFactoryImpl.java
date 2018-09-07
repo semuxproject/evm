@@ -36,7 +36,7 @@ public class ProgramInvokeFactoryImpl implements ProgramInvokeFactory {
         byte[] address = tx.isCreate() ? HashUtil.calcNewAddress(tx.getFrom(), tx.getNonce()) : tx.getTo();
         byte[] origin = tx.getFrom();
         byte[] caller = tx.getFrom();
-        BigInteger gas = tx.getGas();
+        long gas = tx.getGas();
         BigInteger gasPrice = tx.getGasPrice();
         BigInteger callValue = tx.getValue();
         byte[] callData = tx.getData();
@@ -49,7 +49,7 @@ public class ProgramInvokeFactoryImpl implements ProgramInvokeFactory {
         BigInteger gasLimit = block.getGasLimit();
 
         return new ProgramInvokeImpl(new DataWord(address), new DataWord(origin), new DataWord(caller),
-                new DataWord(gas), new DataWord(gasPrice), new DataWord(callValue), callData,
+                gas, new DataWord(gasPrice), new DataWord(callValue), callData,
                 new DataWord(prevHash), new DataWord(coinbase), new DataWord(timestamp), new DataWord(number),
                 new DataWord(difficulty), new DataWord(gasLimit),
                 repository, blockStore, 0, false);
@@ -58,7 +58,7 @@ public class ProgramInvokeFactoryImpl implements ProgramInvokeFactory {
     @Override
     public ProgramInvoke createProgramInvoke(Program program,
             DataWord callerAddress, DataWord toAddress,
-            DataWord gas, DataWord value, byte[] data,
+            long gas, DataWord value, byte[] data,
             Repository repository, BlockStore blockStore, boolean isStaticCall) {
 
         DataWord origin = program.getOriginAddress();

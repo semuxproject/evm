@@ -27,11 +27,11 @@ public class TransactionMock implements Transaction {
     private long nonce;
     private BigInteger value;
     private byte[] data;
-    private BigInteger gas;
+    private long gas;
     private BigInteger gasPrice;
 
     public TransactionMock(boolean isCreate, byte[] from, byte[] to, long nonce, BigInteger value, byte[] data,
-            BigInteger gas, BigInteger gasPrice) {
+            long gas, BigInteger gasPrice) {
         this.isCreate = isCreate;
         this.from = from;
         this.to = to;
@@ -73,7 +73,7 @@ public class TransactionMock implements Transaction {
     }
 
     @Override
-    public BigInteger getGas() {
+    public long getGas() {
         return gas;
     }
 

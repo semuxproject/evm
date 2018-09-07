@@ -64,7 +64,7 @@ public class TestBase {
                 new DataWord(address),
                 new DataWord(origin),
                 new DataWord(caller),
-                new DataWord(gas),
+                gas,
                 new DataWord(gasPrice),
                 new DataWord(value),
                 data,

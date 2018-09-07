@@ -86,7 +86,7 @@ public class TransactionExecutor {
         this.gasUsedInTheBlock = gasUsedInTheBlock;
         this.localCall = localCall;
 
-        this.gasLeft = tx.getGas();
+        this.gasLeft = BigInteger.valueOf(tx.getGas());
     }
 
     /**
@@ -102,7 +102,7 @@ public class TransactionExecutor {
             return true;
         }
 
-        BigInteger txGas = tx.getGas();
+        BigInteger txGas = BigInteger.valueOf(tx.getGas());
         BigInteger blockGasLimit = block.getGasLimit();
 
         if (txGas.add(BigInteger.valueOf(gasUsedInTheBlock)).compareTo(blockGasLimit) > 0) {
@@ -143,7 +143,7 @@ public class TransactionExecutor {
             repo.increaseNonce(tx.getFrom());
 
             // charge gas cost
-            BigInteger txGasLimit = tx.getGas();
+            BigInteger txGasLimit = BigInteger.valueOf(tx.getGas());
             BigInteger txGasCost = tx.getGasPrice().multiply(txGasLimit);
             repo.addBalance(tx.getFrom(), txGasCost.negate());
         }
@@ -239,7 +239,7 @@ public class TransactionExecutor {
 
                 // overwrites result
                 result = program.getResult();
-                gasLeft = tx.getGas().subtract(toBI(result.getGasUsed()));
+                gasLeft = BigInteger.valueOf(tx.getGas()).subtract(toBI(result.getGasUsed()));
 
                 if (tx.isCreate() && !result.isRevert()) {
                     int returnDataGasValue = getLength(result.getReturnData())
@@ -333,6 +333,6 @@ public class TransactionExecutor {
     }
 
     private long getGasUsed() {
-        return tx.getGas().subtract(gasLeft).longValue();
+        return tx.getGas() - gasLeft.longValue();
     }
 }
