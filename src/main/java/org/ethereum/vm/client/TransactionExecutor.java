@@ -263,7 +263,7 @@ public class TransactionExecutor {
                     } else {
                         // Contract successfully created
                         gasLeft = gasLeft.subtract(BigInteger.valueOf(returnDataGasValue));
-                        track.saveCode(HashUtil.calcNewAddress(tx.getFrom(), tx.getNonce()), result.getReturnData());
+                        track.saveCode(HashUtil.calcNewAddress(tx.getFrom(), tx.getNonce()), tx.getData());
                     }
                 }
 
