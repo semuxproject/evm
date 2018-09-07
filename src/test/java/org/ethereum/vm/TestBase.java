@@ -31,23 +31,23 @@ import org.junit.Before;
 
 public class TestBase {
 
-    protected byte[] address = address(1);
-    protected byte[] origin = address(2);
-    protected byte[] caller = address(2);
-    protected long gas = 1_000_00L;
-    protected BigInteger gasPrice = BigInteger.ONE;
-    protected BigInteger value = BigInteger.ZERO;
-    protected byte[] data = new byte[0];
+    protected final byte[] address = address(1);
+    protected final byte[] origin = address(2);
+    protected final byte[] caller = address(2);
+    protected final long gas = 1_000_00L;
+    protected final BigInteger gasPrice = BigInteger.ONE;
+    protected final BigInteger value = BigInteger.ZERO;
+    protected final byte[] data = new byte[0];
 
-    protected byte[] prevHash = new byte[32];
-    protected byte[] coinbase = address(3);
-    protected long timestamp = System.currentTimeMillis();
-    protected long number = 1;
-    protected BigInteger difficulty = BigInteger.TEN;
-    protected long gasLimit = 10_000_000L;
+    protected final byte[] prevHash = new byte[32];
+    protected final byte[] coinbase = address(3);
+    protected final long timestamp = System.currentTimeMillis();
+    protected final long number = 1;
+    protected final BigInteger difficulty = BigInteger.TEN;
+    protected final long gasLimit = 10_000_000L;
 
-    protected int callDepth = 0;
-    protected boolean isStaticCall = false;
+    protected final int callDepth = 0;
+    protected final boolean isStaticCall = false;
 
     protected Repository repository;
     protected BlockStore blockStore;

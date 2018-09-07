@@ -21,52 +21,53 @@ import static junit.framework.TestCase.assertTrue;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.when;
 
 import java.math.BigInteger;
 
 import org.ethereum.vm.TestBase;
+import org.ethereum.vm.util.HexUtil;
+import org.junit.Before;
 import org.junit.Test;
 
 public class TransactionExecutorTest extends TestBase {
 
+    protected final BigInteger premine = BigInteger.valueOf(100L).multiply(Unit.ETH);
+    protected final boolean isCreate = false;
+    protected final long nonce = 0;
+
+    // by default, it's a CALL transaction with 1 million gas and empty payload
+    protected Transaction transaction;
+    protected Block block;
+
+    @Before
+    public void additionalSetup() {
+        transaction = new TransactionMock(false, caller, address, nonce, value, data, BigInteger.valueOf(gas),
+                gasPrice);
+        block = new BlockMock(BigInteger.valueOf(gasLimit), prevHash, coinbase, timestamp, number);
+        repository.addBalance(caller, premine);
+    }
+
     @Test
     public void testBasicTx() {
-        Transaction tx = new TransactionMock(
-                false,
-                address(1),
-                address(2),
-                0,
-                BigInteger.ONE.multiply(Unit.ETH),
-                new byte[0],
-                BigInteger.valueOf(22_000),
-                BigInteger.ONE.multiply(Unit.GWEI));
-        Block block = new BlockMock(
-                BigInteger.valueOf(1_000_000L),
-                new byte[32],
-                address(3),
-                System.currentTimeMillis(),
-                1);
-        BigInteger premine = BigInteger.TEN.multiply(Unit.ETH);
-        long gasUsage = 21_000L;
-        BigInteger txFee = BigInteger.valueOf(gasUsage).multiply(tx.getGasPrice());
-        repository.addBalance(address(1), premine);
+        // transfer 1 ETH
+        transaction = spy(transaction);
+        when(transaction.getValue()).thenReturn(Unit.ETH);
+        when(transaction.getGas()).thenReturn(BigInteger.valueOf(21_000L + 1000L));
 
-        TransactionExecutor executor = new TransactionExecutor(tx, block, repository, blockStore, false);
-        TransactionReceipt summary = executor.run();
-        System.out.println(summary);
+        TransactionExecutor executor = new TransactionExecutor(transaction, block, repository, blockStore, false);
+        TransactionReceipt receipt = executor.run();
+        System.out.println(receipt);
 
-        assertFalse(summary.isFailed());
-        assertEquals(gasUsage, summary.getGasUsed());
-        assertArrayEquals(new byte[0], summary.getReturnData());
-        assertTrue(summary.getLogs().isEmpty());
+        assertFalse(receipt.isFailed());
+        assertEquals(21_000L, receipt.getGasUsed());
+        assertArrayEquals(new byte[0], receipt.getReturnData());
+        assertTrue(receipt.getLogs().isEmpty());
 
-        BigInteger balance1 = repository.getBalance(address(1));
-        BigInteger balance2 = repository.getBalance(address(2));
-        BigInteger balance3 = repository.getBalance(address(3));
-        assertEquals(premine.subtract(tx.getValue()).subtract(txFee), balance1);
-        assertEquals(tx.getValue(), balance2);
-        // TODO: How is miner get paid
-        // assertEquals(BigInteger.valueOf(21_000L).multiply(tx.getGasPrice()),
-        // balance3);
+        BigInteger balance1 = repository.getBalance(caller);
+        BigInteger balance2 = repository.getBalance(address);
+        assertEquals(premine.subtract(Unit.ETH).subtract(BigInteger.valueOf(21_000L)), balance1);
+        assertEquals(Unit.ETH, balance2);
     }
 }
