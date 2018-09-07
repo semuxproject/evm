@@ -294,7 +294,7 @@ public class TransactionExecutor {
      * @return a transaction summary, or NULL if the transaction fails the at
      *         {@link #init()}.
      */
-    public TransactionSummary run() {
+    public TransactionReceipt run() {
         if (!init()) {
             return null;
         } else {
@@ -317,7 +317,7 @@ public class TransactionExecutor {
         repo.addBalance(tx.getFrom(), gasLeft.multiply(tx.getGasPrice()));
         logger.debug("Pay total refund to sender: amount = {}", totalRefund);
 
-        return new TransactionSummary(tx,
+        return new TransactionReceipt(tx,
                 result.getException() != null,
                 getGasUsed(),
                 result.getReturnData(),

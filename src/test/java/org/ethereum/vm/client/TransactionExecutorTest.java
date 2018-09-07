@@ -52,7 +52,7 @@ public class TransactionExecutorTest extends TestBase {
         repository.addBalance(address(1), premine);
 
         TransactionExecutor executor = new TransactionExecutor(tx, block, repository, blockStore, false);
-        TransactionSummary summary = executor.run();
+        TransactionReceipt summary = executor.run();
         System.out.println(summary);
 
         assertFalse(summary.isFailed());

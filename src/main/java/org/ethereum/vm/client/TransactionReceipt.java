@@ -24,7 +24,7 @@ import org.ethereum.vm.LogInfo;
 import org.ethereum.vm.program.InternalTransaction;
 import org.ethereum.vm.util.ByteArrayWrapper;
 
-public class TransactionSummary {
+public class TransactionReceipt {
 
     private Transaction tx;
 
@@ -35,7 +35,7 @@ public class TransactionSummary {
     private List<ByteArrayWrapper> deletedAccounts;
     private List<LogInfo> logs;
 
-    public TransactionSummary(Transaction tx, boolean isFailed, long gasUsed, byte[] returnData,
+    public TransactionReceipt(Transaction tx, boolean isFailed, long gasUsed, byte[] returnData,
             List<InternalTransaction> internalTransactions,
             List<ByteArrayWrapper> deletedAccounts,
             List<LogInfo> logs) {
@@ -78,7 +78,7 @@ public class TransactionSummary {
 
     @Override
     public String toString() {
-        return "TransactionSummary{" +
+        return "TransactionReceipt{" +
                 "isFailed=" + isFailed +
                 ", gasUsed=" + gasUsed +
                 ", returnData=" + Arrays.toString(returnData) +
