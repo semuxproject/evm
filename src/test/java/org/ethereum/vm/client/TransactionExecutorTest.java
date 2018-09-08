@@ -21,6 +21,7 @@ import static junit.framework.TestCase.assertTrue;
 import static org.apache.commons.lang3.ArrayUtils.EMPTY_BYTE_ARRAY;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
@@ -177,6 +178,43 @@ public class TransactionExecutorTest extends TestBase {
         TransactionReceipt receipt = executor.run();
         assertTrue(receipt.isSuccess());
         assertEquals(DataWord.ONE, new DataWord(receipt.getReturnData()));
+    }
+
+    @Test
+    public void testMultipleCreates() {
+        // contract Test {
+        // function f(uint n) {
+        // for (uint i = 0; i < n; i++) {
+        // new Resource(i);
+        // }
+        // }
+        // }
+        //
+        // contract Resource {
+        // uint a;
+        //
+        // constructor(uint _a) {
+        // a = _a;
+        // }
+        // }
+        String code = "608060405234801561001057600080fd5b50610179806100206000396000f300608060405260043610610041576000357c0100000000000000000000000000000000000000000000000000000000900463ffffffff168063b3de648b14610046575b600080fd5b34801561005257600080fd5b5061007160048036038101908080359060200190929190505050610073565b005b60008090505b818110156100bf578061008a6100c3565b80828152602001915050604051809103906000f0801580156100b0573d6000803e3d6000fd5b50508080600101915050610079565b5050565b604051607b806100d38339019056006080604052348015600f57600080fd5b50604051602080607b83398101806040528101908080519060200190929190505050806000819055505060358060466000396000f3006080604052600080fd00a165627a7a723058200980eb06443a6d542e49e879013722262ef2955dfa50c09a8f8608d37354758b0029a165627a7a723058201fc71e1d1c7eef260f90edc83a2a7cc72e1c11992ba2448ffb1073ea8b8559b50029";
+        byte[] contractAddress = deploy(code);
+
+        byte[] method = HashUtil.keccak256("f(uint256)".getBytes(StandardCharsets.UTF_8));
+        byte[] data = ByteArrayUtil.merge(Arrays.copyOf(method, 4), new DataWord(8).getData());
+
+        Transaction tx = spy(transaction);
+        when(tx.getTo()).thenReturn(contractAddress);
+        when(tx.getData()).thenReturn(data);
+
+        TransactionExecutor executor = new TransactionExecutor(tx, block, repository, blockStore, true);
+        TransactionReceipt receipt = executor.run();
+
+        assertTrue(receipt.isSuccess());
+        for (int i = 0; i < 8; i++) {
+            assertFalse(receipt.getInternalTransactions().get(i).isRejected());
+            assertEquals(i, receipt.getInternalTransactions().get(i).getIndex());
+        }
     }
 
     protected byte[] deploy(String code) {
