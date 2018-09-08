@@ -46,4 +46,9 @@ public class ByteArrayWrapper {
     public int hashCode() {
         return Arrays.hashCode(bytes);
     }
+
+    @Override
+    public String toString() {
+        return HexUtil.toHexString(bytes);
+    }
 }

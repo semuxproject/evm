@@ -37,6 +37,7 @@ import org.ethereum.vm.TestTransactionBase;
 import org.ethereum.vm.config.Config;
 import org.ethereum.vm.program.InternalTransaction;
 import org.ethereum.vm.util.ByteArrayUtil;
+import org.ethereum.vm.util.ByteArrayWrapper;
 import org.ethereum.vm.util.BytecodeCompiler;
 import org.ethereum.vm.util.HashUtil;
 import org.ethereum.vm.util.HexUtil;
@@ -196,5 +197,30 @@ public class TransactionExecutorTest extends TestTransactionBase {
             assertFalse(receipt.getInternalTransactions().get(i).isRejected());
             assertEquals(i, receipt.getInternalTransactions().get(i).getIndex());
         }
+    }
+
+    @Test
+    public void testSuicide() {
+        String asm = "CALLER" + " SUICIDE";
+        byte[] code = BytecodeCompiler.compile(asm);
+        repository.saveCode(address, code);
+        repository.addBalance(address, Unit.ETH);
+
+        TransactionExecutor executor = new TransactionExecutor(transaction, block, repository, blockStore, false);
+        TransactionReceipt receipt = executor.run();
+        System.out.println(receipt);
+
+        assertTrue(receipt.isSuccess());
+        assertEquals(1, receipt.getInternalTransactions().size());
+        assertEquals(new ByteArrayWrapper(address), receipt.getDeletedAccounts().get(0));
+
+        FeeSchedule fs = Config.DEFAULT.getFeeSchedule();
+        long gasUsed = fs.getTRANSACTION() + OpCode.CALLER.getTier().asInt() + fs.getSUICIDE();
+        long gasRefund = Math.min(fs.getSUICIDE_REFUND(), gasUsed / 2);
+        BigInteger balance1 = repository.getBalance(caller);
+        BigInteger balance2 = repository.getBalance(address);
+        assertEquals(premine.add(Unit.ETH).subtract(BigInteger.valueOf(gasUsed - gasRefund).multiply(gasPrice)),
+                balance1);
+        assertEquals(BigInteger.ZERO, balance2);
     }
 }
