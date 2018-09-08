@@ -129,7 +129,7 @@ public class RepositoryMock implements Repository {
     @Override
     public BigInteger getBalance(byte[] address) {
         Account account = getAccount(address);
-        return account == null ? null : account.balance;
+        return account == null ? BigInteger.ZERO : account.balance;
     }
 
     @Override

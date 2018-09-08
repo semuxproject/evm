@@ -318,7 +318,7 @@ public class TransactionExecutor {
         logger.debug("Pay total refund to sender: amount = {}", totalRefund);
 
         return new TransactionReceipt(tx,
-                result.getException() == null,
+                result.getException() == null && !result.isRevert(),
                 getGasUsed(),
                 result.getReturnData(),
                 result.getLogs(), new ArrayList<>(result.getDeleteAccounts()), result.getInternalTransactions());

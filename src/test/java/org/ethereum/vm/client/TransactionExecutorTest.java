@@ -18,8 +18,10 @@
 package org.ethereum.vm.client;
 
 import static junit.framework.TestCase.assertTrue;
+import static org.apache.commons.lang3.ArrayUtils.EMPTY_BYTE_ARRAY;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
 
@@ -97,10 +99,10 @@ public class TransactionExecutorTest extends TestBase {
 
         byte[] method = HashUtil.keccak256("f(uint256)".getBytes(StandardCharsets.UTF_8));
         byte[] data = ByteArrayUtil.merge(Arrays.copyOf(method, 4), new DataWord(1000).getData());
-        transaction = spy(transaction);
-        when(transaction.getData()).thenReturn(data);
+        Transaction tx = spy(transaction);
+        when(tx.getData()).thenReturn(data);
 
-        TransactionExecutor executor = new TransactionExecutor(transaction, block, repository, blockStore, false);
+        TransactionExecutor executor = new TransactionExecutor(tx, block, repository, blockStore, false);
         TransactionReceipt receipt = executor.run();
 
         assertTrue(receipt.isSuccess());
@@ -111,11 +113,11 @@ public class TransactionExecutorTest extends TestBase {
 
         List<InternalTransaction> txs = receipt.getInternalTransactions();
         for (int i = 0; i < txs.size(); i++) {
-            InternalTransaction tx = txs.get(i);
-            assertEquals(i, tx.getDepth());
-            assertEquals(0, tx.getIndex());
-            assertEquals(OpCode.CALL, tx.getType());
-            assertEquals(i >= txs.size() - 2, tx.isRejected());
+            InternalTransaction itx = txs.get(i);
+            assertEquals(i, itx.getDepth());
+            assertEquals(0, itx.getIndex());
+            assertEquals(OpCode.CALL, itx.getType());
+            assertEquals(i >= txs.size() - 2, itx.isRejected());
         }
     }
 
@@ -150,5 +152,52 @@ public class TransactionExecutorTest extends TestBase {
         ;
         assertEquals(availableGas - availableGas / 64 + fs.getSTIPEND_CALL(),
                 receipt.getInternalTransactions().get(0).getGas());
+    }
+
+    @Test
+    public void testDeploy() {
+        // contract Test {
+        // uint public n;
+        //
+        // constructor(uint _n) {
+        // n = _n;
+        // }
+        // }
+        String code = "608060405234801561001057600080fd5b506040516020806100e7833981018060405281019080805190602001909291905050508060008190555050609e806100496000396000f300608060405260043610603f576000357c0100000000000000000000000000000000000000000000000000000000900463ffffffff1680632e52d606146044575b600080fd5b348015604f57600080fd5b506056606c565b6040518082815260200191505060405180910390f35b600054815600a165627a7a72305820efb6a6369e3c5d7fe9b3274b20753bb0fe188b763fc2adee86cd844de935c8220029";
+        byte[] contractAddress = deploy(code, DataWord.ONE.getData());
+
+        byte[] method = HashUtil.keccak256("n()".getBytes(StandardCharsets.UTF_8));
+        byte[] data = Arrays.copyOf(method, 4);
+
+        Transaction tx = spy(transaction);
+        when(tx.getTo()).thenReturn(contractAddress);
+        when(tx.getData()).thenReturn(data);
+
+        TransactionExecutor executor = new TransactionExecutor(tx, block, repository, blockStore, true);
+        TransactionReceipt receipt = executor.run();
+        assertTrue(receipt.isSuccess());
+        assertEquals(DataWord.ONE, new DataWord(receipt.getReturnData()));
+    }
+
+    protected byte[] deploy(String code) {
+        return deploy(code, EMPTY_BYTE_ARRAY);
+    }
+
+    protected byte[] deploy(String code, byte[] arguments) {
+        byte[] contractAddress = HashUtil.calcNewAddress(caller, repository.getNonce(caller));
+
+        Transaction tx = spy(transaction);
+        when(tx.isCreate()).thenReturn(true);
+        when(tx.getTo()).thenReturn(EMPTY_BYTE_ARRAY);
+        when(tx.getData()).thenReturn(ByteArrayUtil.merge(HexUtil.fromHexString(code), arguments));
+
+        TransactionExecutor executor = new TransactionExecutor(tx, block, repository, blockStore, false);
+        TransactionReceipt receipt = executor.run();
+
+        assertTrue(receipt.isSuccess());
+        assertNotNull(repository.getCode(contractAddress));
+        assertArrayEquals(receipt.getReturnData(), repository.getCode(contractAddress));
+
+        return contractAddress;
     }
 }

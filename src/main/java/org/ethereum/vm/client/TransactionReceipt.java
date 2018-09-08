@@ -21,6 +21,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.bouncycastle.util.encoders.Hex;
 import org.ethereum.vm.LogInfo;
 import org.ethereum.vm.program.InternalTransaction;
 import org.ethereum.vm.util.ByteArrayWrapper;
@@ -82,7 +83,7 @@ public class TransactionReceipt {
         return "TransactionReceipt{" +
                 "success=" + success +
                 ", gasUsed=" + gasUsed +
-                ", returnData=" + Arrays.toString(returnData) +
+                ", returnData=" + Hex.toHexString(returnData) +
                 ", deletedAccounts=" + deletedAccounts +
                 ", logs=" + logs +
                 "}" + internalTransactions.stream().map(tx -> "\n|--" + tx.toString()).collect(Collectors.joining());
