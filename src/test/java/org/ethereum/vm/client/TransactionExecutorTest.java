@@ -17,12 +17,10 @@
  */
 package org.ethereum.vm.client;
 
-import static junit.framework.TestCase.assertTrue;
-import static org.apache.commons.lang3.ArrayUtils.EMPTY_BYTE_ARRAY;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
 
@@ -35,33 +33,16 @@ import org.bouncycastle.util.encoders.Hex;
 import org.ethereum.vm.DataWord;
 import org.ethereum.vm.FeeSchedule;
 import org.ethereum.vm.OpCode;
-import org.ethereum.vm.TestBase;
+import org.ethereum.vm.TestTransactionBase;
 import org.ethereum.vm.config.Config;
 import org.ethereum.vm.program.InternalTransaction;
 import org.ethereum.vm.util.ByteArrayUtil;
 import org.ethereum.vm.util.BytecodeCompiler;
 import org.ethereum.vm.util.HashUtil;
 import org.ethereum.vm.util.HexUtil;
-import org.junit.Before;
 import org.junit.Test;
 
-public class TransactionExecutorTest extends TestBase {
-
-    protected final BigInteger premine = BigInteger.valueOf(100L).multiply(Unit.ETH);
-    protected final boolean isCreate = false;
-    protected final long nonce = 0;
-
-    // by default, it's a CALL transaction with 1 million gas and empty payload
-    protected Transaction transaction;
-    protected Block block;
-
-    @Before
-    public void setup() {
-        super.setup();
-        transaction = new TransactionMock(isCreate, caller, address, nonce, value, data, gas, gasPrice);
-        block = new BlockMock(number, prevHash, coinbase, timestamp, gasLimit);
-        repository.addBalance(caller, premine);
-    }
+public class TransactionExecutorTest extends TestTransactionBase {
 
     @Test
     public void testBasicTx() {
@@ -215,27 +196,5 @@ public class TransactionExecutorTest extends TestBase {
             assertFalse(receipt.getInternalTransactions().get(i).isRejected());
             assertEquals(i, receipt.getInternalTransactions().get(i).getIndex());
         }
-    }
-
-    protected byte[] deploy(String code) {
-        return deploy(code, EMPTY_BYTE_ARRAY);
-    }
-
-    protected byte[] deploy(String code, byte[] arguments) {
-        byte[] contractAddress = HashUtil.calcNewAddress(caller, repository.getNonce(caller));
-
-        Transaction tx = spy(transaction);
-        when(tx.isCreate()).thenReturn(true);
-        when(tx.getTo()).thenReturn(EMPTY_BYTE_ARRAY);
-        when(tx.getData()).thenReturn(ByteArrayUtil.merge(HexUtil.fromHexString(code), arguments));
-
-        TransactionExecutor executor = new TransactionExecutor(tx, block, repository, blockStore, false);
-        TransactionReceipt receipt = executor.run();
-
-        assertTrue(receipt.isSuccess());
-        assertNotNull(repository.getCode(contractAddress));
-        assertArrayEquals(receipt.getReturnData(), repository.getCode(contractAddress));
-
-        return contractAddress;
     }
 }
