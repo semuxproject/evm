@@ -28,11 +28,15 @@ import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.List;
 
+import org.bouncycastle.util.encoders.Hex;
 import org.ethereum.vm.DataWord;
+import org.ethereum.vm.FeeSchedule;
 import org.ethereum.vm.OpCode;
 import org.ethereum.vm.TestBase;
+import org.ethereum.vm.config.Config;
 import org.ethereum.vm.program.InternalTransaction;
 import org.ethereum.vm.util.ByteArrayUtil;
+import org.ethereum.vm.util.BytecodeCompiler;
 import org.ethereum.vm.util.HashUtil;
 import org.ethereum.vm.util.HexUtil;
 import org.junit.Before;
@@ -49,7 +53,8 @@ public class TransactionExecutorTest extends TestBase {
     protected Block block;
 
     @Before
-    public void additionalSetup() {
+    public void setup() {
+        super.setup();
         transaction = new TransactionMock(isCreate, caller, address, nonce, value, data, gas, gasPrice);
         block = new BlockMock(BigInteger.valueOf(gasLimit), prevHash, coinbase, timestamp, number);
         repository.addBalance(caller, premine);
@@ -112,5 +117,38 @@ public class TransactionExecutorTest extends TestBase {
             assertEquals(OpCode.CALL, tx.getType());
             assertEquals(i >= txs.size() - 2, tx.isRejected());
         }
+    }
+
+    @Test
+    public void testCallWithMaxGas() {
+        String asm = "PUSH1 0x88" // out size
+                + " PUSH1 0x00" // out offset
+                + " PUSH1 0x00" // in size
+                + " PUSH1 0x00" // in offset
+                + " PUSH1 0x01" // value
+                + " PUSH20 0x" + Hex.toHexString(address(128)) // address
+                + " PUSH32 0x" + new DataWord(DataWord.MAX_VALUE) // gas
+                + " CALL";
+        byte[] code = BytecodeCompiler.compile(asm);
+        repository.saveCode(address, code);
+        repository.addBalance(address, BigInteger.ONE.multiply(Unit.ETH));
+
+        TransactionExecutor executor = new TransactionExecutor(transaction, block, repository, blockStore, false);
+        TransactionReceipt receipt = executor.run();
+
+        assertTrue(receipt.isSuccess());
+        assertEquals(1, receipt.getInternalTransactions().size());
+
+        Config config = Config.DEFAULT;
+        FeeSchedule fs = config.getFeeSchedule();
+        int memWords = (0x88 + 31) / 32;
+        long availableGas = gas - config.getTransactionCost(transaction) // basic cost
+                - OpCode.Tier.VeryLowTier.asInt() * 7 // 7 push ops
+                - fs.getCALL() // call
+                - fs.getVT_CALL() // extra: value transfer
+                - (fs.getMEMORY() * memWords + memWords * memWords / 512 - 0) // memory expansion
+        ;
+        assertEquals(availableGas - availableGas / 64 + fs.getSTIPEND_CALL(),
+                receipt.getInternalTransactions().get(0).getGas());
     }
 }
