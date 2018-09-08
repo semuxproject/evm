@@ -56,7 +56,7 @@ public class TransactionExecutorTest extends TestBase {
     public void setup() {
         super.setup();
         transaction = new TransactionMock(isCreate, caller, address, nonce, value, data, gas, gasPrice);
-        block = new BlockMock(BigInteger.valueOf(gasLimit), prevHash, coinbase, timestamp, number);
+        block = new BlockMock(number, prevHash, coinbase, timestamp, gasLimit);
         repository.addBalance(caller, premine);
     }
 

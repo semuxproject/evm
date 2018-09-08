@@ -103,7 +103,7 @@ public class TransactionExecutor {
         }
 
         BigInteger txGas = BigInteger.valueOf(tx.getGas());
-        BigInteger blockGasLimit = block.getGasLimit();
+        BigInteger blockGasLimit = BigInteger.valueOf(block.getGasLimit());
 
         if (txGas.add(BigInteger.valueOf(gasUsedInTheBlock)).compareTo(blockGasLimit) > 0) {
             logger.warn("Too much gas used in this block");

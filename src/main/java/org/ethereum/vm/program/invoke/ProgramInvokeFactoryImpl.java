@@ -46,7 +46,7 @@ public class ProgramInvokeFactoryImpl implements ProgramInvokeFactory {
         long timestamp = block.getTimestamp();
         long number = block.getNumber();
         BigInteger difficulty = block.getDifficulty();
-        BigInteger gasLimit = block.getGasLimit();
+        long gasLimit = block.getGasLimit();
 
         return new ProgramInvokeImpl(new DataWord(address), new DataWord(origin), new DataWord(caller),
                 gas, new DataWord(gasPrice), new DataWord(callValue), callData,

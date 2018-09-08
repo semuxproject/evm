@@ -17,17 +17,15 @@
  */
 package org.ethereum.vm.client;
 
-import java.math.BigInteger;
-
 public class BlockMock implements Block {
 
-    private BigInteger gasLimit;
+    private long number;
     private byte[] parentHash;
     private byte[] coinbase;
     private long timestamp;
-    private long number;
+    private long gasLimit;
 
-    public BlockMock(BigInteger gasLimit, byte[] parentHash, byte[] coinbase, long timestamp, long number) {
+    public BlockMock(long number, byte[] parentHash, byte[] coinbase, long timestamp, long gasLimit) {
         this.gasLimit = gasLimit;
         this.parentHash = parentHash;
         this.coinbase = coinbase;
@@ -36,7 +34,7 @@ public class BlockMock implements Block {
     }
 
     @Override
-    public BigInteger getGasLimit() {
+    public long getGasLimit() {
         return gasLimit;
     }
 

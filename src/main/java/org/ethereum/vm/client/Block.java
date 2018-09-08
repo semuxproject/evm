@@ -21,7 +21,7 @@ import java.math.BigInteger;
 
 public interface Block {
 
-    BigInteger getGasLimit();
+    long getGasLimit();
 
     byte[] getParentHash();
 
