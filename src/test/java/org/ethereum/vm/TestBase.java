@@ -34,7 +34,7 @@ public class TestBase {
     protected final byte[] address = address(1);
     protected final byte[] origin = address(2);
     protected final byte[] caller = address(2);
-    protected final long gas = 1_000_00L;
+    protected final long gas = 1_000_000L;
     protected final BigInteger gasPrice = BigInteger.ONE;
     protected final BigInteger value = BigInteger.ZERO;
     protected final byte[] data = new byte[0];

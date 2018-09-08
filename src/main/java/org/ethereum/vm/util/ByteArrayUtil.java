@@ -22,6 +22,30 @@ import static org.apache.commons.lang3.ArrayUtils.EMPTY_BYTE_ARRAY;
 import java.math.BigInteger;
 
 public class ByteArrayUtil {
+
+    /**
+     * Merges multiple array into a single one.
+     *
+     * @param arrays
+     *            an array of byte arrays
+     * @return the merged byte array
+     */
+    public static byte[] merge(byte[]... arrays) {
+        int length = 0;
+        for (byte[] a : arrays) {
+            length += a.length;
+        }
+
+        byte[] result = new byte[length];
+        int start = 0;
+        for (byte[] a : arrays) {
+            System.arraycopy(a, 0, result, start, a.length);
+            start += a.length;
+        }
+
+        return result;
+    }
+
     public static int firstNonZeroByte(byte[] data) {
         for (int i = 0; i < data.length; ++i) {
             if (data[i] != 0) {

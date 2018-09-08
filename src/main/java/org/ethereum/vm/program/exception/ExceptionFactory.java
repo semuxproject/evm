@@ -19,7 +19,6 @@ package org.ethereum.vm.program.exception;
 
 import java.math.BigInteger;
 
-import org.ethereum.vm.DataWord;
 import org.ethereum.vm.OpCode;
 import org.ethereum.vm.program.Program;
 import org.ethereum.vm.util.HexUtil;

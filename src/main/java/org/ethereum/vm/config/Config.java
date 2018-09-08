@@ -17,7 +17,6 @@
  */
 package org.ethereum.vm.config;
 
-import org.ethereum.vm.DataWord;
 import org.ethereum.vm.FeeSchedule;
 import org.ethereum.vm.OpCode;
 import org.ethereum.vm.client.Transaction;

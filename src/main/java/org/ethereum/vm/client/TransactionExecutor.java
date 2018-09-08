@@ -318,12 +318,10 @@ public class TransactionExecutor {
         logger.debug("Pay total refund to sender: amount = {}", totalRefund);
 
         return new TransactionReceipt(tx,
-                result.getException() != null,
+                result.getException() == null,
                 getGasUsed(),
                 result.getReturnData(),
-                result.getInternalTransactions(),
-                new ArrayList<>(result.getDeleteAccounts()),
-                result.getLogs());
+                result.getLogs(), new ArrayList<>(result.getDeleteAccounts()), result.getInternalTransactions());
     }
 
     private void rollback() {

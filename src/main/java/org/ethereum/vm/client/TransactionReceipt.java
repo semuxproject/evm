@@ -19,6 +19,7 @@ package org.ethereum.vm.client;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.ethereum.vm.LogInfo;
 import org.ethereum.vm.program.InternalTransaction;
@@ -28,32 +29,32 @@ public class TransactionReceipt {
 
     private Transaction tx;
 
-    private boolean isFailed;
+    private boolean success;
     private long gasUsed;
     private byte[] returnData;
-    private List<InternalTransaction> internalTransactions;
-    private List<ByteArrayWrapper> deletedAccounts;
     private List<LogInfo> logs;
 
-    public TransactionReceipt(Transaction tx, boolean isFailed, long gasUsed, byte[] returnData,
-            List<InternalTransaction> internalTransactions,
-            List<ByteArrayWrapper> deletedAccounts,
-            List<LogInfo> logs) {
+    // transient
+    private List<ByteArrayWrapper> deletedAccounts;
+    private List<InternalTransaction> internalTransactions;
+
+    public TransactionReceipt(Transaction tx, boolean success, long gasUsed, byte[] returnData, List<LogInfo> logs,
+            List<ByteArrayWrapper> deletedAccounts, List<InternalTransaction> internalTransactions) {
         this.tx = tx;
+        this.success = success;
         this.gasUsed = gasUsed;
-        this.isFailed = isFailed;
         this.returnData = returnData;
-        this.internalTransactions = internalTransactions;
-        this.deletedAccounts = deletedAccounts;
         this.logs = logs;
+        this.deletedAccounts = deletedAccounts;
+        this.internalTransactions = internalTransactions;
     }
 
     public Transaction getTx() {
         return tx;
     }
 
-    public boolean isFailed() {
-        return isFailed;
+    public boolean isSuccess() {
+        return success;
     }
 
     public long getGasUsed() {
@@ -64,27 +65,26 @@ public class TransactionReceipt {
         return returnData;
     }
 
-    public List<InternalTransaction> getInternalTransactions() {
-        return internalTransactions;
+    public List<LogInfo> getLogs() {
+        return logs;
     }
 
     public List<ByteArrayWrapper> getDeletedAccounts() {
         return deletedAccounts;
     }
 
-    public List<LogInfo> getLogs() {
-        return logs;
+    public List<InternalTransaction> getInternalTransactions() {
+        return internalTransactions;
     }
 
     @Override
     public String toString() {
         return "TransactionReceipt{" +
-                "isFailed=" + isFailed +
+                "success=" + success +
                 ", gasUsed=" + gasUsed +
                 ", returnData=" + Arrays.toString(returnData) +
-                ", internalTransactions=" + internalTransactions +
                 ", deletedAccounts=" + deletedAccounts +
                 ", logs=" + logs +
-                '}';
+                "}" + internalTransactions.stream().map(tx -> "\n|--" + tx.toString()).collect(Collectors.joining());
     }
 }

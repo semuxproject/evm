@@ -35,7 +35,7 @@ public class BytecodeCompiler {
         for (int i = 0; i < code.length; i++) {
             OpCode op = OpCode.code(code[i]);
             if (op == null) {
-                sb.append(HexUtil.toHexString(code[i])).append(" ");
+                sb.append("[0x").append(HexUtil.toHexString(code[i])).append("] ");
                 continue;
             }
 
@@ -44,8 +44,8 @@ public class BytecodeCompiler {
             if (op.val() >= OpCode.PUSH1.val() && op.val() <= OpCode.PUSH32.val()) {
                 int n = op.val() - OpCode.PUSH1.val() + 1;
                 sb.append("0x");
-                for (int j = 0; j < n; j++) {
-                    sb.append(HexUtil.toHexString(code[++i]));
+                for (int j = 0; j < n && ++i < code.length; j++) {
+                    sb.append(HexUtil.toHexString(code[i]));
                 }
                 sb.append(" ");
             }

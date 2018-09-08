@@ -21,6 +21,7 @@ import java.math.BigInteger;
 
 import org.ethereum.vm.OpCode;
 import org.ethereum.vm.client.Transaction;
+import org.ethereum.vm.util.HexUtil;
 
 /**
  * Represents an internal transaction.
@@ -125,11 +126,18 @@ public class InternalTransaction implements Transaction {
 
     @Override
     public String toString() {
-        return "InternalTransaction [" +
-                "depth=" + getDepth() +
-                ", index=" + getIndex() +
-                ", type=" + getType() +
-                "]";
+        return "InternalTransaction{" +
+                "rejected=" + rejected +
+                ", depth=" + depth +
+                ", index=" + index +
+                ", type=" + type +
+                ", from=" + HexUtil.toHexString(from) +
+                ", to=" + HexUtil.toHexString(to) +
+                ", nonce=" + nonce +
+                ", value=" + value +
+                ", data=" + HexUtil.toHexString(data) +
+                ", gas=" + gas +
+                ", gasPrice=" + gasPrice +
+                '}';
     }
-
 }
