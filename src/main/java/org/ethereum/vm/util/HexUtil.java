@@ -22,7 +22,7 @@ import org.bouncycastle.util.encoders.Hex;
 public class HexUtil {
 
     public static byte[] fromHexString(String hex) {
-        return Hex.decode(hex);
+        return Hex.decode(hex.startsWith("0x") ? hex.substring(2) : hex);
     }
 
     public static String toHexString(byte[] data) {
