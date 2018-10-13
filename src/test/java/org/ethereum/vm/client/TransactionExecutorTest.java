@@ -223,4 +223,28 @@ public class TransactionExecutorTest extends TestTransactionBase {
                 balance1);
         assertEquals(BigInteger.ZERO, balance2);
     }
+
+    // contract Test {
+    // function f() returns (bool success) {
+    // return true;
+    // }
+    // }
+    @Test
+    public void testSolidityReturn() {
+        // prepare the code
+        String deploymentCode = "6080604052348015600f57600080fd5b5060a58061001e6000396000f300608060405260043610603f576000357c0100000000000000000000000000000000000000000000000000000000900463ffffffff16806326121ff0146044575b600080fd5b348015604f57600080fd5b5060566070565b604051808215151515815260200191505060405180910390f35b600060019050905600a165627a7a723058202a9a4eef7c8bd2ed11241a2692b3d9093e2cfe4c3e6cefe4ef91c18e141efc980029";
+        String contractCode = deploymentCode.substring(deploymentCode.indexOf("60806040", 1));
+        repository.saveCode(address, HexUtil.fromHexString(contractCode));
+
+        // call the `f()` method
+        byte[] methodSignature = Arrays.copyOf(HashUtil.keccak256("f()".getBytes(StandardCharsets.UTF_8)), 4);
+        Transaction tx = spy(transaction);
+        when(tx.getData()).thenReturn(methodSignature);
+
+        TransactionExecutor executor = new TransactionExecutor(tx, block, repository, blockStore, false);
+        TransactionReceipt receipt = executor.run();
+
+        assertTrue(receipt.isSuccess());
+        assertEquals(DataWord.ONE, new DataWord(receipt.getReturnData()));
+    }
 }
