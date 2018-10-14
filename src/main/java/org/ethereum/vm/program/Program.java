@@ -127,7 +127,7 @@ public class Program {
     }
 
     public void stackPush(byte[] data) {
-        stackPush(new DataWord(data));
+        stackPush(DataWord.of(data));
     }
 
     public void stackPushZero() {
@@ -350,7 +350,7 @@ public class Program {
 
         ProgramInvoke programInvoke = programInvokeFactory.createProgramInvoke(this,
                 getOwnerAddress(),
-                new DataWord(newAddress),
+                DataWord.of(newAddress),
                 gas,
                 value,
                 EMPTY_BYTE_ARRAY,
@@ -416,7 +416,7 @@ public class Program {
             track.commit();
 
             // IN SUCCESS PUSH THE ADDRESS INTO THE STACK
-            stackPush(new DataWord(newAddress));
+            stackPush(DataWord.of(newAddress));
         }
 
         // 5. REFUND THE REMAIN GAS
@@ -480,7 +480,7 @@ public class Program {
         if (isNotEmpty(programCode)) {
             ProgramInvoke programInvoke = programInvokeFactory.createProgramInvoke(this,
                     msg.getType().callIsDelegate() ? getCallerAddress() : getOwnerAddress(),
-                    new DataWord(contextAddress),
+                    DataWord.of(contextAddress),
                     msg.getGas(),
                     msg.getType().callIsDelegate() ? getCallValue() : msg.getEndowment(),
                     data,
@@ -644,13 +644,13 @@ public class Program {
 
     public DataWord getBlockHash(int index) {
         return index < this.getNumber().longValue() && index >= Math.max(256, this.getNumber().intValue()) - 256
-                ? new DataWord(this.invoke.getBlockStore().getBlockHashByNumber(index))
+                ? DataWord.of(this.invoke.getBlockStore().getBlockHashByNumber(index))
                 : DataWord.ZERO;
     }
 
     public DataWord getBalance(DataWord address) {
         BigInteger balance = getStorage().getBalance(address.getLast20Bytes());
-        return new DataWord(balance.toByteArray());
+        return DataWord.of(balance.toByteArray());
     }
 
     public DataWord getOriginAddress() {
@@ -686,7 +686,7 @@ public class Program {
     }
 
     public DataWord getReturnDataBufferSize() {
-        return new DataWord(getReturnDataBufferSizeI());
+        return DataWord.of(getReturnDataBufferSizeI());
     }
 
     private int getReturnDataBufferSizeI() {

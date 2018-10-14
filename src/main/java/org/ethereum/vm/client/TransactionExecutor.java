@@ -158,7 +158,7 @@ public class TransactionExecutor {
     protected void call() {
         byte[] targetAddress = tx.getTo();
         PrecompiledContracts.PrecompiledContract precompiledContract = PrecompiledContracts
-                .getContractForAddress(new DataWord(targetAddress), config);
+                .getContractForAddress(DataWord.of(targetAddress), config);
 
         // transfer value
         BigInteger endowment = tx.getValue();

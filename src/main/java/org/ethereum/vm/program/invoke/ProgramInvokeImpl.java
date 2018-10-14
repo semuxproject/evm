@@ -143,14 +143,14 @@ public class ProgramInvokeImpl implements ProgramInvoke {
         byte[] buffer = new byte[DataWord.SIZE];
         System.arraycopy(data, idx, buffer, 0, size); // left-aligned
 
-        return new DataWord(buffer);
+        return DataWord.of(buffer);
     }
 
     @Override
     public DataWord getDataSize() {
         byte[] data = getData();
 
-        return new DataWord(data.length);
+        return DataWord.of(data.length);
     }
 
     @Override

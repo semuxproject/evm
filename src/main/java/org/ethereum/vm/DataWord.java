@@ -33,22 +33,22 @@ public class DataWord implements Comparable<DataWord> {
     public static final BigInteger TWO_POW_256 = BigInteger.valueOf(2).pow(256);
     public static final BigInteger MAX_VALUE = TWO_POW_256.subtract(BigInteger.ONE);
 
-    public static final DataWord ZERO = new DataWord(0);
-    public static final DataWord ONE = new DataWord(1);
+    public static final DataWord ZERO = of(0);
+    public static final DataWord ONE = of(1);
 
     public static final int SIZE = 32;
 
     private final byte[] data;
 
-    public DataWord(int num) {
-        this(ByteBuffer.allocate(Integer.BYTES).putInt(num).array());
+    public static DataWord of(int num) {
+        return new DataWord(ByteBuffer.allocate(Integer.BYTES).putInt(num).array(), false);
     }
 
-    public DataWord(long num) {
-        this(ByteBuffer.allocate(Long.BYTES).putLong(num).array());
+    public static DataWord of(long num) {
+        return new DataWord(ByteBuffer.allocate(Long.BYTES).putLong(num).array(), false);
     }
 
-    public DataWord(BigInteger num) {
+    public static DataWord of(BigInteger num) {
         if (num.signum() < 0 || num.compareTo(MAX_VALUE) > 0) {
             throw new IllegalArgumentException("Input BigInt can't be negative or larger than MAX_VALUE");
         }
@@ -58,16 +58,18 @@ public class DataWord implements Comparable<DataWord> {
         int copyOffset = Math.max(bytes.length - SIZE, 0);
         int copyLength = bytes.length - copyOffset;
 
-        this.data = new byte[SIZE];
+        byte[] data = new byte[SIZE];
         System.arraycopy(bytes, copyOffset, data, SIZE - copyLength, copyLength);
+
+        return new DataWord(data, false);
     }
 
-    public DataWord(String hex) {
-        this(HexUtil.fromHexString(hex));
+    public static DataWord of(String hex) {
+        return new DataWord(HexUtil.fromHexString(hex), false);
     }
 
-    public DataWord(byte[] data) {
-        this(data, true);
+    public static DataWord of(byte[] data) {
+        return new DataWord(data, true);
     }
 
     /**
@@ -222,7 +224,7 @@ public class DataWord implements Comparable<DataWord> {
     public DataWord mul(DataWord word) {
         BigInteger result = value().multiply(word.value());
 
-        return new DataWord(result.and(MAX_VALUE));
+        return of(result.and(MAX_VALUE));
     }
 
     public DataWord div(DataWord word) {
@@ -230,7 +232,7 @@ public class DataWord implements Comparable<DataWord> {
             return ZERO;
         } else {
             BigInteger result = value().divide(word.value());
-            return new DataWord(result.and(MAX_VALUE));
+            return of(result.and(MAX_VALUE));
         }
     }
 
@@ -239,18 +241,18 @@ public class DataWord implements Comparable<DataWord> {
             return ZERO;
         } else {
             BigInteger result = sValue().divide(word.sValue());
-            return new DataWord(result.and(MAX_VALUE));
+            return of(result.and(MAX_VALUE));
         }
     }
 
     public DataWord sub(DataWord word) {
         BigInteger result = value().subtract(word.value());
-        return new DataWord(result.and(MAX_VALUE));
+        return of(result.and(MAX_VALUE));
     }
 
     public DataWord exp(DataWord word) {
         BigInteger result = value().modPow(word.value(), TWO_POW_256);
-        return new DataWord(result);
+        return of(result);
     }
 
     public DataWord mod(DataWord word) {
@@ -258,7 +260,7 @@ public class DataWord implements Comparable<DataWord> {
             return ZERO;
         } else {
             BigInteger result = value().mod(word.value());
-            return new DataWord(result.and(MAX_VALUE));
+            return of(result.and(MAX_VALUE));
         }
     }
 
@@ -269,7 +271,7 @@ public class DataWord implements Comparable<DataWord> {
             BigInteger result = sValue().abs().mod(word.sValue().abs());
             result = (sValue().signum() == -1) ? result.negate() : result;
 
-            return new DataWord(result.and(MAX_VALUE));
+            return of(result.and(MAX_VALUE));
         }
     }
 
@@ -278,7 +280,7 @@ public class DataWord implements Comparable<DataWord> {
             return ZERO;
         } else {
             BigInteger result = value().add(word1.value()).mod(word2.value());
-            return new DataWord(result.and(MAX_VALUE));
+            return of(result.and(MAX_VALUE));
         }
     }
 
@@ -287,7 +289,7 @@ public class DataWord implements Comparable<DataWord> {
             return ZERO;
         } else {
             BigInteger result = value().multiply(word1.value()).mod(word2.value());
-            return new DataWord(result.and(MAX_VALUE));
+            return of(result.and(MAX_VALUE));
         }
     }
 

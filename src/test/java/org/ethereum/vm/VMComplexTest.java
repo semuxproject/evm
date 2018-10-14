@@ -43,8 +43,8 @@ public class VMComplexTest extends TestBase {
         // stop
         // }
 
-        DataWord key1 = new DataWord(999);
-        DataWord value1 = new DataWord(3);
+        DataWord key1 = DataWord.of(999);
+        DataWord value1 = DataWord.of(3);
 
         // Set contract into Database
         String address = "77045e71a7a2c50903d88e564cd72fab11e82051";
@@ -55,7 +55,7 @@ public class VMComplexTest extends TestBase {
         byte[] codeB = BytecodeCompiler.compile(code);
 
         ProgramInvoke pi = spy(invoke);
-        when(pi.getOwnerAddress()).thenReturn(new DataWord(addressB));
+        when(pi.getOwnerAddress()).thenReturn(DataWord.of(addressB));
 
         repository.createAccount(addressB);
         repository.saveCode(addressB, codeB);

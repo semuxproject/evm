@@ -48,7 +48,7 @@ public class VMCustomTest extends TestBase {
     public void testCALLDATASIZE_1() {
         VM vm = new VM();
         program = new Program(HexUtil.fromHexString("36"), invoke);
-        String s_expected_1 = new DataWord(callData.length).toString();
+        String s_expected_1 = DataWord.of(callData.length).toString();
 
         vm.step(program);
 
@@ -241,7 +241,7 @@ public class VMCustomTest extends TestBase {
     public void testADDRESS_1() {
         VM vm = new VM();
         program = new Program(HexUtil.fromHexString("30"), invoke);
-        String s_expected_1 = new DataWord(address).toString();
+        String s_expected_1 = DataWord.of(address).toString();
 
         vm.step(program);
 
@@ -253,7 +253,7 @@ public class VMCustomTest extends TestBase {
     public void testBALANCE_1() {
         VM vm = new VM();
         program = new Program(HexUtil.fromHexString("3031"), invoke);
-        String s_expected_1 = new DataWord(1000L).toString();
+        String s_expected_1 = DataWord.of(1000L).toString();
 
         vm.step(program);
         vm.step(program);
@@ -266,7 +266,7 @@ public class VMCustomTest extends TestBase {
     public void testORIGIN_1() {
         VM vm = new VM();
         program = new Program(HexUtil.fromHexString("32"), invoke);
-        String s_expected_1 = new DataWord(origin).toString();
+        String s_expected_1 = DataWord.of(origin).toString();
 
         vm.step(program);
 
@@ -278,7 +278,7 @@ public class VMCustomTest extends TestBase {
     public void testCALLER_1() {
         VM vm = new VM();
         program = new Program(HexUtil.fromHexString("33"), invoke);
-        String s_expected_1 = new DataWord(caller).toString();
+        String s_expected_1 = DataWord.of(caller).toString();
 
         vm.step(program);
 
@@ -290,7 +290,7 @@ public class VMCustomTest extends TestBase {
     public void testCALLVALUE_1() {
         VM vm = new VM();
         program = new Program(HexUtil.fromHexString("34"), invoke);
-        String s_expected_1 = new DataWord(value).toString();
+        String s_expected_1 = DataWord.of(value).toString();
 
         vm.step(program);
 
@@ -351,7 +351,7 @@ public class VMCustomTest extends TestBase {
     public void testBLOCKHASH_1() {
         VM vm = new VM();
         program = new Program(HexUtil.fromHexString("600140"), invoke);
-        String s_expected_1 = new DataWord(blockStore.getBlockHashByNumber(1)).toString();
+        String s_expected_1 = DataWord.of(blockStore.getBlockHashByNumber(1)).toString();
 
         vm.step(program);
         vm.step(program);
@@ -364,7 +364,7 @@ public class VMCustomTest extends TestBase {
     public void testCOINBASE_1() {
         VM vm = new VM();
         program = new Program(HexUtil.fromHexString("41"), invoke);
-        String s_expected_1 = new DataWord(coinbase).toString();
+        String s_expected_1 = DataWord.of(coinbase).toString();
 
         vm.step(program);
 
@@ -376,7 +376,7 @@ public class VMCustomTest extends TestBase {
     public void testTIMESTAMP_1() {
         VM vm = new VM();
         program = new Program(HexUtil.fromHexString("42"), invoke);
-        String s_expected_1 = new DataWord(timestamp).toString();
+        String s_expected_1 = DataWord.of(timestamp).toString();
 
         vm.step(program);
 
@@ -388,7 +388,7 @@ public class VMCustomTest extends TestBase {
     public void testNUMBER_1() {
         VM vm = new VM();
         program = new Program(HexUtil.fromHexString("43"), invoke);
-        String s_expected_1 = new DataWord(number).toString();
+        String s_expected_1 = DataWord.of(number).toString();
 
         vm.step(program);
 
@@ -400,7 +400,7 @@ public class VMCustomTest extends TestBase {
     public void testDIFFICULTY_1() {
         VM vm = new VM();
         program = new Program(HexUtil.fromHexString("44"), invoke);
-        String s_expected_1 = new DataWord(difficulty).toString();
+        String s_expected_1 = DataWord.of(difficulty).toString();
 
         vm.step(program);
 
@@ -412,7 +412,7 @@ public class VMCustomTest extends TestBase {
     public void testGASPRICE_1() {
         VM vm = new VM();
         program = new Program(HexUtil.fromHexString("3A"), invoke);
-        String s_expected_1 = new DataWord(gasPrice).toString();
+        String s_expected_1 = DataWord.of(gasPrice).toString();
 
         vm.step(program);
 
@@ -424,7 +424,7 @@ public class VMCustomTest extends TestBase {
     public void testGAS_1() {
         VM vm = new VM();
         program = new Program(HexUtil.fromHexString("5A"), invoke);
-        String s_expected_1 = new DataWord(gas - OpCode.GAS.getTier().asInt()).toString();
+        String s_expected_1 = DataWord.of(gas - OpCode.GAS.getTier().asInt()).toString();
 
         vm.step(program);
 
@@ -436,7 +436,7 @@ public class VMCustomTest extends TestBase {
     public void testGASLIMIT_1() {
         VM vm = new VM();
         program = new Program(HexUtil.fromHexString("45"), invoke);
-        String s_expected_1 = new DataWord(gasLimit).toString();
+        String s_expected_1 = DataWord.of(gasLimit).toString();
 
         vm.step(program);
 

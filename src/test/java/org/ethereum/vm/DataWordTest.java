@@ -34,8 +34,8 @@ public class DataWordTest {
             three[i] = (byte) 0xff;
         }
 
-        DataWord x = new DataWord(three);
-        x.add(new DataWord(three));
+        DataWord x = DataWord.of(three);
+        x.add(DataWord.of(three));
         assertEquals(32, x.getData().length);
     }
 
@@ -52,8 +52,8 @@ public class DataWordTest {
         }
         two[31] = 0x56; // 0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff56
 
-        DataWord x = new DataWord(one);// System.out.println(x.value());
-        DataWord y = new DataWord(two);// System.out.println(y.value());
+        DataWord x = DataWord.of(one);// System.out.println(x.value());
+        DataWord y = DataWord.of(two);// System.out.println(y.value());
         DataWord z = y.mod(x);
         assertEquals(32, z.getData().length);
         assertEquals(expected, HexUtil.toHexString(z.getData()));
@@ -67,8 +67,8 @@ public class DataWordTest {
         byte[] two = new byte[32];
         two[11] = 0x1; // 0x0000000000000000000000010000000000000000000000000000000000000000
 
-        DataWord x = new DataWord(one);// System.out.println(x.value());
-        DataWord y = new DataWord(two);// System.out.println(y.value());
+        DataWord x = DataWord.of(one);// System.out.println(x.value());
+        DataWord y = DataWord.of(two);// System.out.println(y.value());
         DataWord z = x.mul(y);
         assertEquals(32, z.getData().length);
         assertEquals("0000000000000000000000010000000000000000000000000000000000000000",
@@ -84,9 +84,9 @@ public class DataWordTest {
         byte[] two = new byte[32];
         two[0] = 0x1;
 
-        DataWord x = new DataWord(one);
+        DataWord x = DataWord.of(one);
         System.out.println(x);
-        DataWord y = new DataWord(two);
+        DataWord y = DataWord.of(two);
         System.out.println(y);
         DataWord z = x.mul(y);
         System.out.println(z);
@@ -105,8 +105,8 @@ public class DataWordTest {
         byte[] two = new byte[32];
         two[31] = 0x0f; // 0x000000000000000000000000000000000000000000000000000000000000000f
 
-        DataWord x = new DataWord(one);
-        DataWord y = new DataWord(two);
+        DataWord x = DataWord.of(one);
+        DataWord y = DataWord.of(two);
         DataWord z = x.div(y);
 
         assertEquals(32, z.getData().length);
@@ -121,8 +121,8 @@ public class DataWordTest {
 
         byte[] two = new byte[32];
 
-        DataWord x = new DataWord(one);
-        DataWord y = new DataWord(two);
+        DataWord x = DataWord.of(one);
+        DataWord y = DataWord.of(two);
         DataWord z = x.div(y);
 
         assertEquals(32, z.getData().length);
@@ -138,8 +138,8 @@ public class DataWordTest {
         byte[] two = new byte[32];
         two[31] = 0x0f;
 
-        DataWord x = new DataWord(one);
-        DataWord y = new DataWord(two);
+        DataWord x = DataWord.of(one);
+        DataWord y = DataWord.of(two);
         DataWord z = x.sDiv(y);
 
         assertEquals(32, z.getData().length);
@@ -149,7 +149,7 @@ public class DataWordTest {
     @Test
     public void testSignExtend1() {
 
-        DataWord x = new DataWord(HexUtil.fromHexString("f2"));
+        DataWord x = DataWord.of(HexUtil.fromHexString("f2"));
         byte k = 0;
         String expected = "fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff2";
 
@@ -160,7 +160,7 @@ public class DataWordTest {
 
     @Test
     public void testSignExtend2() {
-        DataWord x = new DataWord(HexUtil.fromHexString("f2"));
+        DataWord x = DataWord.of(HexUtil.fromHexString("f2"));
         byte k = 1;
         String expected = "00000000000000000000000000000000000000000000000000000000000000f2";
 
@@ -173,7 +173,7 @@ public class DataWordTest {
     public void testSignExtend3() {
 
         byte k = 1;
-        DataWord x = new DataWord(HexUtil.fromHexString("0f00ab"));
+        DataWord x = DataWord.of(HexUtil.fromHexString("0f00ab"));
         String expected = "00000000000000000000000000000000000000000000000000000000000000ab";
 
         DataWord z = x.signExtend(k);
@@ -185,7 +185,7 @@ public class DataWordTest {
     public void testSignExtend4() {
 
         byte k = 1;
-        DataWord x = new DataWord(HexUtil.fromHexString("ffff"));
+        DataWord x = DataWord.of(HexUtil.fromHexString("ffff"));
         String expected = "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff";
 
         DataWord z = x.signExtend(k);
@@ -197,7 +197,7 @@ public class DataWordTest {
     public void testSignExtend5() {
 
         byte k = 3;
-        DataWord x = new DataWord(HexUtil.fromHexString("ffffffff"));
+        DataWord x = DataWord.of(HexUtil.fromHexString("ffffffff"));
         String expected = "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff";
 
         DataWord z = x.signExtend(k);
@@ -209,7 +209,7 @@ public class DataWordTest {
     public void testSignExtend6() {
 
         byte k = 3;
-        DataWord x = new DataWord(HexUtil.fromHexString("ab02345678"));
+        DataWord x = DataWord.of(HexUtil.fromHexString("ab02345678"));
         String expected = "0000000000000000000000000000000000000000000000000000000002345678";
 
         DataWord z = x.signExtend(k);
@@ -221,7 +221,7 @@ public class DataWordTest {
     public void testSignExtend7() {
 
         byte k = 3;
-        DataWord x = new DataWord(HexUtil.fromHexString("ab82345678"));
+        DataWord x = DataWord.of(HexUtil.fromHexString("ab82345678"));
         String expected = "ffffffffffffffffffffffffffffffffffffffffffffffffffffffff82345678";
 
         DataWord z = x.signExtend(k);
@@ -233,7 +233,7 @@ public class DataWordTest {
     public void testSignExtend8() {
 
         byte k = 30;
-        DataWord x = new DataWord(
+        DataWord x = DataWord.of(
                 HexUtil.fromHexString("ff34567882345678823456788234567882345678823456788234567882345678"));
         String expected = "0034567882345678823456788234567882345678823456788234567882345678";
 
@@ -246,7 +246,7 @@ public class DataWordTest {
     public void testSignExtendException1() {
 
         byte k = -1;
-        DataWord x = new DataWord(0);
+        DataWord x = DataWord.of(0);
 
         x.signExtend(k); // should throw an exception
     }
@@ -255,7 +255,7 @@ public class DataWordTest {
     public void testSignExtendException2() {
 
         byte k = 32;
-        DataWord x = new DataWord(0);
+        DataWord x = DataWord.of(0);
 
         x.signExtend(k); // should throw an exception
     }
@@ -271,9 +271,9 @@ public class DataWordTest {
     }
 
     void testAddMod(String v1, String v2, String v3) {
-        DataWord dv1 = new DataWord(HexUtil.fromHexString(v1));
-        DataWord dv2 = new DataWord(HexUtil.fromHexString(v2));
-        DataWord dv3 = new DataWord(HexUtil.fromHexString(v3));
+        DataWord dv1 = DataWord.of(HexUtil.fromHexString(v1));
+        DataWord dv2 = DataWord.of(HexUtil.fromHexString(v2));
+        DataWord dv3 = DataWord.of(HexUtil.fromHexString(v3));
         BigInteger bv1 = new BigInteger(v1, 16);
         BigInteger bv2 = new BigInteger(v2, 16);
         BigInteger bv3 = new BigInteger(v3, 16);
@@ -285,10 +285,10 @@ public class DataWordTest {
 
     @Test
     public void testMulMod1() {
-        DataWord wr = new DataWord(
+        DataWord wr = DataWord.of(
                 HexUtil.fromHexString("9999999999999999999999999999999999999999999999999999999999999999"));
-        DataWord w1 = new DataWord(HexUtil.fromHexString("01"));
-        DataWord w2 = new DataWord(
+        DataWord w1 = DataWord.of(HexUtil.fromHexString("01"));
+        DataWord w2 = DataWord.of(
                 HexUtil.fromHexString("9999999999999999999999999999999999999999999999999999999999999998"));
 
         DataWord z = wr.mulmod(w1, w2);
@@ -300,10 +300,10 @@ public class DataWordTest {
 
     @Test
     public void testMulMod2() {
-        DataWord wr = new DataWord(
+        DataWord wr = DataWord.of(
                 HexUtil.fromHexString("9999999999999999999999999999999999999999999999999999999999999999"));
-        DataWord w1 = new DataWord(HexUtil.fromHexString("01"));
-        DataWord w2 = new DataWord(
+        DataWord w1 = DataWord.of(HexUtil.fromHexString("01"));
+        DataWord w2 = DataWord.of(
                 HexUtil.fromHexString("9999999999999999999999999999999999999999999999999999999999999999"));
 
         DataWord z = wr.mulmod(w1, w2);
@@ -314,10 +314,10 @@ public class DataWordTest {
 
     @Test
     public void testMulModZero() {
-        DataWord wr = new DataWord(HexUtil.fromHexString("00"));
-        DataWord w1 = new DataWord(
+        DataWord wr = DataWord.of(HexUtil.fromHexString("00"));
+        DataWord w1 = DataWord.of(
                 HexUtil.fromHexString("9999999999999999999999999999999999999999999999999999999999999999"));
-        DataWord w2 = new DataWord(
+        DataWord w2 = DataWord.of(
                 HexUtil.fromHexString("ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"));
 
         DataWord z = wr.mulmod(w1, w2);
@@ -328,10 +328,10 @@ public class DataWordTest {
 
     @Test
     public void testMulModZeroWord1() {
-        DataWord wr = new DataWord(
+        DataWord wr = DataWord.of(
                 HexUtil.fromHexString("9999999999999999999999999999999999999999999999999999999999999999"));
-        DataWord w1 = new DataWord(HexUtil.fromHexString("00"));
-        DataWord w2 = new DataWord(
+        DataWord w1 = DataWord.of(HexUtil.fromHexString("00"));
+        DataWord w2 = DataWord.of(
                 HexUtil.fromHexString("ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"));
 
         DataWord z = wr.mulmod(w1, w2);
@@ -342,11 +342,11 @@ public class DataWordTest {
 
     @Test
     public void testMulModZeroWord2() {
-        DataWord wr = new DataWord(
+        DataWord wr = DataWord.of(
                 HexUtil.fromHexString("9999999999999999999999999999999999999999999999999999999999999999"));
-        DataWord w1 = new DataWord(
+        DataWord w1 = DataWord.of(
                 HexUtil.fromHexString("ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"));
-        DataWord w2 = new DataWord(HexUtil.fromHexString("00"));
+        DataWord w2 = DataWord.of(HexUtil.fromHexString("00"));
 
         DataWord z = wr.mulmod(w1, w2);
 
@@ -356,11 +356,11 @@ public class DataWordTest {
 
     @Test
     public void testMulModOverflow() {
-        DataWord wr = new DataWord(
+        DataWord wr = DataWord.of(
                 HexUtil.fromHexString("ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"));
-        DataWord w1 = new DataWord(
+        DataWord w1 = DataWord.of(
                 HexUtil.fromHexString("ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"));
-        DataWord w2 = new DataWord(
+        DataWord w2 = DataWord.of(
                 HexUtil.fromHexString("ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"));
 
         DataWord z = wr.mulmod(w1, w2);

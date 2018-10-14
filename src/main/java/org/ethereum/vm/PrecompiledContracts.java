@@ -53,14 +53,14 @@ public class PrecompiledContracts {
     private static final BN128Multiplication altBN128Mul = new BN128Multiplication();
     private static final BN128Pairing altBN128Pairing = new BN128Pairing();
 
-    private static final DataWord ecRecoverAddr = new DataWord(1);
-    private static final DataWord sha256Addr = new DataWord(2);
-    private static final DataWord ripempd160Addr = new DataWord(3);
-    private static final DataWord identityAddr = new DataWord(4);
-    private static final DataWord modExpAddr = new DataWord(5);
-    private static final DataWord altBN128AddAddr = new DataWord(6);
-    private static final DataWord altBN128MulAddr = new DataWord(7);
-    private static final DataWord altBN128PairingAddr = new DataWord(8);
+    private static final DataWord ecRecoverAddr = DataWord.of(1);
+    private static final DataWord sha256Addr = DataWord.of(2);
+    private static final DataWord ripempd160Addr = DataWord.of(3);
+    private static final DataWord identityAddr = DataWord.of(4);
+    private static final DataWord modExpAddr = DataWord.of(5);
+    private static final DataWord altBN128AddAddr = DataWord.of(6);
+    private static final DataWord altBN128MulAddr = DataWord.of(7);
+    private static final DataWord altBN128PairingAddr = DataWord.of(8);
 
     public static PrecompiledContract getContractForAddress(DataWord address, Config config) {
 
@@ -162,7 +162,7 @@ public class PrecompiledContracts {
                 result = HashUtil.ripemd160(data);
             }
 
-            return Pair.of(true, new DataWord(result).getData());
+            return Pair.of(true, DataWord.of(result).getData());
         }
     }
 
@@ -192,7 +192,7 @@ public class PrecompiledContracts {
 
                 ECKey.ECDSASignature signature = ECKey.ECDSASignature.fromComponents(r, s, v[31]);
                 if (validateV(v) && signature.validateComponents()) {
-                    out = new DataWord(ECKey.signatureToAddress(h, signature));
+                    out = DataWord.of(ECKey.signatureToAddress(h, signature));
                 }
             } catch (Throwable any) {
             }
@@ -310,7 +310,7 @@ public class PrecompiledContracts {
 
         private int parseLen(byte[] data, int idx) {
             byte[] bytes = parseBytes(data, 32 * idx, 32);
-            return new DataWord(bytes).intValueSafe();
+            return DataWord.of(bytes).intValueSafe();
         }
 
         private BigInteger parseArg(byte[] data, int offset, int len) {
@@ -475,7 +475,7 @@ public class PrecompiledContracts {
             check.run();
             int result = check.result();
 
-            return Pair.of(true, new DataWord(result).getData());
+            return Pair.of(true, DataWord.of(result).getData());
         }
 
         private Pair<BN128G1, BN128G2> decodePair(byte[] in, int offset) {

@@ -1064,7 +1064,7 @@ public class VMTest extends TestBase {
         VM vm = new VM();
 
         String programCode = "";
-        String top = new DataWord(0x10 + n).toString();
+        String top = DataWord.of(0x10 + n).toString();
 
         for (int i = n; i > -1; --i) {
             programCode += "PUSH1 0x" + HexUtil.toHexString((byte) (0x10 + i)) + " ";
@@ -1454,7 +1454,7 @@ public class VMTest extends TestBase {
         vm.step(program);
         vm.step(program);
 
-        DataWord key = new DataWord(HexUtil.fromHexString(s_expected_key));
+        DataWord key = DataWord.of(HexUtil.fromHexString(s_expected_key));
         DataWord val = program.getStorage().getStorageRow(invoke.getOwnerAddress().getLast20Bytes(), key);
 
         assertEquals(s_expected_val, HexUtil.toHexString(val.getData()).toUpperCase());
@@ -1476,7 +1476,7 @@ public class VMTest extends TestBase {
         vm.step(program);
 
         Repository repository = program.getStorage();
-        DataWord key = new DataWord(HexUtil.fromHexString(s_expected_key));
+        DataWord key = DataWord.of(HexUtil.fromHexString(s_expected_key));
         DataWord val = repository.getStorageRow(invoke.getOwnerAddress().getLast20Bytes(), key);
 
         assertEquals(s_expected_val, HexUtil.toHexString(val.getData()).toUpperCase());
@@ -1687,7 +1687,7 @@ public class VMTest extends TestBase {
         vm.step(program);
         vm.step(program);
 
-        DataWord key = new DataWord(HexUtil.fromHexString(s_expected_key));
+        DataWord key = DataWord.of(HexUtil.fromHexString(s_expected_key));
         DataWord val = program.getStorage().getStorageRow(invoke.getOwnerAddress().getLast20Bytes(), key);
 
         assertTrue(program.isStopped());
@@ -1711,7 +1711,7 @@ public class VMTest extends TestBase {
         vm.step(program);
         vm.step(program);
 
-        DataWord key = new DataWord(HexUtil.fromHexString(s_expected_key));
+        DataWord key = DataWord.of(HexUtil.fromHexString(s_expected_key));
         DataWord val = program.getStorage().getStorageRow(invoke.getOwnerAddress().getLast20Bytes(), key);
 
         assertTrue(program.isStopped());
@@ -2387,7 +2387,7 @@ public class VMTest extends TestBase {
         VM vm = new VM();
         program = new Program(HexUtil.fromHexString("73471FD3AD3E9EEADEEC4608B92D16CE6B500704CC3B"),
                 invoke);
-        String s_expected_1 = new DataWord(testCode.length).toString();
+        String s_expected_1 = DataWord.of(testCode.length).toString();
 
         vm.step(program);
         vm.step(program);

@@ -37,7 +37,7 @@ public class PrecompiledContractTest {
 
     @Test
     public void identityTest1() {
-        DataWord addr = new DataWord("0000000000000000000000000000000000000000000000000000000000000004");
+        DataWord addr = DataWord.of("0000000000000000000000000000000000000000000000000000000000000004");
         PrecompiledContract contract = PrecompiledContracts.getContractForAddress(addr, byzantiumConfig);
         byte[] data = HexUtil.fromHexString("112233445566");
         byte[] expected = HexUtil.fromHexString("112233445566");
@@ -49,7 +49,7 @@ public class PrecompiledContractTest {
 
     @Test
     public void sha256Test1() {
-        DataWord addr = new DataWord("0000000000000000000000000000000000000000000000000000000000000002");
+        DataWord addr = DataWord.of("0000000000000000000000000000000000000000000000000000000000000002");
         PrecompiledContract contract = PrecompiledContracts.getContractForAddress(addr, byzantiumConfig);
         byte[] data = null;
         String expected = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855";
@@ -62,7 +62,7 @@ public class PrecompiledContractTest {
     @Test
     public void sha256Test2() {
 
-        DataWord addr = new DataWord("0000000000000000000000000000000000000000000000000000000000000002");
+        DataWord addr = DataWord.of("0000000000000000000000000000000000000000000000000000000000000002");
         PrecompiledContract contract = PrecompiledContracts.getContractForAddress(addr, byzantiumConfig);
         byte[] data = EMPTY_BYTE_ARRAY;
         String expected = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855";
@@ -75,7 +75,7 @@ public class PrecompiledContractTest {
     @Test
     public void sha256Test3() {
 
-        DataWord addr = new DataWord("0000000000000000000000000000000000000000000000000000000000000002");
+        DataWord addr = DataWord.of("0000000000000000000000000000000000000000000000000000000000000002");
         PrecompiledContract contract = PrecompiledContracts.getContractForAddress(addr, byzantiumConfig);
         byte[] data = HexUtil.fromHexString("112233");
         String expected = "49ee2bf93aac3b1fb4117e59095e07abe555c3383b38d608da37680a406096e8";
@@ -87,7 +87,7 @@ public class PrecompiledContractTest {
 
     @Test
     public void Ripempd160Test1() {
-        DataWord addr = new DataWord("0000000000000000000000000000000000000000000000000000000000000003");
+        DataWord addr = DataWord.of("0000000000000000000000000000000000000000000000000000000000000003");
         PrecompiledContract contract = PrecompiledContracts.getContractForAddress(addr, byzantiumConfig);
         byte[] data = HexUtil.fromHexString("0000000000000000000000000000000000000000000000000000000000000001");
         String expected = "000000000000000000000000ae387fcfeb723c3f5964509af111cf5a67f30661";
@@ -116,7 +116,7 @@ public class PrecompiledContractTest {
                 + "f83fda161e1a3105a14c41168bf3dce0"
                 + "46eabf35680328e26ef4579caf8aeb2c"
                 + "f9ece05dbf67a4f3d1f28c7b1d0e3546");
-        DataWord addr = new DataWord("0000000000000000000000000000000000000000000000000000000000000001");
+        DataWord addr = DataWord.of("0000000000000000000000000000000000000000000000000000000000000001");
         PrecompiledContract contract = PrecompiledContracts.getContractForAddress(addr, byzantiumConfig);
         String expected2 = "0000000000000000000000007f8b3b04bf34618f4a1723fba96b5db211279a2b";
 
@@ -126,7 +126,7 @@ public class PrecompiledContractTest {
 
     @Test
     public void modExpTest() {
-        DataWord addr = new DataWord("0000000000000000000000000000000000000000000000000000000000000005");
+        DataWord addr = DataWord.of("0000000000000000000000000000000000000000000000000000000000000005");
 
         PrecompiledContract contract = PrecompiledContracts.getContractForAddress(addr, byzantiumConfig);
         assertNotNull(contract);

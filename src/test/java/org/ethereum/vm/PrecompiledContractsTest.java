@@ -53,7 +53,7 @@ public class PrecompiledContractsTest extends TestTransactionBase {
                         4);
         byte[] hash = HashUtil.keccak256("hello".getBytes(StandardCharsets.UTF_8));
         System.out.println(HexUtil.toHexString(hash));
-        byte[] v = new DataWord(28).getData();
+        byte[] v = DataWord.of(28).getData();
         byte[] r = HexUtil.fromHexString("9242685bf161793cc25603c231bc2f568eb630ea16aa137d2664ac8038825608");
         byte[] s = HexUtil.fromHexString("4f8ae3bd7535248d0bd448298cc2e2071e56992d0774dc340c368ae950852ada");
         byte[] data = ByteArrayUtil.merge(method, hash, v, r, s);
@@ -66,6 +66,6 @@ public class PrecompiledContractsTest extends TestTransactionBase {
         TransactionReceipt receipt = executor.run();
 
         assertTrue(receipt.isSuccess());
-        assertEquals(new DataWord("7156526fbd7a3c72969b54f64e42c10fbb768c8a"), new DataWord(receipt.getReturnData()));
+        assertEquals(DataWord.of("7156526fbd7a3c72969b54f64e42c10fbb768c8a"), DataWord.of(receipt.getReturnData()));
     }
 }

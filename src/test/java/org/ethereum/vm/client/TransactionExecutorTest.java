@@ -81,7 +81,7 @@ public class TransactionExecutorTest extends TestTransactionBase {
         repository.saveCode(address, code);
 
         byte[] method = HashUtil.keccak256("f(uint256)".getBytes(StandardCharsets.UTF_8));
-        byte[] data = ByteArrayUtil.merge(Arrays.copyOf(method, 4), new DataWord(1000).getData());
+        byte[] data = ByteArrayUtil.merge(Arrays.copyOf(method, 4), DataWord.of(1000).getData());
         Transaction tx = spy(transaction);
         when(tx.getData()).thenReturn(data);
 
@@ -112,7 +112,7 @@ public class TransactionExecutorTest extends TestTransactionBase {
                 + " PUSH1 0x00" // in offset
                 + " PUSH1 0x01" // value
                 + " PUSH20 0x" + Hex.toHexString(address(128)) // address
-                + " PUSH32 0x" + new DataWord(DataWord.MAX_VALUE) // gas
+                + " PUSH32 0x" + DataWord.of(DataWord.MAX_VALUE) // gas
                 + " CALL";
         byte[] code = BytecodeCompiler.compile(asm);
         repository.saveCode(address, code);
@@ -159,7 +159,7 @@ public class TransactionExecutorTest extends TestTransactionBase {
         TransactionExecutor executor = new TransactionExecutor(tx, block, repository, blockStore, true);
         TransactionReceipt receipt = executor.run();
         assertTrue(receipt.isSuccess());
-        assertEquals(DataWord.ONE, new DataWord(receipt.getReturnData()));
+        assertEquals(DataWord.ONE, DataWord.of(receipt.getReturnData()));
     }
 
     @Test
@@ -183,7 +183,7 @@ public class TransactionExecutorTest extends TestTransactionBase {
         byte[] contractAddress = deploy(code);
 
         byte[] method = HashUtil.keccak256("f(uint256)".getBytes(StandardCharsets.UTF_8));
-        byte[] data = ByteArrayUtil.merge(Arrays.copyOf(method, 4), new DataWord(8).getData());
+        byte[] data = ByteArrayUtil.merge(Arrays.copyOf(method, 4), DataWord.of(8).getData());
 
         Transaction tx = spy(transaction);
         when(tx.getTo()).thenReturn(contractAddress);
@@ -245,6 +245,6 @@ public class TransactionExecutorTest extends TestTransactionBase {
         TransactionReceipt receipt = executor.run();
 
         assertTrue(receipt.isSuccess());
-        assertEquals(DataWord.ONE, new DataWord(receipt.getReturnData()));
+        assertEquals(DataWord.ONE, DataWord.of(receipt.getReturnData()));
     }
 }

@@ -171,13 +171,13 @@ public class VM {
 
             // These all operate on memory and therefore potentially expand it:
             case MSTORE:
-                gasCost += calcMemGas(feeSchedule, oldMemSize, memNeeded(stack.peek(), new DataWord(32)), 0);
+                gasCost += calcMemGas(feeSchedule, oldMemSize, memNeeded(stack.peek(), DataWord.of(32)), 0);
                 break;
             case MSTORE8:
-                gasCost += calcMemGas(feeSchedule, oldMemSize, memNeeded(stack.peek(), new DataWord(1)), 0);
+                gasCost += calcMemGas(feeSchedule, oldMemSize, memNeeded(stack.peek(), DataWord.of(1)), 0);
                 break;
             case MLOAD:
-                gasCost += calcMemGas(feeSchedule, oldMemSize, memNeeded(stack.peek(), new DataWord(32)), 0);
+                gasCost += calcMemGas(feeSchedule, oldMemSize, memNeeded(stack.peek(), DataWord.of(32)), 0);
                 break;
             case RETURN:
             case REVERT:
@@ -469,7 +469,7 @@ public class VM {
                 final DataWord result;
                 if (word1.value().compareTo(THIRTY_TWO) < 0) {
                     byte tmp = word2.getByte(word1.intValue());
-                    result = new DataWord(new byte[] { tmp });
+                    result = DataWord.of(new byte[] { tmp });
                 } else {
                     result = DataWord.ZERO;
                 }
@@ -503,7 +503,7 @@ public class VM {
                 byte[] buffer = program.memoryChunk(memOffsetData.intValueSafe(), lengthData.intValueSafe());
 
                 byte[] encoded = HashUtil.keccak256(buffer);
-                DataWord word = new DataWord(encoded);
+                DataWord word = DataWord.of(encoded);
 
                 program.stackPush(word);
                 program.step();
@@ -605,7 +605,7 @@ public class VM {
                     DataWord address = program.stackPop();
                     length = program.getCodeAt(address).length;
                 }
-                DataWord codeLength = new DataWord(length);
+                DataWord codeLength = DataWord.of(length);
 
                 program.stackPush(codeLength);
                 program.step();
@@ -841,7 +841,7 @@ public class VM {
                 break;
             case PC: {
                 int pc = program.getPC();
-                DataWord pcWord = new DataWord(pc);
+                DataWord pcWord = DataWord.of(pc);
 
                 program.stackPush(pcWord);
                 program.step();
@@ -849,7 +849,7 @@ public class VM {
                 break;
             case MSIZE: {
                 int memSize = program.getMemSize();
-                DataWord wordMemSize = new DataWord(memSize);
+                DataWord wordMemSize = DataWord.of(memSize);
 
                 program.stackPush(wordMemSize);
                 program.step();
@@ -858,7 +858,7 @@ public class VM {
             case GAS: {
                 long gasLeft = program.getAvailableGas();
 
-                program.stackPush(new DataWord(gasLeft));
+                program.stackPush(DataWord.of(gasLeft));
                 program.step();
             }
                 break;
