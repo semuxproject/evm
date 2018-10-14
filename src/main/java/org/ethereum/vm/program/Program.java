@@ -368,8 +368,6 @@ public class Program {
             Program program = new Program(programCode, programInvoke, internalTx, config);
             vm.play(program);
             result = program.getResult();
-
-            getResult().merge(result);
         }
 
         // 4. CREATE THE CONTRACT OUT OF RETURN
@@ -393,6 +391,8 @@ public class Program {
             result.spendGas(storageCost);
             track.saveCode(newAddress, code);
         }
+
+        getResult().merge(result);
 
         if (result.getException() != null || result.isRevert()) {
             if (logger.isDebugEnabled()) {
