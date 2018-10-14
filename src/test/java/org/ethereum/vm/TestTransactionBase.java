@@ -24,7 +24,12 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
 
+import java.io.IOException;
 import java.math.BigInteger;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.List;
 
 import org.ethereum.vm.client.Block;
 import org.ethereum.vm.client.BlockMock;
@@ -76,5 +81,12 @@ public class TestTransactionBase extends TestBase {
         assertArrayEquals(receipt.getReturnData(), repository.getCode(contractAddress));
 
         return contractAddress;
+    }
+
+    protected byte[] readContract(String fileName) throws IOException {
+        ClassLoader classLoader = getClass().getClassLoader();
+        String path = classLoader.getResource(fileName).getPath();
+        List<String> lines = Files.readAllLines(Paths.get(path), Charset.forName("UTF8"));
+        return HexUtil.fromHexString(lines.get(0));
     }
 }
