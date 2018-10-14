@@ -36,13 +36,13 @@ import org.ethereum.vm.PrecompiledContracts;
 import org.ethereum.vm.VM;
 import org.ethereum.vm.client.Repository;
 import org.ethereum.vm.client.Transaction;
-import org.ethereum.vm.config.Config;
 import org.ethereum.vm.program.exception.BytecodeExecutionException;
 import org.ethereum.vm.program.exception.ExceptionFactory;
 import org.ethereum.vm.program.exception.StackUnderflowException;
 import org.ethereum.vm.program.invoke.ProgramInvoke;
 import org.ethereum.vm.program.invoke.ProgramInvokeFactory;
 import org.ethereum.vm.program.invoke.ProgramInvokeFactoryImpl;
+import org.ethereum.vm.chainspec.Spec;
 import org.ethereum.vm.util.HashUtil;
 import org.ethereum.vm.util.HexUtil;
 import org.slf4j.Logger;
@@ -68,7 +68,7 @@ public class Program {
     private ProgramInvoke invoke;
     private ProgramInvokeFactory programInvokeFactory = new ProgramInvokeFactoryImpl();
 
-    private Config config;
+    private Spec spec;
     private ProgramPreprocess preprocessed;
 
     private Stack stack;
@@ -82,7 +82,7 @@ public class Program {
     private int pc;
     private boolean stopped;
 
-    public Program(byte[] ops, ProgramInvoke programInvoke, Transaction transaction, Config config) {
+    public Program(byte[] ops, ProgramInvoke programInvoke, Transaction transaction, Spec spec) {
         this.ops = nullToEmpty(ops);
         this.invoke = programInvoke;
 
@@ -91,11 +91,11 @@ public class Program {
         this.storage = new Storage(programInvoke);
 
         this.transaction = transaction;
-        this.config = config;
+        this.spec = spec;
     }
 
     public Program(byte[] ops, ProgramInvoke programInvoke) {
-        this(ops, programInvoke, null, Config.DEFAULT);
+        this(ops, programInvoke, null, Spec.DEFAULT);
     }
 
     public ProgramPreprocess getProgramPreprocess() {
@@ -317,7 +317,7 @@ public class Program {
         byte[] programCode = memoryChunk(memStart.intValue(), memSize.intValue());
 
         // actual gas subtract
-        long gas = config.getCreateGas(getAvailableGas());
+        long gas = spec.getCreateGas(getAvailableGas());
         spendGas(gas, "internal call");
 
         // [2] CREATE THE CONTRACT ADDRESS
@@ -364,8 +364,8 @@ public class Program {
             result.setException(
                     new BytecodeExecutionException("Account already exists: 0x" + HexUtil.toHexString(newAddress)));
         } else if (isNotEmpty(programCode)) {
-            VM vm = new VM(config);
-            Program program = new Program(programCode, programInvoke, internalTx, config);
+            VM vm = new VM(spec);
+            Program program = new Program(programCode, programInvoke, internalTx, spec);
             vm.play(program);
             result = program.getResult();
         }
@@ -373,16 +373,16 @@ public class Program {
         // 4. CREATE THE CONTRACT OUT OF RETURN
         byte[] code = result.getReturnData();
 
-        long storageCost = getLength(code) * config.getFeeSchedule().getCREATE_DATA();
+        long storageCost = getLength(code) * spec.getFeeSchedule().getCREATE_DATA();
         long afterSpend = programInvoke.getGas() - storageCost - result.getGasUsed();
         if (afterSpend < 0) {
-            if (!config.getConstants().createEmptyContractOnOOG()) {
+            if (!spec.createEmptyContractOnOOG()) {
                 result.setException(ExceptionFactory.notEnoughSpendingGas("No gas to return just created contract",
                         storageCost, this));
             } else {
                 track.saveCode(newAddress, EMPTY_BYTE_ARRAY);
             }
-        } else if (getLength(code) > config.getConstants().getMAX_CONTRACT_SZIE()) {
+        } else if (getLength(code) > spec.maxContractSize()) {
             result.setException(
                     ExceptionFactory.notEnoughSpendingGas(
                             "Contract size too large: " + getLength(result.getReturnData()),
@@ -488,8 +488,8 @@ public class Program {
                     this.invoke.getBlockStore(),
                     msg.getType().callIsStatic() || isStaticCall());
 
-            VM vm = new VM(config);
-            Program program = new Program(programCode, programInvoke, internalTx, config);
+            VM vm = new VM(spec);
+            Program program = new Program(programCode, programInvoke, internalTx, spec);
             vm.play(program);
             result = program.getResult();
 

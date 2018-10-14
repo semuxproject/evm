@@ -26,7 +26,7 @@ import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.ethereum.vm.config.Config;
+import org.ethereum.vm.chainspec.Spec;
 import org.ethereum.vm.program.Program;
 import org.ethereum.vm.program.Stack;
 import org.ethereum.vm.program.exception.ExceptionFactory;
@@ -79,14 +79,14 @@ public class VM {
     // theoretical limit, used to reduce expensive BigInt arithmetic
     private static final BigInteger MAX_MEM_SIZE = BigInteger.valueOf(Integer.MAX_VALUE);
 
-    private Config config;
+    private Spec spec;
 
     public VM() {
-        this(Config.DEFAULT);
+        this(Spec.DEFAULT);
     }
 
-    public VM(Config config) {
-        this.config = config;
+    public VM(Spec spec) {
+        this.spec = spec;
     }
 
     private long calcMemGas(FeeSchedule feeSchedule, long oldMemSize, BigInteger newMemSize, long copySize) {
@@ -133,7 +133,7 @@ public class VM {
             Stack stack = program.getStack();
 
             long gasCost = op.getTier().asInt();
-            FeeSchedule feeSchedule = config.getFeeSchedule();
+            FeeSchedule feeSchedule = spec.getFeeSchedule();
             long adjustedCallGas = 0;
 
             // Calculate fees and spend gas
@@ -245,7 +245,7 @@ public class VM {
                 }
 
                 long available = program.getAvailableGas();
-                adjustedCallGas = config.getCallGas(op, callGasWord.longValueSafe(), available - gasCost);
+                adjustedCallGas = spec.getCallGas(op, callGasWord.longValueSafe(), available - gasCost);
                 gasCost += adjustedCallGas;
                 break;
             case CREATE:
@@ -947,7 +947,7 @@ public class VM {
                         outDataOffs, outDataSize);
 
                 PrecompiledContracts.PrecompiledContract contract = PrecompiledContracts
-                        .getContractForAddress(codeAddress, config);
+                        .getContractForAddress(codeAddress, spec);
 
                 if (contract != null) {
                     program.callToPrecompiledAddress(msg, contract);

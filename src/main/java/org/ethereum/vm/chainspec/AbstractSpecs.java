@@ -15,16 +15,17 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.ethereum.vm.config;
+package org.ethereum.vm.chainspec;
 
-public class Constants {
+public abstract class AbstractSpecs implements Spec {
 
-    public int getMAX_CONTRACT_SZIE() {
+    @Override
+    public int maxContractSize() {
         return Integer.MAX_VALUE;
     }
 
+    @Override
     public boolean createEmptyContractOnOOG() {
         return true;
     }
-
 }

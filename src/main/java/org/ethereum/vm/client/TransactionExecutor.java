@@ -32,7 +32,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.ethereum.vm.DataWord;
 import org.ethereum.vm.PrecompiledContracts;
 import org.ethereum.vm.VM;
-import org.ethereum.vm.config.Config;
+import org.ethereum.vm.chainspec.Spec;
 import org.ethereum.vm.program.Program;
 import org.ethereum.vm.program.ProgramResult;
 import org.ethereum.vm.program.exception.ExceptionFactory;
@@ -56,7 +56,7 @@ public class TransactionExecutor {
     private final Repository track;
     private final BlockStore blockStore;
 
-    private final Config config;
+    private final Spec spec;
     private final ProgramInvokeFactory invokeFactory;
     private final long gasUsedInTheBlock;
     private final boolean localCall;
@@ -68,20 +68,20 @@ public class TransactionExecutor {
     private BigInteger gasLeft;
 
     public TransactionExecutor(Transaction tx, Block block, Repository repo, BlockStore blockStore, boolean localCall) {
-        this(tx, block, repo, blockStore, Config.DEFAULT, new ProgramInvokeFactoryImpl(), 0, localCall);
+        this(tx, block, repo, blockStore, Spec.DEFAULT, new ProgramInvokeFactoryImpl(), 0, localCall);
     }
 
     public TransactionExecutor(Transaction tx, Block block, Repository repo, BlockStore blockStore,
-            Config config, ProgramInvokeFactory invokeFactory, long gasUsedInTheBlock, boolean localCall) {
+            Spec spec, ProgramInvokeFactory invokeFactory, long gasUsedInTheBlock, boolean localCall) {
         this.tx = tx;
         this.block = block;
-        this.basicTxCost = config.getTransactionCost(tx);
+        this.basicTxCost = spec.getTransactionCost(tx);
 
         this.repo = repo;
         this.track = repo.startTracking();
         this.blockStore = blockStore;
 
-        this.config = config;
+        this.spec = spec;
         this.invokeFactory = invokeFactory;
         this.gasUsedInTheBlock = gasUsedInTheBlock;
         this.localCall = localCall;
@@ -158,7 +158,7 @@ public class TransactionExecutor {
     protected void call() {
         byte[] targetAddress = tx.getTo();
         PrecompiledContracts.PrecompiledContract precompiledContract = PrecompiledContracts
-                .getContractForAddress(DataWord.of(targetAddress), config);
+                .getContractForAddress(DataWord.of(targetAddress), spec);
 
         // transfer value
         BigInteger endowment = tx.getValue();
@@ -192,8 +192,8 @@ public class TransactionExecutor {
             } else {
                 ProgramInvoke programInvoke = invokeFactory.createProgramInvoke(tx, block, track, blockStore);
 
-                this.vm = new VM(config);
-                this.program = new Program(code, programInvoke, tx, config);
+                this.vm = new VM(spec);
+                this.program = new Program(code, programInvoke, tx, spec);
             }
         }
     }
@@ -222,8 +222,8 @@ public class TransactionExecutor {
         } else {
             ProgramInvoke programInvoke = invokeFactory.createProgramInvoke(tx, block, track, blockStore);
 
-            this.vm = new VM(config);
-            this.program = new Program(tx.getData(), programInvoke, tx, config);
+            this.vm = new VM(spec);
+            this.program = new Program(tx.getData(), programInvoke, tx, spec);
         }
     }
 
@@ -243,17 +243,17 @@ public class TransactionExecutor {
 
                 if (tx.isCreate() && !result.isRevert()) {
                     int returnDataGasValue = getLength(result.getReturnData())
-                            * config.getFeeSchedule().getCREATE_DATA();
+                            * spec.getFeeSchedule().getCREATE_DATA();
 
                     if (gasLeft.compareTo(BigInteger.valueOf(returnDataGasValue)) < 0) {
                         // Not enough gas to return contract code
-                        if (!config.getConstants().createEmptyContractOnOOG()) {
+                        if (!spec.createEmptyContractOnOOG()) {
                             program.setRuntimeFailure(
                                     ExceptionFactory.notEnoughSpendingGas("No gas to return just created contract",
                                             returnDataGasValue, program));
                         }
                         result.setReturnData(EMPTY_BYTE_ARRAY);
-                    } else if (getLength(result.getReturnData()) > config.getConstants().getMAX_CONTRACT_SZIE()) {
+                    } else if (getLength(result.getReturnData()) > spec.maxContractSize()) {
                         // Contract size too large
                         program.setRuntimeFailure(ExceptionFactory
                                 .notEnoughSpendingGas("Contract size too large: " + getLength(result.getReturnData()),
@@ -303,7 +303,7 @@ public class TransactionExecutor {
         }
 
         // accumulate refunds for suicides
-        result.addFutureRefund(result.getDeleteAccounts().size() * config.getFeeSchedule().getSUICIDE_REFUND());
+        result.addFutureRefund(result.getDeleteAccounts().size() * spec.getFeeSchedule().getSUICIDE_REFUND());
         long gasRefund = Math.min(result.getFutureRefund(), getGasUsed() / 2);
         gasLeft = gasLeft.add(BigInteger.valueOf(gasRefund));
 

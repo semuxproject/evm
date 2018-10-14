@@ -31,7 +31,7 @@ import static org.ethereum.vm.util.ByteArrayUtil.stripLeadingZeroes;
 import java.math.BigInteger;
 
 import org.apache.commons.lang3.tuple.Pair;
-import org.ethereum.vm.config.Config;
+import org.ethereum.vm.chainspec.Spec;
 import org.ethereum.vm.crypto.ECKey;
 import org.ethereum.vm.crypto.zksnark.BN128;
 import org.ethereum.vm.crypto.zksnark.BN128Fp;
@@ -62,7 +62,7 @@ public class PrecompiledContracts {
     private static final DataWord altBN128MulAddr = DataWord.of(7);
     private static final DataWord altBN128PairingAddr = DataWord.of(8);
 
-    public static PrecompiledContract getContractForAddress(DataWord address, Config config) {
+    public static PrecompiledContract getContractForAddress(DataWord address, Spec spec) {
 
         if (address.equals(ecRecoverAddr)) {
             return ecRecover;

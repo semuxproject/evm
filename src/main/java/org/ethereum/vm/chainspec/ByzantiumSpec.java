@@ -15,14 +15,14 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.ethereum.vm.config;
+package org.ethereum.vm.chainspec;
 
 import org.ethereum.vm.FeeSchedule;
 import org.ethereum.vm.OpCode;
 import org.ethereum.vm.client.Transaction;
 import org.ethereum.vm.program.exception.OutOfGasException;
 
-public class ByzantiumConfig implements Config {
+public class ByzantiumSpec extends AbstractSpecs {
 
     private static class FeeScheduleByzantium extends FeeSchedule {
         public int getBALANCE() {
@@ -59,10 +59,13 @@ public class ByzantiumConfig implements Config {
     }
 
     private static final FeeSchedule feeSchedule = new FeeScheduleByzantium();
-    private static final Constants constants = new Constants();
 
-    public ByzantiumConfig() {
+    public ByzantiumSpec() {
+    }
 
+    @Override
+    public FeeSchedule getFeeSchedule() {
+        return feeSchedule;
     }
 
     private static long maxAllowed(long available) {
@@ -90,15 +93,5 @@ public class ByzantiumConfig implements Config {
         }
 
         return cost;
-    }
-
-    @Override
-    public FeeSchedule getFeeSchedule() {
-        return feeSchedule;
-    }
-
-    @Override
-    public Constants getConstants() {
-        return constants;
     }
 }

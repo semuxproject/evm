@@ -15,24 +15,16 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.ethereum.vm.config;
+package org.ethereum.vm.chainspec;
 
-import org.ethereum.vm.FeeSchedule;
-import org.ethereum.vm.OpCode;
-import org.ethereum.vm.client.Transaction;
-import org.ethereum.vm.program.exception.OutOfGasException;
-
-public interface Config {
-
-    Config DEFAULT = new ByzantiumConfig();
-
-    long getCallGas(OpCode op, long requestedGas, long availableGas) throws OutOfGasException;
-
-    long getCreateGas(long availableGas);
-
-    long getTransactionCost(Transaction tx);
-
-    FeeSchedule getFeeSchedule();
-
-    Constants getConstants();
+/**
+ * EIPs included in the Constantinople Hard Fork:
+ * <ul>
+ * <li>145 - Bitwise shifting instructions in EVM</li>
+ * <li>1014 - Skinny CREATE2</li>
+ * <li>1052 - EXTCODEHASH opcode</li>
+ * <li>1087 - Net gas metering for SSTORE operations</li>
+ * </ul>
+ */
+public class ConstantinopleSpec extends ByzantiumSpec {
 }

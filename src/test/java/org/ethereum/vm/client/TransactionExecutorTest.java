@@ -34,7 +34,7 @@ import org.ethereum.vm.DataWord;
 import org.ethereum.vm.FeeSchedule;
 import org.ethereum.vm.OpCode;
 import org.ethereum.vm.TestTransactionBase;
-import org.ethereum.vm.config.Config;
+import org.ethereum.vm.chainspec.Spec;
 import org.ethereum.vm.program.InternalTransaction;
 import org.ethereum.vm.util.ByteArrayUtil;
 import org.ethereum.vm.util.ByteArrayWrapper;
@@ -124,10 +124,10 @@ public class TransactionExecutorTest extends TestTransactionBase {
         assertTrue(receipt.isSuccess());
         assertEquals(1, receipt.getInternalTransactions().size());
 
-        Config config = Config.DEFAULT;
-        FeeSchedule fs = config.getFeeSchedule();
+        Spec spec = Spec.DEFAULT;
+        FeeSchedule fs = spec.getFeeSchedule();
         int memWords = (0x88 + 31) / 32;
-        long availableGas = gas - config.getTransactionCost(transaction) // basic cost
+        long availableGas = gas - spec.getTransactionCost(transaction) // basic cost
                 - OpCode.Tier.VeryLowTier.asInt() * 7 // 7 push ops
                 - fs.getCALL() // call
                 - fs.getVT_CALL() // extra: value transfer
@@ -214,7 +214,7 @@ public class TransactionExecutorTest extends TestTransactionBase {
         assertEquals(1, receipt.getInternalTransactions().size());
         assertEquals(new ByteArrayWrapper(address), receipt.getDeletedAccounts().get(0));
 
-        FeeSchedule fs = Config.DEFAULT.getFeeSchedule();
+        FeeSchedule fs = Spec.DEFAULT.getFeeSchedule();
         long gasUsed = fs.getTRANSACTION() + OpCode.CALLER.getTier().asInt() + fs.getSUICIDE();
         long gasRefund = Math.min(fs.getSUICIDE_REFUND(), gasUsed / 2);
         BigInteger balance1 = repository.getBalance(caller);
