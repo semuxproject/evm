@@ -40,6 +40,12 @@ public class DataWord implements Comparable<DataWord> {
 
     private final byte[] data;
 
+    public static DataWord of(byte num) {
+        byte[] bb = new byte[32];
+        bb[31] = num;
+        return new DataWord(bb, false);
+    }
+
     public static DataWord of(int num) {
         return new DataWord(ByteBuffer.allocate(Integer.BYTES).putInt(num).array(), false);
     }

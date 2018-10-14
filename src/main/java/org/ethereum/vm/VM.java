@@ -469,7 +469,7 @@ public class VM {
                 final DataWord result;
                 if (word1.value().compareTo(THIRTY_TWO) < 0) {
                     byte tmp = word2.getByte(word1.intValue());
-                    result = DataWord.of(new byte[] { tmp });
+                    result = DataWord.of(tmp);
                 } else {
                     result = DataWord.ZERO;
                 }
