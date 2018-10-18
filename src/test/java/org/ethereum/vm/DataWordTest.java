@@ -369,6 +369,133 @@ public class DataWordTest {
         assertTrue(z.isZero());
     }
 
+    @Test
+    public void testSHL() {
+        assertEquals(DataWord.of("0x0000000000000000000000000000000000000000000000000000000000000001"),
+                DataWord.of("0x0000000000000000000000000000000000000000000000000000000000000001")
+                        .shiftLeft(DataWord.of("0x00")));
+        assertEquals(DataWord.of("0x0000000000000000000000000000000000000000000000000000000000000002"),
+                DataWord.of("0x0000000000000000000000000000000000000000000000000000000000000001")
+                        .shiftLeft(DataWord.of("0x01")));
+        assertEquals(DataWord.of("0x8000000000000000000000000000000000000000000000000000000000000000"),
+                DataWord.of("0x0000000000000000000000000000000000000000000000000000000000000001")
+                        .shiftLeft(DataWord.of("0xff")));
+        assertEquals(DataWord.of("0x0000000000000000000000000000000000000000000000000000000000000000"),
+                DataWord.of("0x0000000000000000000000000000000000000000000000000000000000000001")
+                        .shiftLeft(DataWord.of("0x0100")));
+        assertEquals(DataWord.of("0x0000000000000000000000000000000000000000000000000000000000000000"),
+                DataWord.of("0x0000000000000000000000000000000000000000000000000000000000000001")
+                        .shiftLeft(DataWord.of("0x0101")));
+        assertEquals(DataWord.of("0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"),
+                DataWord.of("0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff")
+                        .shiftLeft(DataWord.of("0x00")));
+        assertEquals(DataWord.of("0xfffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffe"),
+                DataWord.of("0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff")
+                        .shiftLeft(DataWord.of("0x01")));
+        assertEquals(DataWord.of("0x8000000000000000000000000000000000000000000000000000000000000000"),
+                DataWord.of("0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff")
+                        .shiftLeft(DataWord.of("0xff")));
+        assertEquals(DataWord.of("0x0000000000000000000000000000000000000000000000000000000000000000"),
+                DataWord.of("0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff")
+                        .shiftLeft(DataWord.of("0x0100")));
+        assertEquals(DataWord.of("0x0000000000000000000000000000000000000000000000000000000000000000"),
+                DataWord.of("0x0000000000000000000000000000000000000000000000000000000000000000")
+                        .shiftLeft(DataWord.of("0x01")));
+        assertEquals(DataWord.of("0xfffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffe"),
+                DataWord.of("0x7fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff")
+                        .shiftLeft(DataWord.of("0x01")));
+        assertEquals(DataWord.of(""), DataWord.of("").shiftLeft(DataWord.of("")));
+    }
+
+    @Test
+    public void testSHR() {
+        assertEquals(DataWord.of("0x0000000000000000000000000000000000000000000000000000000000000001"),
+                DataWord.of("0x0000000000000000000000000000000000000000000000000000000000000001")
+                        .shiftRight(DataWord.of("0x00")));
+        assertEquals(DataWord.of("0x0000000000000000000000000000000000000000000000000000000000000000"),
+                DataWord.of("0x0000000000000000000000000000000000000000000000000000000000000001")
+                        .shiftRight(DataWord.of("0x01")));
+        assertEquals(DataWord.of("0x4000000000000000000000000000000000000000000000000000000000000000"),
+                DataWord.of("0x8000000000000000000000000000000000000000000000000000000000000000")
+                        .shiftRight(DataWord.of("0x01")));
+        assertEquals(DataWord.of("0x0000000000000000000000000000000000000000000000000000000000000001"),
+                DataWord.of("0x8000000000000000000000000000000000000000000000000000000000000000")
+                        .shiftRight(DataWord.of("0xff")));
+        assertEquals(DataWord.of("0x0000000000000000000000000000000000000000000000000000000000000000"),
+                DataWord.of("0x8000000000000000000000000000000000000000000000000000000000000000")
+                        .shiftRight(DataWord.of("0x0100")));
+        assertEquals(DataWord.of("0x0000000000000000000000000000000000000000000000000000000000000000"),
+                DataWord.of("0x8000000000000000000000000000000000000000000000000000000000000000")
+                        .shiftRight(DataWord.of("0x0101")));
+        assertEquals(DataWord.of("0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"),
+                DataWord.of("0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff")
+                        .shiftRight(DataWord.of("0x00")));
+        assertEquals(DataWord.of("0x7fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"),
+                DataWord.of("0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff")
+                        .shiftRight(DataWord.of("0x01")));
+        assertEquals(DataWord.of("0x0000000000000000000000000000000000000000000000000000000000000001"),
+                DataWord.of("0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff")
+                        .shiftRight(DataWord.of("0xff")));
+        assertEquals(DataWord.of("0x0000000000000000000000000000000000000000000000000000000000000000"),
+                DataWord.of("0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff")
+                        .shiftRight(DataWord.of("0x0100")));
+        assertEquals(DataWord.of("0x0000000000000000000000000000000000000000000000000000000000000000"),
+                DataWord.of("0x0000000000000000000000000000000000000000000000000000000000000000")
+                        .shiftRight(DataWord.of("0x01")));
+    }
+
+    @Test
+    public void testSAR() {
+        assertEquals(DataWord.of("0x0000000000000000000000000000000000000000000000000000000000000001"),
+                DataWord.of("0x0000000000000000000000000000000000000000000000000000000000000001")
+                        .shiftRightSigned(DataWord.of("0x00")));
+        assertEquals(DataWord.of("0x0000000000000000000000000000000000000000000000000000000000000000"),
+                DataWord.of("0x0000000000000000000000000000000000000000000000000000000000000001")
+                        .shiftRightSigned(DataWord.of("0x01")));
+        assertEquals(DataWord.of("0xc000000000000000000000000000000000000000000000000000000000000000"),
+                DataWord.of("0x8000000000000000000000000000000000000000000000000000000000000000")
+                        .shiftRightSigned(DataWord.of("0x01")));
+        assertEquals(DataWord.of("0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"),
+                DataWord.of("0x8000000000000000000000000000000000000000000000000000000000000000")
+                        .shiftRightSigned(DataWord.of("0xff")));
+        assertEquals(DataWord.of("0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"),
+                DataWord.of("0x8000000000000000000000000000000000000000000000000000000000000000")
+                        .shiftRightSigned(DataWord.of("0x0100")));
+        assertEquals(DataWord.of("0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"),
+                DataWord.of("0x8000000000000000000000000000000000000000000000000000000000000000")
+                        .shiftRightSigned(DataWord.of("0x0101")));
+        assertEquals(DataWord.of("0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"),
+                DataWord.of("0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff")
+                        .shiftRightSigned(DataWord.of("0x00")));
+        assertEquals(DataWord.of("0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"),
+                DataWord.of("0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff")
+                        .shiftRightSigned(DataWord.of("0x01")));
+        assertEquals(DataWord.of("0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"),
+                DataWord.of("0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff")
+                        .shiftRightSigned(DataWord.of("0xff")));
+        assertEquals(DataWord.of("0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"),
+                DataWord.of("0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff")
+                        .shiftRightSigned(DataWord.of("0x0100")));
+        assertEquals(DataWord.of("0x0000000000000000000000000000000000000000000000000000000000000000"),
+                DataWord.of("0x0000000000000000000000000000000000000000000000000000000000000000")
+                        .shiftRightSigned(DataWord.of("0x01")));
+        assertEquals(DataWord.of("0x0000000000000000000000000000000000000000000000000000000000000001"),
+                DataWord.of("0x4000000000000000000000000000000000000000000000000000000000000000")
+                        .shiftRightSigned(DataWord.of("0xfe")));
+        assertEquals(DataWord.of("0x000000000000000000000000000000000000000000000000000000000000007f"),
+                DataWord.of("0x7fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff")
+                        .shiftRightSigned(DataWord.of("0xf8")));
+        assertEquals(DataWord.of("0x0000000000000000000000000000000000000000000000000000000000000001"),
+                DataWord.of("0x7fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff")
+                        .shiftRightSigned(DataWord.of("0xfe")));
+        assertEquals(DataWord.of("0x0000000000000000000000000000000000000000000000000000000000000000"),
+                DataWord.of("0x7fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff")
+                        .shiftRightSigned(DataWord.of("0xff")));
+        assertEquals(DataWord.of("0x0000000000000000000000000000000000000000000000000000000000000000"),
+                DataWord.of("0x7fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff")
+                        .shiftRightSigned(DataWord.of("0x0100")));
+    }
+
     public static BigInteger pow(BigInteger x, BigInteger y) {
         if (y.compareTo(BigInteger.ZERO) < 0)
             throw new IllegalArgumentException();

@@ -94,9 +94,4 @@ public class ByzantiumSpec extends AbstractSpecs {
 
         return cost;
     }
-
-    @Override
-    public boolean eip1052() {
-        return false;
-    }
 }

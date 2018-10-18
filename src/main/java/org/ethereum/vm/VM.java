@@ -128,9 +128,15 @@ public class VM {
 
             // validate opcode
             switch (op) {
+            case SHL:
+            case SHR:
+            case SAR:
+                if (!spec.eip145()) {
+                    throw ExceptionFactory.invalidOpCode(program.getCurrentOp());
+                }
+                break;
             case EXTCODEHASH:
                 if (!spec.eip1052()) {
-                    // opcode since Homestead release only
                     throw ExceptionFactory.invalidOpCode(program.getCurrentOp());
                 }
                 break;
@@ -487,6 +493,30 @@ public class VM {
                     result = DataWord.ZERO;
                 }
 
+                program.stackPush(result);
+                program.step();
+            }
+                break;
+            case SHL: {
+                DataWord word1 = program.stackPop();
+                DataWord word2 = program.stackPop();
+                DataWord result = word2.shiftLeft(word1);
+                program.stackPush(result);
+                program.step();
+            }
+                break;
+            case SHR: {
+                DataWord word1 = program.stackPop();
+                DataWord word2 = program.stackPop();
+                DataWord result = word2.shiftRight(word1);
+                program.stackPush(result);
+                program.step();
+            }
+                break;
+            case SAR: {
+                DataWord word1 = program.stackPop();
+                DataWord word2 = program.stackPop();
+                DataWord result = word2.shiftRightSigned(word1);
                 program.stackPush(result);
                 program.step();
             }

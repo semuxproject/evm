@@ -28,4 +28,14 @@ public abstract class AbstractSpecs implements Spec {
     public boolean createEmptyContractOnOOG() {
         return true;
     }
+
+    @Override
+    public boolean eip1052() {
+        return false;
+    }
+
+    @Override
+    public boolean eip145() {
+        return false;
+    }
 }

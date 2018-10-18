@@ -89,4 +89,10 @@ public interface Spec {
      * EIP1052: https://eips.ethereum.org/EIPS/eip-1052 EXTCODEHASH opcode
      */
     boolean eip1052();
+
+    /**
+     * EIP145: https://eips.ethereum.org/EIPS/eip-145 Bitwise shifting instructions
+     * in EVM
+     */
+    boolean eip145();
 }

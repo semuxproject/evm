@@ -183,6 +183,10 @@ public class DataWord implements Comparable<DataWord> {
         return true;
     }
 
+    public boolean isNegative() {
+        return (data[0] & 0x80) != 0;
+    }
+
     public DataWord and(DataWord w2) {
         byte[] buffer = new byte[SIZE];
         for (int i = 0; i < this.data.length; ++i) {
@@ -205,6 +209,10 @@ public class DataWord implements Comparable<DataWord> {
             buffer[i] = (byte) (this.data[i] ^ w2.data[i]);
         }
         return new DataWord(buffer, false);
+    }
+
+    public DataWord negate() {
+        return isZero() ? ZERO : bnot().add(DataWord.ONE);
     }
 
     // bitwise not
@@ -321,6 +329,52 @@ public class DataWord implements Comparable<DataWord> {
         }
 
         return 0;
+    }
+
+    /**
+     * Shift left, both this and input arg are treated as unsigned
+     *
+     * @param arg
+     * @return this << arg
+     */
+    public DataWord shiftLeft(DataWord arg) {
+        if (arg.value().compareTo(BigInteger.valueOf(SIZE * 8)) > 0) {
+            return ZERO;
+        } else {
+            return DataWord.of(value().shiftLeft(arg.intValue()).and(MAX_VALUE));
+        }
+    }
+
+    /**
+     * Shift right, both this and input arg are treated as unsigned
+     *
+     * @param arg
+     * @return this >>> arg
+     */
+    public DataWord shiftRight(DataWord arg) {
+        if (arg.value().compareTo(BigInteger.valueOf(SIZE * 8)) > 0) {
+            return ZERO;
+        } else {
+            return DataWord.of(value().shiftRight(arg.intValue()).and(MAX_VALUE));
+        }
+    }
+
+    /**
+     * Shift right, this is signed, while input arg is treated as unsigned
+     *
+     * @param arg
+     * @return this >> arg
+     */
+    public DataWord shiftRightSigned(DataWord arg) {
+        if (arg.value().compareTo(BigInteger.valueOf(SIZE * 8)) > 0) {
+            if (this.isNegative()) {
+                return DataWord.ONE.negate();
+            } else {
+                return DataWord.ZERO;
+            }
+        } else {
+            return DataWord.of(sValue().shiftRight(arg.intValue()).and(MAX_VALUE));
+        }
     }
 
     @Override

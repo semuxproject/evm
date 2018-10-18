@@ -31,4 +31,9 @@ public class ConstantinopleSpec extends ByzantiumSpec {
     public boolean eip1052() {
         return true;
     }
+
+    @Override
+    public boolean eip145() {
+        return true;
+    }
 }
