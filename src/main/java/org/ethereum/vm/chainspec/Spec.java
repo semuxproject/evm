@@ -84,4 +84,9 @@ public interface Spec {
      * @return
      */
     boolean createEmptyContractOnOOG();
+
+    /**
+     * EIP1052: https://eips.ethereum.org/EIPS/eip-1052 EXTCODEHASH opcode
+     */
+    boolean eip1052();
 }

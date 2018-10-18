@@ -27,4 +27,8 @@ package org.ethereum.vm.chainspec;
  * </ul>
  */
 public class ConstantinopleSpec extends ByzantiumSpec {
+    @Override
+    public boolean eip1052() {
+        return true;
+    }
 }

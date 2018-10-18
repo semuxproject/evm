@@ -248,6 +248,11 @@ public enum OpCode {
      */
     EXTCODECOPY(0x3c, 4, 0, ExtTier),
 
+    /**
+     * (0x3f) Returns the keccak256 hash of a contract’s code
+     */
+    EXTCODEHASH(0x3f, 1, 1, ExtTier),
+
     // ========================
     // Block Information
     // ========================

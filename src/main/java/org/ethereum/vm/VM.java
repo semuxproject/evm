@@ -126,6 +126,16 @@ public class VM {
                 throw ExceptionFactory.invalidOpCode(program.getCurrentOp());
             }
 
+            // validate opcode
+            switch (op) {
+            case EXTCODEHASH:
+                if (!spec.eip1052()) {
+                    // opcode since Homestead release only
+                    throw ExceptionFactory.invalidOpCode(program.getCurrentOp());
+                }
+                break;
+            }
+
             program.verifyStackUnderflow(op.require());
             program.verifyStackOverflow(op.require(), op.ret()); // Check not exceeding stack limits
 
@@ -209,6 +219,9 @@ public class VM {
                 gasCost = feeSchedule.getEXT_CODE_COPY() + calcMemGas(feeSchedule, oldMemSize,
                         memNeeded(stack.get(stack.size() - 2), stack.get(stack.size() - 4)),
                         stack.get(stack.size() - 4).longValueSafe());
+                break;
+            case EXTCODEHASH:
+                gasCost = feeSchedule.getEXT_CODE_HASH();
                 break;
             case CALL:
             case CALLCODE:
@@ -637,6 +650,18 @@ public class VM {
                     System.arraycopy(fullCode, codeOffset, codeCopy, 0, sizeToBeCopied);
 
                 program.memorySave(memOffset, lengthData, codeCopy);
+                program.step();
+            }
+                break;
+            case EXTCODEHASH: {
+                DataWord address = program.stackPop();
+
+                // NOTE: The EXTCODEHASH of an precompiled contract is either c5d246... or 0
+                byte[] code = program.getCodeAt(address);
+                code = (code == null) ? EMPTY_BYTE_ARRAY : code;
+
+                byte[] codeHash = HashUtil.keccak256(code);
+                program.stackPush(codeHash);
                 program.step();
             }
                 break;

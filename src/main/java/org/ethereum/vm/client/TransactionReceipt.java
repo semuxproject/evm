@@ -17,7 +17,6 @@
  */
 package org.ethereum.vm.client;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -80,12 +79,8 @@ public class TransactionReceipt {
 
     @Override
     public String toString() {
-        return "TransactionReceipt{" +
-                "success=" + success +
-                ", gasUsed=" + gasUsed +
-                ", returnData=" + Hex.toHexString(returnData) +
-                ", deletedAccounts=" + deletedAccounts +
-                ", logs=" + logs +
-                "}" + internalTransactions.stream().map(tx -> "\n|--" + tx.toString()).collect(Collectors.joining());
+        return "TransactionReceipt{" + "success=" + success + ", gasUsed=" + gasUsed + ", returnData="
+                + Hex.toHexString(returnData) + ", deletedAccounts=" + deletedAccounts + ", logs=" + logs + "}"
+                + internalTransactions.stream().map(tx -> "\n|--" + tx.toString()).collect(Collectors.joining());
     }
 }

@@ -63,6 +63,7 @@ public class FeeSchedule {
     private static final int EC_RECOVER = 3000;
     private static final int EXT_CODE_SIZE = 20;
     private static final int EXT_CODE_COPY = 20;
+    private final int EXT_CODE_HASH = 400;
     private static final int NEW_ACCT_SUICIDE = 0;
 
     public int getBALANCE() {
@@ -215,5 +216,9 @@ public class FeeSchedule {
 
     public int getEXT_CODE_COPY() {
         return EXT_CODE_COPY;
+    }
+
+    public int getEXT_CODE_HASH() {
+        return EXT_CODE_HASH;
     }
 }
