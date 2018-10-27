@@ -17,8 +17,10 @@
  */
 package org.ethereum.vm.util;
 
+import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 
+import org.bouncycastle.util.encoders.Hex;
 import org.junit.Test;
 
 public class HashUtilTest {
@@ -37,5 +39,16 @@ public class HashUtilTest {
         byte[] address = new byte[20];
         long nonce = 0;
         assertEquals(20, HashUtil.calcNewAddress(address, nonce).length);
+    }
+
+    @Test
+    public void calcSaltAddressTest() {
+        byte[] from = Hex.decode("0123456789012345678901234567890123456789");
+        byte[] salt = Hex.decode("0000000000000000000000000000000000000000000000000000000000000314");
+        // contract Demo{}
+        byte[] code = Hex.decode(
+                "6080604052348015600f57600080fd5b50603580601d6000396000f3006080604052600080fd00a165627a7a72305820a63607f79a5e21cdaf424583b9686f2aa44059d70183eb9846ccfa086405716e0029");
+        assertArrayEquals(Hex.decode("d26e42c8a0511c19757f783402231cf82b2bdf59"),
+                HashUtil.calcSaltAddress(from, code, salt));
     }
 }

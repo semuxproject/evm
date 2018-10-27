@@ -23,7 +23,7 @@ package org.ethereum.vm.chainspec;
  * <li>145 - Bitwise shifting instructions in EVM</li>
  * <li>1014 - Skinny CREATE2</li>
  * <li>1052 - EXTCODEHASH opcode</li>
- * <li>1087 - Net gas metering for SSTORE operations</li>
+ * <li>1283 - Net gas metering for SSTORE without dirty maps</li>
  * </ul>
  */
 public class ConstantinopleSpec extends ByzantiumSpec {
@@ -39,6 +39,11 @@ public class ConstantinopleSpec extends ByzantiumSpec {
 
     @Override
     public boolean eip1283() {
+        return true;
+    }
+
+    @Override
+    public boolean eip1014() {
         return true;
     }
 }

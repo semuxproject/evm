@@ -101,4 +101,10 @@ public interface Spec {
      * without dirty maps
      */
     boolean eip1283();
+
+    /**
+     * EIP 1014: https://eips.ethereum.org/EIPS/eip-1014 Skinny CREATE2: same as
+     * CREATE but with deterministic address
+     */
+    boolean eip1014();
 }

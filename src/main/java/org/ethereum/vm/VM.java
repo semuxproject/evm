@@ -140,6 +140,10 @@ public class VM {
                     throw ExceptionFactory.invalidOpCode(program.getCurrentOp());
                 }
                 break;
+            case CREATE2:
+                if (!spec.eip1014()) {
+                    throw ExceptionFactory.invalidOpCode(program.getCurrentOp());
+                }
             default:
                 break;
             }
@@ -312,6 +316,10 @@ public class VM {
                 gasCost += adjustedCallGas;
                 break;
             case CREATE:
+                gasCost = feeSchedule.getCREATE() + calcMemGas(feeSchedule, oldMemSize,
+                        memNeeded(stack.get(stack.size() - 2), stack.get(stack.size() - 3)), 0);
+                break;
+            case CREATE2:
                 gasCost = feeSchedule.getCREATE() + calcMemGas(feeSchedule, oldMemSize,
                         memNeeded(stack.get(stack.size() - 2), stack.get(stack.size() - 3)), 0);
                 break;
@@ -1015,6 +1023,20 @@ public class VM {
                 DataWord inSize = program.stackPop();
 
                 program.createContract(value, inOffset, inSize);
+
+                program.step();
+            }
+                break;
+            case CREATE2: {
+                if (program.isStaticCall())
+                    throw new StaticCallModificationException();
+
+                DataWord value = program.stackPop();
+                DataWord inOffset = program.stackPop();
+                DataWord inSize = program.stackPop();
+                DataWord salt = program.stackPop();
+
+                program.createContract2(value, inOffset, inSize, salt);
 
                 program.step();
             }
