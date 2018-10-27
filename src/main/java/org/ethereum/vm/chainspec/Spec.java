@@ -95,4 +95,10 @@ public interface Spec {
      * in EVM
      */
     boolean eip145();
+
+    /**
+     * EIP 1283: https://eips.ethereum.org/EIPS/eip-1283 Net gas metering for SSTORE
+     * without dirty maps
+     */
+    boolean eip1283();
 }

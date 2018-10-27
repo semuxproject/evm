@@ -97,6 +97,11 @@ public class Storage implements Repository {
     }
 
     @Override
+    public Repository clone() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
     public void commit() {
         repository.commit();
     }

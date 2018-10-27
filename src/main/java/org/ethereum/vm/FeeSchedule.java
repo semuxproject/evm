@@ -35,6 +35,7 @@ public class FeeSchedule {
     private static final int SET_SSTORE = 20000;
     private static final int RESET_SSTORE = 5000;
     private static final int REFUND_SSTORE = 15000;
+    private static final int REUSE_SSTORE = 200;
     private static final int CREATE = 32000;
 
     private static final int CALL = 40;
@@ -63,7 +64,7 @@ public class FeeSchedule {
     private static final int EC_RECOVER = 3000;
     private static final int EXT_CODE_SIZE = 20;
     private static final int EXT_CODE_COPY = 20;
-    private final int EXT_CODE_HASH = 400;
+    private static final int EXT_CODE_HASH = 400;
     private static final int NEW_ACCT_SUICIDE = 0;
 
     public int getBALANCE() {
@@ -104,6 +105,10 @@ public class FeeSchedule {
 
     public int getREFUND_SSTORE() {
         return REFUND_SSTORE;
+    }
+
+    public int getREUSE_SSTORE() {
+        return REUSE_SSTORE;
     }
 
     public int getCREATE() {

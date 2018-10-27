@@ -74,6 +74,7 @@ public class Program {
     private Stack stack;
     private Memory memory;
     private Storage storage;
+    private Repository originalRepo;
     private byte[] returnDataBuffer;
 
     private ProgramResult result = new ProgramResult();
@@ -89,6 +90,8 @@ public class Program {
         this.memory = new Memory();
         this.stack = new Stack();
         this.storage = new Storage(programInvoke);
+        // assuming no changes has been made so far
+        this.originalRepo = programInvoke.getRepository().clone();
 
         this.transaction = transaction;
         this.spec = spec;
@@ -700,8 +703,18 @@ public class Program {
                 : Arrays.copyOfRange(returnDataBuffer, off.intValueSafe(), off.intValueSafe() + size.intValueSafe());
     }
 
-    public DataWord storageLoad(DataWord key) {
+    /**
+     * Returns the current storage data for key
+     */
+    public DataWord getCurrentValue(DataWord key) {
         return getStorage().getStorageRow(getOwnerAddress().getLast20Bytes(), key);
+    }
+
+    /**
+     * Returns the storage data at the beginning of program execution
+     */
+    public DataWord getOriginalValue(DataWord key) {
+        return originalRepo.getStorageRow(getOwnerAddress().getLast20Bytes(), key);
     }
 
     public DataWord getCoinbase() {

@@ -140,6 +140,8 @@ public class VM {
                     throw ExceptionFactory.invalidOpCode(program.getCurrentOp());
                 }
                 break;
+            default:
+                break;
             }
 
             program.verifyStackUnderflow(op.require());
@@ -166,17 +168,59 @@ public class VM {
                 }
                 break;
             case SSTORE:
+                DataWord currentValue = program.getCurrentValue(stack.peek());
+                if (currentValue == null)
+                    currentValue = DataWord.ZERO;
                 DataWord newValue = stack.get(stack.size() - 2);
-                DataWord oldValue = program.storageLoad(stack.peek());
 
-                if (oldValue == null && !newValue.isZero()) {
-                    gasCost = feeSchedule.getSET_SSTORE();
-                } else if (oldValue != null && newValue.isZero()) {
-                    program.futureRefundGas(feeSchedule.getREFUND_SSTORE());
-                    gasCost = feeSchedule.getCLEAR_SSTORE();
-                } else {
-                    gasCost = feeSchedule.getRESET_SSTORE();
+                if (spec.eip1283()) { // Net gas metering for SSTORE
+                    if (newValue.equals(currentValue)) {
+                        gasCost = feeSchedule.getREUSE_SSTORE();
+                    } else {
+                        DataWord origValue = program.getOriginalValue(stack.peek());
+                        if (origValue == null)
+                            origValue = DataWord.ZERO;
+                        if (currentValue.equals(origValue)) {
+                            if (origValue.isZero()) {
+                                gasCost = feeSchedule.getSET_SSTORE();
+                            } else {
+                                gasCost = feeSchedule.getCLEAR_SSTORE();
+                                if (newValue.isZero()) {
+                                    program.futureRefundGas(feeSchedule.getREFUND_SSTORE());
+                                }
+                            }
+                        } else {
+                            gasCost = feeSchedule.getREUSE_SSTORE();
+                            if (!origValue.isZero()) {
+                                if (currentValue.isZero()) {
+                                    program.futureRefundGas(-feeSchedule.getREFUND_SSTORE());
+                                } else if (newValue.isZero()) {
+                                    program.futureRefundGas(feeSchedule.getREFUND_SSTORE());
+                                }
+                            }
+                            if (origValue.equals(newValue)) {
+                                if (origValue.isZero()) {
+                                    program.futureRefundGas(
+                                            feeSchedule.getSET_SSTORE() - feeSchedule.getREUSE_SSTORE());
+                                } else {
+                                    program.futureRefundGas(
+                                            feeSchedule.getCLEAR_SSTORE() - feeSchedule.getREUSE_SSTORE());
+                                }
+                            }
+                        }
+                    }
+                } else { // Before EIP-1283 cost calculation
+                    if (currentValue.isZero() && !newValue.isZero())
+                        gasCost = feeSchedule.getSET_SSTORE();
+                    else if (!currentValue.isZero() && newValue.isZero()) {
+                        // refund step cost policy.
+                        program.futureRefundGas(feeSchedule.getREFUND_SSTORE());
+                        gasCost = feeSchedule.getCLEAR_SSTORE();
+                    } else {
+                        gasCost = feeSchedule.getRESET_SSTORE();
+                    }
                 }
+
                 break;
             case SLOAD:
                 gasCost = feeSchedule.getSLOAD();
@@ -852,7 +896,7 @@ public class VM {
                 break;
             case SLOAD: {
                 DataWord key = program.stackPop();
-                DataWord val = program.storageLoad(key);
+                DataWord val = program.getCurrentValue(key);
 
                 if (val == null) {
                     val = DataWord.ZERO;

@@ -153,6 +153,11 @@ public interface Repository {
     Repository startTracking();
 
     /**
+     * Clone this repository, including all the uncommitted changes.
+     */
+    Repository clone();
+
+    /**
      * Stores all the temporary changes made to the repository in the actual
      * database
      */

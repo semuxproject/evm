@@ -25,6 +25,9 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.List;
 
+import org.bouncycastle.util.encoders.Hex;
+import org.ethereum.vm.chainspec.ConstantinopleSpec;
+import org.ethereum.vm.chainspec.Spec;
 import org.ethereum.vm.client.Repository;
 import org.ethereum.vm.program.Program;
 import org.ethereum.vm.program.exception.BadJumpDestinationException;
@@ -33,6 +36,9 @@ import org.ethereum.vm.util.HexUtil;
 import org.junit.Test;
 
 public class VMTest extends TestBase {
+
+    private Spec constantinople = new ConstantinopleSpec();
+
     @Test // PUSH1 OP
     public void testPUSH1() {
         VM vm = new VM();
@@ -2624,5 +2630,197 @@ public class VMTest extends TestBase {
         } finally {
             assertTrue(program.isStopped());
         }
+    }
+
+    @Test // SSTORE EIP1283
+    public void testSSTORE_NET_1() {
+        VM vm = new VM(constantinople);
+        program = new Program(Hex.decode("60006000556000600055"), invoke);
+        while (!program.isStopped())
+            vm.step(program);
+        assertEquals(412, program.getResult().getGasUsed());
+        assertEquals(0, program.getResult().getFutureRefund());
+    }
+
+    @Test // SSTORE EIP1283
+    public void testSSTORE_NET_2() {
+        VM vm = new VM(constantinople);
+        program = new Program(Hex.decode("60006000556001600055"), invoke);
+        while (!program.isStopped())
+            vm.step(program);
+        assertEquals(20212, program.getResult().getGasUsed());
+        assertEquals(0, program.getResult().getFutureRefund());
+    }
+
+    @Test // SSTORE EIP1283
+    public void testSSTORE_NET_3() {
+        VM vm = new VM(constantinople);
+        program = new Program(Hex.decode("60016000556000600055"), invoke);
+        while (!program.isStopped())
+            vm.step(program);
+        assertEquals(20212, program.getResult().getGasUsed());
+        assertEquals(19800, program.getResult().getFutureRefund());
+    }
+
+    @Test // SSTORE EIP1283
+    public void testSSTORE_NET_4() {
+        VM vm = new VM(constantinople);
+        program = new Program(Hex.decode("60016000556002600055"), invoke);
+        while (!program.isStopped())
+            vm.step(program);
+        assertEquals(20212, program.getResult().getGasUsed());
+        assertEquals(0, program.getResult().getFutureRefund());
+    }
+
+    @Test // SSTORE EIP1283
+    public void testSSTORE_NET_5() {
+        VM vm = new VM(constantinople);
+        program = new Program(Hex.decode("60016000556001600055"), invoke);
+        while (!program.isStopped())
+            vm.step(program);
+        assertEquals(20212, program.getResult().getGasUsed());
+        assertEquals(0, program.getResult().getFutureRefund());
+    }
+
+    @Test // SSTORE EIP1283
+    public void testSSTORE_NET_6() {
+        VM vm = new VM(constantinople);
+        setStorageToOne(vm);
+        program = new Program(Hex.decode("60006000556000600055"), invoke);
+        while (!program.isStopped())
+            vm.step(program);
+        assertEquals(5212, program.getResult().getGasUsed());
+        assertEquals(15000, program.getResult().getFutureRefund());
+    }
+
+    /**
+     * Sets Storage row on "cow" address: 0: 1
+     */
+    private void setStorageToOne(VM vm) {
+        // Sets storage value to 1 and commits
+        program = new Program(Hex.decode("60006000556001600055"), invoke);
+        while (!program.isStopped())
+            vm.step(program);
+        invoke.getRepository().commit();
+    }
+
+    @Test // SSTORE EIP1283
+    public void testSSTORE_NET_7() {
+        VM vm = new VM(constantinople);
+        setStorageToOne(vm);
+        program = new Program(Hex.decode("60006000556001600055"), invoke);
+        while (!program.isStopped())
+            vm.step(program);
+        assertEquals(5212, program.getResult().getGasUsed());
+        assertEquals(4800, program.getResult().getFutureRefund());
+    }
+
+    @Test // SSTORE EIP1283
+    public void testSSTORE_NET_8() {
+        VM vm = new VM(constantinople);
+        setStorageToOne(vm);
+        program = new Program(Hex.decode("60006000556002600055"), invoke);
+        while (!program.isStopped())
+            vm.step(program);
+        assertEquals(5212, program.getResult().getGasUsed());
+        assertEquals(0, program.getResult().getFutureRefund());
+    }
+
+    @Test // SSTORE EIP1283
+    public void testSSTORE_NET_9() {
+        VM vm = new VM(constantinople);
+        setStorageToOne(vm);
+        program = new Program(Hex.decode("60026000556000600055"), invoke);
+        while (!program.isStopped())
+            vm.step(program);
+        assertEquals(5212, program.getResult().getGasUsed());
+        assertEquals(15000, program.getResult().getFutureRefund());
+    }
+
+    @Test // SSTORE EIP1283
+    public void testSSTORE_NET_10() {
+        VM vm = new VM(constantinople);
+        setStorageToOne(vm);
+        program = new Program(Hex.decode("60026000556003600055"), invoke);
+        while (!program.isStopped())
+            vm.step(program);
+        assertEquals(5212, program.getResult().getGasUsed());
+        assertEquals(0, program.getResult().getFutureRefund());
+    }
+
+    @Test // SSTORE EIP1283
+    public void testSSTORE_NET_11() {
+        VM vm = new VM(constantinople);
+        setStorageToOne(vm);
+        program = new Program(Hex.decode("60026000556001600055"), invoke);
+        while (!program.isStopped())
+            vm.step(program);
+        assertEquals(5212, program.getResult().getGasUsed());
+        assertEquals(4800, program.getResult().getFutureRefund());
+    }
+
+    @Test // SSTORE EIP1283
+    public void testSSTORE_NET_12() {
+        VM vm = new VM(constantinople);
+        setStorageToOne(vm);
+        program = new Program(Hex.decode("60026000556002600055"), invoke);
+        while (!program.isStopped())
+            vm.step(program);
+        assertEquals(5212, program.getResult().getGasUsed());
+        assertEquals(0, program.getResult().getFutureRefund());
+    }
+
+    @Test // SSTORE EIP1283
+    public void testSSTORE_NET_13() {
+        VM vm = new VM(constantinople);
+        setStorageToOne(vm);
+        program = new Program(Hex.decode("60016000556000600055"), invoke);
+        while (!program.isStopped())
+            vm.step(program);
+        assertEquals(5212, program.getResult().getGasUsed());
+        assertEquals(15000, program.getResult().getFutureRefund());
+    }
+
+    @Test // SSTORE EIP1283
+    public void testSSTORE_NET_14() {
+        VM vm = new VM(constantinople);
+        setStorageToOne(vm);
+        program = new Program(Hex.decode("60016000556002600055"), invoke);
+        while (!program.isStopped())
+            vm.step(program);
+        assertEquals(5212, program.getResult().getGasUsed());
+        assertEquals(0, program.getResult().getFutureRefund());
+    }
+
+    @Test // SSTORE EIP1283
+    public void testSSTORE_NET_15() {
+        VM vm = new VM(constantinople);
+        setStorageToOne(vm);
+        program = new Program(Hex.decode("60016000556001600055"), invoke);
+        while (!program.isStopped())
+            vm.step(program);
+        assertEquals(412, program.getResult().getGasUsed());
+        assertEquals(0, program.getResult().getFutureRefund());
+    }
+
+    @Test // SSTORE EIP1283
+    public void testSSTORE_NET_16() {
+        VM vm = new VM(constantinople);
+        program = new Program(Hex.decode("600160005560006000556001600055"), invoke);
+        while (!program.isStopped())
+            vm.step(program);
+        assertEquals(40218, program.getResult().getGasUsed());
+        assertEquals(19800, program.getResult().getFutureRefund());
+    }
+
+    @Test // SSTORE EIP1283
+    public void testSSTORE_NET_17() {
+        VM vm = new VM(constantinople);
+        setStorageToOne(vm);
+        program = new Program(Hex.decode("600060005560016000556000600055"), invoke);
+        while (!program.isStopped())
+            vm.step(program);
+        assertEquals(10218, program.getResult().getGasUsed());
+        assertEquals(19800, program.getResult().getFutureRefund());
     }
 }

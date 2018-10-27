@@ -145,6 +145,15 @@ public class RepositoryMock implements Repository {
     }
 
     @Override
+    public Repository clone() {
+        RepositoryMock copy = new RepositoryMock(parent);
+        for (Map.Entry<ByteArrayWrapper, Account> entry : accounts.entrySet()) {
+            copy.accounts.put(entry.getKey(), entry.getValue().clone());
+        }
+        return copy;
+    }
+
+    @Override
     public void commit() {
         if (parent != null) {
             parent.accounts.putAll(accounts);
@@ -170,6 +179,16 @@ public class RepositoryMock implements Repository {
             this.balance = parent.balance;
             this.code = parent.code;
             this.storage = new HashMap<>(parent.storage);
+        }
+
+        public Account clone() {
+            Account a = new Account();
+            a.nonce = nonce;
+            a.balance = balance;
+            a.code = code.clone();
+            a.storage = new HashMap<>(storage);
+
+            return a;
         }
     }
 }

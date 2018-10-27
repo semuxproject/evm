@@ -38,4 +38,9 @@ public abstract class AbstractSpecs implements Spec {
     public boolean eip145() {
         return false;
     }
+
+    @Override
+    public boolean eip1283() {
+        return false;
+    }
 }
