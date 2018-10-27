@@ -30,6 +30,7 @@ import org.ethereum.vm.chainspec.Spec;
 import org.ethereum.vm.program.Program;
 import org.ethereum.vm.program.Stack;
 import org.ethereum.vm.program.exception.ExceptionFactory;
+import org.ethereum.vm.program.exception.OutOfGasException;
 import org.ethereum.vm.program.exception.ReturnDataCopyIllegalBoundsException;
 import org.ethereum.vm.program.exception.StaticCallModificationException;
 import org.ethereum.vm.util.HashUtil;
@@ -251,8 +252,11 @@ public class VM {
             case SHA3:
                 gasCost = feeSchedule.getSHA3() + calcMemGas(feeSchedule, oldMemSize,
                         memNeeded(stack.peek(), stack.get(stack.size() - 2)), 0);
-                DataWord size = stack.get(stack.size() - 2);
-                long chunkUsed = (size.longValueSafe() + 31) / 32;
+                long size = stack.get(stack.size() - 2).longValueSafe();
+                if (size == Long.MAX_VALUE) {
+                    throw new OutOfGasException("Size is larger than Long.MAX_VALUE");
+                }
+                long chunkUsed = getSizeInWords(size);
                 gasCost += chunkUsed * feeSchedule.getSHA3_WORD();
                 break;
             case CALLDATACOPY:
@@ -322,6 +326,11 @@ public class VM {
             case CREATE2:
                 gasCost = feeSchedule.getCREATE() + calcMemGas(feeSchedule, oldMemSize,
                         memNeeded(stack.get(stack.size() - 2), stack.get(stack.size() - 3)), 0);
+                long codeSize = stack.get(stack.size() - 3).longValueSafe();
+                if (codeSize == Long.MAX_VALUE) {
+                    throw new OutOfGasException("Size is larger than Long.MAX_VALUE");
+                }
+                gasCost += getSizeInWords(codeSize) * feeSchedule.getSHA3_WORD();
                 break;
             case LOG0:
             case LOG1:
@@ -1144,5 +1153,12 @@ public class VM {
      */
     private static BigInteger memNeeded(DataWord offset, DataWord size) {
         return size.isZero() ? BigInteger.ZERO : offset.value().add(size.value());
+    }
+
+    /**
+     * Returns number of VM words required to hold data of size {@code size}
+     */
+    public static long getSizeInWords(long size) {
+        return size == 0 ? 0 : (size - 1) / 32 + 1;
     }
 }
