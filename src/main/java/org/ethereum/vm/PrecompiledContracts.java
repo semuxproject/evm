@@ -27,6 +27,7 @@ import static org.ethereum.vm.util.ByteArrayUtil.numberOfLeadingZeros;
 import static org.ethereum.vm.util.ByteArrayUtil.parseBytes;
 import static org.ethereum.vm.util.ByteArrayUtil.parseWord;
 import static org.ethereum.vm.util.ByteArrayUtil.stripLeadingZeroes;
+import static org.ethereum.vm.util.VMUtil.getSizeInWords;
 
 import java.math.BigInteger;
 
@@ -114,7 +115,7 @@ public class PrecompiledContracts {
             // minimum 1 and additional 1 for each 32 bytes word (round up)
             if (data == null)
                 return 15;
-            return 15 + (data.length + 31) / 32 * 3;
+            return 15 + getSizeInWords(data.length) * 3;
         }
 
         @Override
@@ -132,7 +133,7 @@ public class PrecompiledContracts {
                 return 60;
             }
 
-            return 60 + (data.length + 31) / 32 * 12;
+            return 60 + getSizeInWords(data.length) * 12;
         }
 
         @Override
@@ -150,7 +151,7 @@ public class PrecompiledContracts {
                 return 600;
             }
 
-            return 600 + (data.length + 31) / 32 * 120;
+            return 600 + getSizeInWords(data.length) * 120;
         }
 
         @Override
