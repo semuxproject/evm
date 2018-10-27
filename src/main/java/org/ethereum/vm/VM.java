@@ -168,7 +168,7 @@ public class VM {
                 }
                 break;
             case SSTORE:
-                DataWord currentValue = program.getCurrentValue(stack.peek());
+                DataWord currentValue = program.getCurrentStorageValue(stack.peek());
                 if (currentValue == null)
                     currentValue = DataWord.ZERO;
                 DataWord newValue = stack.get(stack.size() - 2);
@@ -177,7 +177,7 @@ public class VM {
                     if (newValue.equals(currentValue)) {
                         gasCost = feeSchedule.getREUSE_SSTORE();
                     } else {
-                        DataWord origValue = program.getOriginalValue(stack.peek());
+                        DataWord origValue = program.getOriginalStorageValue(stack.peek());
                         if (origValue == null)
                             origValue = DataWord.ZERO;
                         if (currentValue.equals(origValue)) {
@@ -896,7 +896,7 @@ public class VM {
                 break;
             case SLOAD: {
                 DataWord key = program.stackPop();
-                DataWord val = program.getCurrentValue(key);
+                DataWord val = program.getCurrentStorageValue(key);
 
                 if (val == null) {
                     val = DataWord.ZERO;

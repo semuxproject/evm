@@ -1461,7 +1461,7 @@ public class VMTest extends TestBase {
         vm.step(program);
 
         DataWord key = DataWord.of(HexUtil.fromHexString(s_expected_key));
-        DataWord val = program.getStorage().getStorageRow(invoke.getOwnerAddress().getLast20Bytes(), key);
+        DataWord val = program.getRepository().getStorageRow(invoke.getOwnerAddress().getLast20Bytes(), key);
 
         assertEquals(s_expected_val, HexUtil.toHexString(val.getData()).toUpperCase());
     }
@@ -1481,7 +1481,7 @@ public class VMTest extends TestBase {
         vm.step(program);
         vm.step(program);
 
-        Repository repository = program.getStorage();
+        Repository repository = program.getRepository();
         DataWord key = DataWord.of(HexUtil.fromHexString(s_expected_key));
         DataWord val = repository.getStorageRow(invoke.getOwnerAddress().getLast20Bytes(), key);
 
@@ -1694,7 +1694,7 @@ public class VMTest extends TestBase {
         vm.step(program);
 
         DataWord key = DataWord.of(HexUtil.fromHexString(s_expected_key));
-        DataWord val = program.getStorage().getStorageRow(invoke.getOwnerAddress().getLast20Bytes(), key);
+        DataWord val = program.getRepository().getStorageRow(invoke.getOwnerAddress().getLast20Bytes(), key);
 
         assertTrue(program.isStopped());
         assertEquals(s_expected_val, HexUtil.toHexString(val.getData()).toUpperCase());
@@ -1718,7 +1718,7 @@ public class VMTest extends TestBase {
         vm.step(program);
 
         DataWord key = DataWord.of(HexUtil.fromHexString(s_expected_key));
-        DataWord val = program.getStorage().getStorageRow(invoke.getOwnerAddress().getLast20Bytes(), key);
+        DataWord val = program.getRepository().getStorageRow(invoke.getOwnerAddress().getLast20Bytes(), key);
 
         assertTrue(program.isStopped());
         assertEquals(s_expected_val, HexUtil.toHexString(val.getData()).toUpperCase());

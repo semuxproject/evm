@@ -73,7 +73,7 @@ public class Program {
 
     private Stack stack;
     private Memory memory;
-    private Storage storage;
+    private Repository repo;
     private Repository originalRepo;
     private byte[] returnDataBuffer;
 
@@ -89,9 +89,9 @@ public class Program {
 
         this.memory = new Memory();
         this.stack = new Stack();
-        this.storage = new Storage(programInvoke);
+        this.repo = programInvoke.getRepository();
         // assuming no changes has been made so far
-        this.originalRepo = programInvoke.getRepository().clone();
+        this.originalRepo = repo.clone();
 
         this.transaction = transaction;
         this.spec = spec;
@@ -275,23 +275,27 @@ public class Program {
     public void suicide(DataWord beneficiary) {
         byte[] owner = getOwnerAddress().getLast20Bytes();
         byte[] obtainer = beneficiary.getLast20Bytes();
-        BigInteger balance = getStorage().getBalance(owner);
+        BigInteger balance = getRepository().getBalance(owner);
 
-        addInternalTx(OpCode.SUICIDE, owner, obtainer, getStorage().getNonce(owner), balance,
+        addInternalTx(OpCode.SUICIDE, owner, obtainer, getRepository().getNonce(owner), balance,
                 EMPTY_BYTE_ARRAY, 0);
 
         if (Arrays.equals(owner, obtainer)) {
             // if owner == obtainer just zeroing account according to Yellow Paper
-            getStorage().addBalance(owner, balance.negate());
+            getRepository().addBalance(owner, balance.negate());
         } else {
-            transfer(getStorage(), owner, obtainer, balance);
+            transfer(getRepository(), owner, obtainer, balance);
         }
 
         getResult().addDeleteAccount(this.getOwnerAddress().getLast20Bytes());
     }
 
-    public Repository getStorage() {
-        return this.storage;
+    public Repository getRepository() {
+        return this.repo;
+    }
+
+    public Repository getOriginalRepository() {
+        return this.originalRepo;
     }
 
     /**
@@ -311,7 +315,7 @@ public class Program {
 
         byte[] senderAddress = this.getOwnerAddress().getLast20Bytes();
         BigInteger endowment = value.value();
-        if (isNotCovers(getStorage().getBalance(senderAddress), endowment)) {
+        if (isNotCovers(getRepository().getBalance(senderAddress), endowment)) {
             stackPushZero();
             return;
         }
@@ -324,16 +328,16 @@ public class Program {
         spendGas(gas, "internal call");
 
         // [2] CREATE THE CONTRACT ADDRESS
-        long nonce = getStorage().getNonce(senderAddress);
+        long nonce = getRepository().getNonce(senderAddress);
         byte[] newAddress = HashUtil.calcNewAddress(getOwnerAddress().getLast20Bytes(), nonce);
 
-        boolean contractAlreadyExists = getStorage().exists(newAddress);
+        boolean contractAlreadyExists = getRepository().exists(newAddress);
 
         // [3] UPDATE THE NONCE
         // (THIS STAGE IS NOT REVERTED BY ANY EXCEPTION)
-        getStorage().increaseNonce(senderAddress);
+        getRepository().increaseNonce(senderAddress);
 
-        Repository track = getStorage().startTracking();
+        Repository track = getRepository().startTracking();
 
         // In case of hashing collisions, check for any balance before createAccount()
         BigInteger oldBalance = track.getBalance(newAddress);
@@ -346,7 +350,7 @@ public class Program {
 
         // [5] COOK THE INVOKE AND EXECUTE
         InternalTransaction internalTx = addInternalTx(OpCode.CREATE, senderAddress, EMPTY_BYTE_ARRAY,
-                getStorage().getNonce(senderAddress), endowment, programCode, gas);
+                getRepository().getNonce(senderAddress), endowment, programCode, gas);
         if (logger.isDebugEnabled()) {
             logger.debug("CREATE: {}", internalTx);
         }
@@ -454,7 +458,7 @@ public class Program {
         byte[] senderAddress = getOwnerAddress().getLast20Bytes();
         byte[] contextAddress = msg.getType().callIsStateless() ? senderAddress : codeAddress;
 
-        Repository track = getStorage().startTracking();
+        Repository track = getRepository().startTracking();
 
         // PERFORM VALUE CHECK
         BigInteger endowment = msg.getEndowment().value();
@@ -466,7 +470,8 @@ public class Program {
         }
 
         // FETCH THE CODE
-        byte[] programCode = getStorage().exists(codeAddress) ? getStorage().getCode(codeAddress) : EMPTY_BYTE_ARRAY;
+        byte[] programCode = getRepository().exists(codeAddress) ? getRepository().getCode(codeAddress)
+                : EMPTY_BYTE_ARRAY;
 
         // TRANSFER
         track.addBalance(senderAddress, endowment.negate());
@@ -474,7 +479,7 @@ public class Program {
 
         // CREATE CALL INTERNAL TRANSACTION
         InternalTransaction internalTx = addInternalTx(msg.getType(), senderAddress, contextAddress,
-                getStorage().getNonce(senderAddress), endowment, data, msg.getGas());
+                getRepository().getNonce(senderAddress), endowment, data, msg.getGas());
         if (logger.isDebugEnabled()) {
             logger.debug("CALL: {}", internalTx);
         }
@@ -555,7 +560,7 @@ public class Program {
             return;
         }
 
-        Repository track = getStorage().startTracking();
+        Repository track = getRepository().startTracking();
 
         byte[] senderAddress = this.getOwnerAddress().getLast20Bytes();
         byte[] codeAddress = msg.getCodeAddress().getLast20Bytes();
@@ -629,7 +634,7 @@ public class Program {
     }
 
     public void storageSave(DataWord key, DataWord value) {
-        getStorage().putStorageRow(getOwnerAddress().getLast20Bytes(), key, value);
+        getRepository().putStorageRow(getOwnerAddress().getLast20Bytes(), key, value);
     }
 
     public byte[] getCode() {
@@ -652,7 +657,7 @@ public class Program {
     }
 
     public DataWord getBalance(DataWord address) {
-        BigInteger balance = getStorage().getBalance(address.getLast20Bytes());
+        BigInteger balance = getRepository().getBalance(address.getLast20Bytes());
         return DataWord.of(balance.toByteArray());
     }
 
@@ -706,15 +711,15 @@ public class Program {
     /**
      * Returns the current storage data for key
      */
-    public DataWord getCurrentValue(DataWord key) {
-        return getStorage().getStorageRow(getOwnerAddress().getLast20Bytes(), key);
+    public DataWord getCurrentStorageValue(DataWord key) {
+        return getRepository().getStorageRow(getOwnerAddress().getLast20Bytes(), key);
     }
 
     /**
      * Returns the storage data at the beginning of program execution
      */
-    public DataWord getOriginalValue(DataWord key) {
-        return originalRepo.getStorageRow(getOwnerAddress().getLast20Bytes(), key);
+    public DataWord getOriginalStorageValue(DataWord key) {
+        return getOriginalRepository().getStorageRow(getOwnerAddress().getLast20Bytes(), key);
     }
 
     public DataWord getCoinbase() {
