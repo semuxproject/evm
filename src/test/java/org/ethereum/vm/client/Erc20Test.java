@@ -44,18 +44,7 @@ public class Erc20Test extends TestTransactionBase {
 
     @Test
     public void testErc20Token() throws IOException {
-        // contract has hardcoded owner
-        byte[] data = readContract("solidity/erc20.con");
-
-        Transaction transaction = new TransactionMock(true, erc20owner, address, nonce, value, data, gas, gasPrice);
-
-        TransactionExecutor executor = new TransactionExecutor(transaction, block, repository, blockStore, false);
-        TransactionReceipt receipt = executor.run();
-
-        Assert.assertTrue(receipt.isSuccess());
-
-        // determine the contract deployed address
-        byte[] contractAddress = HashUtil.calcNewAddress(erc20owner, nonce);
+        byte[] contractAddress = createContract("solidity/erc20.con", erc20owner, nonce, gas);
 
         // check balance
         byte[] method = HashUtil.keccak256("balanceOf(address)".getBytes(StandardCharsets.UTF_8));
@@ -63,8 +52,8 @@ public class Erc20Test extends TestTransactionBase {
 
         transaction = new TransactionMock(false, erc20owner, contractAddress, nonce + 1, value, methodData, gas,
                 gasPrice);
-        executor = new TransactionExecutor(transaction, block, repository, blockStore, false);
-        receipt = executor.run();
+        TransactionExecutor executor = new TransactionExecutor(transaction, block, repository, blockStore, false);
+        TransactionReceipt receipt = executor.run();
         Assert.assertTrue(receipt.isSuccess());
         BigInteger balance = DataWord.of(receipt.getReturnData()).value();
         Assert.assertEquals(new BigInteger("100000000000000000000000000"), balance);

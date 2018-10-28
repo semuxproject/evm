@@ -41,13 +41,14 @@ import org.ethereum.vm.client.Unit;
 import org.ethereum.vm.util.ByteArrayUtil;
 import org.ethereum.vm.util.HashUtil;
 import org.ethereum.vm.util.HexUtil;
+import org.junit.Assert;
 import org.junit.Before;
 
 public class TestTransactionBase extends TestBase {
 
     protected final BigInteger premine = BigInteger.valueOf(100L).multiply(Unit.ETH);
     protected final boolean isCreate = false;
-    protected final long nonce = 0;
+    protected long nonce = 0;
 
     // by default, it's a CALL transaction with 1 million gas and empty payload
     protected Transaction transaction;
@@ -88,5 +89,26 @@ public class TestTransactionBase extends TestBase {
         String path = classLoader.getResource(fileName).getPath();
         List<String> lines = Files.readAllLines(Paths.get(path), Charset.forName("UTF8"));
         return HexUtil.fromHexString(lines.get(0));
+    }
+
+    /**
+     * Create a contract and return it's address
+     * 
+     * @param contractLocation
+     * @param address
+     * @param nonce
+     * @return
+     * @throws IOException
+     */
+    protected byte[] createContract(String contractLocation, byte[] address, long nonce, long gas) throws IOException {
+        byte[] data = readContract(contractLocation);
+        byte[] contractAddress = HashUtil.calcNewAddress(address, nonce);
+
+        Transaction transaction = new TransactionMock(true, address, address, nonce, value, data, gas, gasPrice);
+        TransactionExecutor executor = new TransactionExecutor(transaction, block, repository, blockStore, false);
+        TransactionReceipt receipt = executor.run();
+        Assert.assertTrue(receipt.isSuccess());
+
+        return contractAddress;
     }
 }
