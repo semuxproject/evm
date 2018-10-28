@@ -43,6 +43,7 @@ public class ProgramInvokeImpl implements ProgramInvoke {
      * Database environment
      */
     private final Repository repository;
+    private final Repository originalRepository;
     private final BlockStore blockStore;
 
     private int callDepth;
@@ -51,7 +52,7 @@ public class ProgramInvokeImpl implements ProgramInvoke {
     public ProgramInvokeImpl(DataWord address, DataWord origin, DataWord caller,
             long gas, DataWord gasPrice, DataWord value, byte[] data, DataWord prevHash,
             DataWord coinbase, DataWord timestamp, DataWord number, DataWord difficulty,
-            DataWord gasLimit, Repository repository, BlockStore blockStore,
+            DataWord gasLimit, Repository repository, Repository originalRepository, BlockStore blockStore,
             int callDepth, boolean isStaticCall) {
 
         Objects.requireNonNull(address);
@@ -87,6 +88,7 @@ public class ProgramInvokeImpl implements ProgramInvoke {
         this.gaslimit = gasLimit;
 
         this.repository = repository;
+        this.originalRepository = originalRepository;
         this.blockStore = blockStore;
 
         this.callDepth = callDepth;
@@ -209,6 +211,11 @@ public class ProgramInvokeImpl implements ProgramInvoke {
     @Override
     public Repository getRepository() {
         return repository;
+    }
+
+    @Override
+    public Repository getOriginalRepository() {
+        return originalRepository;
     }
 
     @Override

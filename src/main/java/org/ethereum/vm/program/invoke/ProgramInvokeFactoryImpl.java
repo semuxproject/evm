@@ -48,11 +48,13 @@ public class ProgramInvokeFactoryImpl implements ProgramInvokeFactory {
         BigInteger difficulty = block.getDifficulty();
         long gasLimit = block.getGasLimit();
 
+        Repository originalRepository = repository.clone();
+
         return new ProgramInvokeImpl(DataWord.of(address), DataWord.of(origin), DataWord.of(caller),
                 gas, DataWord.of(gasPrice), DataWord.of(callValue), callData,
                 DataWord.of(prevHash), DataWord.of(coinbase), DataWord.of(timestamp), DataWord.of(number),
                 DataWord.of(difficulty), DataWord.of(gasLimit),
-                repository, blockStore, 0, false);
+                repository, originalRepository, blockStore, 0, false);
     }
 
     @Override
@@ -71,8 +73,10 @@ public class ProgramInvokeFactoryImpl implements ProgramInvokeFactory {
         DataWord difficulty = program.getDifficulty();
         DataWord gasLimit = program.getGasLimit();
 
+        Repository originalRepository = program.getOriginalRepository();
+
         return new ProgramInvokeImpl(toAddress, origin, callerAddress, gas, gasPrice, value, data,
                 prevHash, coinbase, timestamp, number, difficulty, gasLimit,
-                repository, blockStore, program.getCallDepth() + 1, isStaticCall);
+                repository, originalRepository, blockStore, program.getCallDepth() + 1, isStaticCall);
     }
 }

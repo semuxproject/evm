@@ -90,8 +90,7 @@ public class Program {
         this.memory = new Memory();
         this.stack = new Stack();
         this.repo = programInvoke.getRepository();
-        // assuming no changes has been made so far
-        this.originalRepo = repo.clone();
+        this.originalRepo = programInvoke.getOriginalRepository();
 
         this.transaction = transaction;
         this.spec = spec;
@@ -372,7 +371,6 @@ public class Program {
      * @param newAddress
      *            Contract address
      */
-    @SuppressWarnings("ThrowableResultOfMethodCallIgnored")
     private void createContractImpl(DataWord value, byte[] programCode, byte[] newAddress) {
         // [1] LOG, SPEND GAS
         byte[] senderAddress = this.getOwnerAddress().getLast20Bytes();

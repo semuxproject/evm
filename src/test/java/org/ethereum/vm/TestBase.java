@@ -52,6 +52,9 @@ public class TestBase {
     protected Repository repository;
     protected BlockStore blockStore;
 
+    protected Repository track;
+    protected Repository originalTrack;
+
     protected ProgramInvokeImpl invoke;
     protected Program program;
 
@@ -59,6 +62,9 @@ public class TestBase {
     public void setup() {
         this.repository = new RepositoryMock();
         this.blockStore = new BlockStoreMock();
+
+        this.track = repository.startTracking();
+        this.originalTrack = track.clone();
 
         this.invoke = new ProgramInvokeImpl(
                 DataWord.of(address),
@@ -74,7 +80,8 @@ public class TestBase {
                 DataWord.of(number),
                 DataWord.of(difficulty),
                 DataWord.of(gasLimit),
-                repository,
+                track,
+                originalTrack,
                 blockStore,
                 callDepth,
                 isStaticCall);

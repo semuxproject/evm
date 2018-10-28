@@ -27,11 +27,11 @@ import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.bouncycastle.util.encoders.Hex;
 import org.ethereum.vm.chainspec.Spec;
 import org.ethereum.vm.program.Program;
 import org.ethereum.vm.program.Stack;
 import org.ethereum.vm.program.exception.ExceptionFactory;
-import org.ethereum.vm.program.exception.OutOfGasException;
 import org.ethereum.vm.program.exception.ReturnDataCopyIllegalBoundsException;
 import org.ethereum.vm.program.exception.StaticCallModificationException;
 import org.ethereum.vm.util.HashUtil;

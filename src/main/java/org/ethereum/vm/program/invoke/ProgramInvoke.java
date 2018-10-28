@@ -159,6 +159,12 @@ public interface ProgramInvoke {
     Repository getRepository();
 
     /**
+     * Returns the original repository.
+     *
+     */
+    Repository getOriginalRepository();
+
+    /**
      * Returns the block storage interface.
      *
      * @return block store implementation
