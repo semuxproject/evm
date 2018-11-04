@@ -3,7 +3,7 @@ language: java
 matrix:
   include:
     # License, formatter, and FindBugs check
-    - env: NAME="License, formatter, and FindBugs check"
+    - environment: NAME="License, formatter, and FindBugs check"
       os: linux
       sudo: false
       jdk: openjdk8
@@ -13,7 +13,7 @@ matrix:
         - mvn findbugs:check
 
     # Coverage report
-    - env: NAME="Coverage report"
+    - environment: NAME="Coverage report"
       os: linux
       sudo: false
       jdk: openjdk8
@@ -23,7 +23,7 @@ matrix:
         - mvn coveralls:report
 
     # Linux tests (Java 8 LTS)
-    - env: NAME="Linux tests (Java 8)"
+    - environment: NAME="Linux tests (Java 8)"
       os: linux
       sudo: false
       jdk: openjdk8
@@ -31,7 +31,7 @@ matrix:
         - mvn test
 
     # Linux tests (Java 9)
-    - env: NAME="Linux tests (Java 9)"
+    - environment: NAME="Linux tests (Java 9)"
       os: linux
       sudo: false
       jdk: openjdk9
@@ -39,7 +39,7 @@ matrix:
         - mvn test
 
     # Linux tests (Java 10)
-    - env: NAME="Linux tests (Java 10)"
+    - environment: NAME="Linux tests (Java 10)"
       os: linux
       sudo: false
       script:
@@ -48,7 +48,7 @@ matrix:
         - mvn test
 
     # Linux tests (Java 11 LTS)
-    - env: NAME="Linux tests (Java 11)"
+    - environment: NAME="Linux tests (Java 11)"
       os: linux
       sudo: false
       script:
