@@ -30,30 +30,12 @@ matrix:
       script:
         - mvn test
 
-    # Linux tests (Java 9)
-    - env: NAME="Linux tests (Java 9)"
-      os: linux
-      sudo: false
-      jdk: openjdk9
-      script:
-        - mvn test
-
-    # Linux tests (Java 10)
-    - env: NAME="Linux tests (Java 10)"
-      os: linux
-      sudo: false
-      script:
-        - wget https://github.com/sormuras/bach/raw/master/install-jdk.sh
-        - source ./install-jdk.sh -F 10 -L GPL
-        - mvn test
-
     # Linux tests (Java 11 LTS)
     - env: NAME="Linux tests (Java 11)"
       os: linux
       sudo: false
+      jdk: openjdk11
       script:
-        - wget https://github.com/sormuras/bach/raw/master/install-jdk.sh
-        - source ./install-jdk.sh -F 11 -L GPL
         - mvn test
 
 cache:
