@@ -427,25 +427,26 @@ public class Program {
         }
 
         // 4. CREATE THE CONTRACT OUT OF RETURN
-        byte[] code = result.getReturnData();
+        if (!result.isRevert() && result.getException() == null) {
+            byte[] code = result.getReturnData();
+            long storageCost = getLength(code) * spec.getFeeSchedule().getCREATE_DATA();
 
-        long storageCost = getLength(code) * spec.getFeeSchedule().getCREATE_DATA();
-        long afterSpend = programInvoke.getGas() - storageCost - result.getGasUsed();
-        if (afterSpend < 0) {
-            if (!spec.createEmptyContractOnOOG()) {
-                result.setException(ExceptionFactory.notEnoughSpendingGas("No gas to return just created contract",
+            long afterSpend = programInvoke.getGas() - result.getGasUsed() - storageCost;
+            if (afterSpend < 0) {
+                if (!spec.createEmptyContractOnOOG()) {
+                    result.setException(ExceptionFactory.notEnoughSpendingGas("No gas to return just created contract",
+                            storageCost, this));
+                } else {
+                    track.saveCode(newAddress, EMPTY_BYTE_ARRAY);
+                }
+            } else if (getLength(code) > spec.maxContractSize()) {
+                result.setException(ExceptionFactory.notEnoughSpendingGas(
+                        "Contract size too large: " + getLength(result.getReturnData()),
                         storageCost, this));
             } else {
-                track.saveCode(newAddress, EMPTY_BYTE_ARRAY);
+                result.spendGas(storageCost);
+                track.saveCode(newAddress, code);
             }
-        } else if (getLength(code) > spec.maxContractSize()) {
-            result.setException(
-                    ExceptionFactory.notEnoughSpendingGas(
-                            "Contract size too large: " + getLength(result.getReturnData()),
-                            storageCost, this));
-        } else if (!result.isRevert()) {
-            result.spendGas(storageCost);
-            track.saveCode(newAddress, code);
         }
 
         getResult().merge(result);
