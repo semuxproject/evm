@@ -427,16 +427,10 @@ public class Program {
         }
 
         // 4. CREATE THE CONTRACT OUT OF RETURN
-        byte[] code = result.getReturnData();
+        if (!result.isRevert() && result.getException() == null) {
+            byte[] code = result.getReturnData();
+            long storageCost = getLength(code) * spec.getFeeSchedule().getCREATE_DATA();
 
-        long storageCost = getLength(code) * spec.getFeeSchedule().getCREATE_DATA();
-        if (result.isRevert()) {
-            long afterSpend = programInvoke.getGas() - result.getGasUsed();
-            if (afterSpend < 0) {
-                result.setException(ExceptionFactory.notEnoughSpendingGas("No gas to return just created contract",
-                        storageCost, this));
-            }
-        } else {
             long afterSpend = programInvoke.getGas() - result.getGasUsed() - storageCost;
             if (afterSpend < 0) {
                 if (!spec.createEmptyContractOnOOG()) {
