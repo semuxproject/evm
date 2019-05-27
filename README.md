@@ -2,19 +2,28 @@
 
 [![Build Status](https://travis-ci.org/semuxproject/evm.svg?branch=master)](https://travis-ci.org/semuxproject/evm)
 
-EVM in Java is a standalone EVM implementation, derived from the ethereumJ project.
+EVM in Java is a standalone EVM implementation, derived from the EthereumJ project.
 
-It's light-weight and can be easily embedded in other applications.
+It's light-weight and can be easily integrated into other projects.
 
+## How to use it?
 
-## Build
+```
+<dependency>
+    <groupId>com.github.semuxproject</groupId>
+    <artifactId>evm</artifactId>
+    <version>[GIT_COMMIT_HASH]</version>
+</dependency>
+```
+
+## Build from source
 
 ```
 mvn install
 ```
 
 
-## Format
+## Code style
 
 ```
 mvn formatter:format license:format findbugs:check
@@ -23,4 +32,4 @@ mvn formatter:format license:format findbugs:check
 
 ## License
 
-[LGPLv3](./LICENSE)
+This projected is licensed in [LGPLv3](./LICENSE).
