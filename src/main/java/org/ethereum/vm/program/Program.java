@@ -430,22 +430,29 @@ public class Program {
         byte[] code = result.getReturnData();
 
         long storageCost = getLength(code) * spec.getFeeSchedule().getCREATE_DATA();
-        long afterSpend = programInvoke.getGas() - storageCost - result.getGasUsed();
-        if (afterSpend < 0) {
-            if (!spec.createEmptyContractOnOOG()) {
+        if (result.isRevert()) {
+            long afterSpend = programInvoke.getGas() - result.getGasUsed();
+            if (afterSpend < 0) {
                 result.setException(ExceptionFactory.notEnoughSpendingGas("No gas to return just created contract",
                         storageCost, this));
-            } else {
-                track.saveCode(newAddress, EMPTY_BYTE_ARRAY);
             }
-        } else if (getLength(code) > spec.maxContractSize()) {
-            result.setException(
-                    ExceptionFactory.notEnoughSpendingGas(
-                            "Contract size too large: " + getLength(result.getReturnData()),
+        } else {
+            long afterSpend = programInvoke.getGas() - result.getGasUsed() - storageCost;
+            if (afterSpend < 0) {
+                if (!spec.createEmptyContractOnOOG()) {
+                    result.setException(ExceptionFactory.notEnoughSpendingGas("No gas to return just created contract",
                             storageCost, this));
-        } else if (!result.isRevert()) {
-            result.spendGas(storageCost);
-            track.saveCode(newAddress, code);
+                } else {
+                    track.saveCode(newAddress, EMPTY_BYTE_ARRAY);
+                }
+            } else if (getLength(code) > spec.maxContractSize()) {
+                result.setException(ExceptionFactory.notEnoughSpendingGas(
+                        "Contract size too large: " + getLength(result.getReturnData()),
+                        storageCost, this));
+            } else {
+                result.spendGas(storageCost);
+                track.saveCode(newAddress, code);
+            }
         }
 
         getResult().merge(result);
