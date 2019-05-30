@@ -29,11 +29,7 @@ import java.math.BigInteger;
 import java.util.Arrays;
 
 import org.apache.commons.lang3.tuple.Pair;
-import org.ethereum.vm.DataWord;
-import org.ethereum.vm.MessageCall;
-import org.ethereum.vm.OpCode;
-import org.ethereum.vm.PrecompiledContracts;
-import org.ethereum.vm.VM;
+import org.ethereum.vm.*;
 import org.ethereum.vm.client.Repository;
 import org.ethereum.vm.client.Transaction;
 import org.ethereum.vm.program.exception.BytecodeExecutionException;
@@ -601,7 +597,7 @@ public class Program {
         }
     }
 
-    public void callToPrecompiledAddress(MessageCall msg, PrecompiledContracts.PrecompiledContract contract) {
+    public void callToPrecompiledAddress(MessageCall msg, PrecompiledContract contract) {
         returnDataBuffer = null; // reset return buffer right before the call
 
         if (getCallDepth() == MAX_DEPTH) {

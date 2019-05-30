@@ -29,9 +29,7 @@ import java.math.BigInteger;
 import java.util.ArrayList;
 
 import org.apache.commons.lang3.tuple.Pair;
-import org.ethereum.vm.DataWord;
-import org.ethereum.vm.PrecompiledContracts;
-import org.ethereum.vm.VM;
+import org.ethereum.vm.*;
 import org.ethereum.vm.chainspec.Spec;
 import org.ethereum.vm.program.Program;
 import org.ethereum.vm.program.ProgramResult;
@@ -157,7 +155,7 @@ public class TransactionExecutor {
 
     protected void call() {
         byte[] targetAddress = tx.getTo();
-        PrecompiledContracts.PrecompiledContract precompiledContract = PrecompiledContracts
+        PrecompiledContract precompiledContract = spec.precompiledContracts()
                 .getContractForAddress(DataWord.of(targetAddress), spec);
 
         // transfer value

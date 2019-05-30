@@ -17,8 +17,7 @@
  */
 package org.ethereum.vm.chainspec;
 
-import org.ethereum.vm.FeeSchedule;
-import org.ethereum.vm.OpCode;
+import org.ethereum.vm.*;
 import org.ethereum.vm.client.Transaction;
 import org.ethereum.vm.program.exception.OutOfGasException;
 
@@ -59,6 +58,7 @@ public class ByzantiumSpec extends AbstractSpecs {
     }
 
     private static final FeeSchedule feeSchedule = new FeeScheduleByzantium();
+    private static final PrecompiledContracts precompiledContracts = new PrecompiledContractsByzantium();
 
     public ByzantiumSpec() {
     }
@@ -93,5 +93,10 @@ public class ByzantiumSpec extends AbstractSpecs {
         }
 
         return cost;
+    }
+
+    @Override
+    public PrecompiledContracts precompiledContracts() {
+        return precompiledContracts;
     }
 }

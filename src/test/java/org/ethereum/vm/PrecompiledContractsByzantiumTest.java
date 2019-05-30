@@ -33,7 +33,7 @@ import org.ethereum.vm.util.HashUtil;
 import org.ethereum.vm.util.HexUtil;
 import org.junit.Test;
 
-public class PrecompiledContractsTest extends TestTransactionBase {
+public class PrecompiledContractsByzantiumTest extends TestTransactionBase {
 
     @Test
     public void testECRecover() {

@@ -17,8 +17,10 @@
  */
 package org.ethereum.vm;
 
-import org.ethereum.vm.chainspec.Spec;
+import org.apache.commons.lang3.tuple.Pair;
 
-public interface PrecompiledContracts {
-    PrecompiledContract getContractForAddress(DataWord address, Spec spec);
+public abstract class PrecompiledContract {
+    public abstract long getGasForData(byte[] data);
+
+    public abstract Pair<Boolean, byte[]> execute(byte[] data);
 }

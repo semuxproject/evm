@@ -80,7 +80,7 @@ public class VM {
     // theoretical limit, used to reduce expensive BigInt arithmetic
     private static final BigInteger MAX_MEM_SIZE = BigInteger.valueOf(Integer.MAX_VALUE);
 
-    private Spec spec;
+    private final Spec spec;
 
     public VM() {
         this(Spec.DEFAULT);
@@ -1070,8 +1070,7 @@ public class VM {
                 MessageCall msg = new MessageCall(op, adjustedCallGas, codeAddress, value, inDataOffs, inDataSize,
                         outDataOffs, outDataSize);
 
-                PrecompiledContracts.PrecompiledContract contract = PrecompiledContracts
-                        .getContractForAddress(codeAddress, spec);
+                PrecompiledContract contract = spec.precompiledContracts().getContractForAddress(codeAddress, spec);
 
                 if (contract != null) {
                     program.callToPrecompiledAddress(msg, contract);
