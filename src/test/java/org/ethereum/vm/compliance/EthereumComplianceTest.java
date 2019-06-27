@@ -17,27 +17,41 @@
  */
 package org.ethereum.vm.compliance;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import org.ethereum.vm.client.*;
-import org.ethereum.vm.compliance.spec.Address;
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
+import org.ethereum.vm.DataWord;
+import org.ethereum.vm.VM;
+import org.ethereum.vm.chainspec.ConstantinopleSpec;
+import org.ethereum.vm.client.BlockStore;
+import org.ethereum.vm.client.BlockStoreMock;
+import org.ethereum.vm.client.Repository;
+import org.ethereum.vm.client.RepositoryMock;
 import org.ethereum.vm.compliance.spec.Environment;
 import org.ethereum.vm.compliance.spec.Exec;
 import org.ethereum.vm.compliance.spec.TestCase;
-import org.junit.Assert;
+import org.ethereum.vm.program.Program;
+import org.ethereum.vm.program.ProgramResult;
+import org.ethereum.vm.program.invoke.ProgramInvoke;
+import org.ethereum.vm.program.invoke.ProgramInvokeImpl;
+import org.ethereum.vm.util.HexUtil;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class EthereumComplianceTest {
 
     private static Logger logger = LoggerFactory.getLogger(EthereumComplianceTest.class);
-    ObjectMapper objectMapper = new ObjectMapper();
+
+    private ObjectMapper objectMapper = new ObjectMapper();
 
     @Test
     public void runAllTests() throws IOException {
@@ -46,17 +60,15 @@ public class EthereumComplianceTest {
         };
 
         File rootTestDirectory = new File("./src/test/resources/tests/VMTests");
-        for (File file : rootTestDirectory.listFiles()) {
-            if (file.isDirectory()) {
-                for (File test : file.listFiles()) {
-                    if (test.isFile()) {
-                        HashMap<String, TestCase> suite = objectMapper.readValue(test, typeRef);
-                        for (Map.Entry<String, TestCase> testCase : suite.entrySet()) {
-                            String testName = file.getName() + " - " + testCase.getKey();
-                            runTest(testName, testCase.getValue());
-                        }
-                    }
-                }
+        List<File> files = Files.walk(rootTestDirectory.toPath())
+                .map(p -> p.toFile())
+                .filter(f -> f.getName().endsWith(".json"))
+                .collect(Collectors.toList());
+
+        for (File file : files) {
+            HashMap<String, TestCase> suite = objectMapper.readValue(file, typeRef);
+            for (Map.Entry<String, TestCase> entry : suite.entrySet()) {
+                runTest(file.getName(), entry.getKey(), entry.getValue());
             }
         }
     }
@@ -67,37 +79,44 @@ public class EthereumComplianceTest {
      * @param testName
      * @param testCase
      */
-    private void runTest(String testName, TestCase testCase) {
-        logger.info("Running " + testName);
+    private void runTest(String fileName, String testName, TestCase testCase) {
+        logger.info("Running test: file = {}, test = {}", fileName, testName);
 
-        Transaction transaction = buildTransaction(testCase.getExec());
-        Block block = buildBlock(testCase.getEnvironment());
-        Repository repository = buildRepository(testCase.getPre());
-        BlockStore blockStore = buildBlockStore();
+        Exec exec = testCase.getExec();
+        byte[] code = HexUtil.fromHexString(exec.getCode());
+        DataWord address = DataWord.of(exec.getAddress());
+        DataWord origin = DataWord.of(exec.getOrigin());
+        DataWord caller = DataWord.of(exec.getCaller());
+        long gas = DataWord.of(exec.getGas()).longValue();
+        DataWord gasPrice = DataWord.of(exec.getGasPrice());
+        DataWord value = DataWord.of(exec.getValue());
+        byte[] data = HexUtil.fromHexString(exec.getData());
 
-        TransactionExecutor executor = new TransactionExecutor(transaction, block, repository, blockStore, false);
-        TransactionReceipt receipt = executor.run();
+        Environment env = testCase.getEnvironment();
+        DataWord prevHash = DataWord.ZERO;
+        DataWord coinbase = DataWord.of(env.getCurrentCoinbase());
+        DataWord timestamp = DataWord.of(env.getCurrentTimestamp());
+        DataWord number = DataWord.of(env.getCurrentNumber());
+        DataWord difficulty = DataWord.of(env.getCurrentDifficulty());
+        DataWord gasLimit = DataWord.of(env.getCurrentGasLimit());
 
-        Repository expectedRepository = buildRepository(testCase.getPost());
+        Repository repository = new RepositoryMock();
+        Repository originalRepository = repository.clone();
+        BlockStore blockStore = new BlockStoreMock();
+        int callDepth = 0;
+        boolean isStaticCall = false;
 
-        Assert.assertEquals(expectedRepository, repository);
-    }
+        ConstantinopleSpec spec = new ConstantinopleSpec();
+        VM vm = new VM(spec);
+        ProgramInvoke programInvoke = new ProgramInvokeImpl(address, origin, caller, gas, gasPrice, value, data,
+                prevHash, coinbase, timestamp, number, difficulty, gasLimit, repository, originalRepository, blockStore,
+                callDepth, isStaticCall);
+        Program program = new Program(code, programInvoke, null, spec);
 
-    private BlockStore buildBlockStore() {
+        vm.play(program);
 
-        return new BlockStoreMock();
-    }
-
-    private Repository buildRepository(Map<String, Address> pre) {
-        RepositoryMock repository = new RepositoryMock();
-        return repository;
-    }
-
-    private Transaction buildTransaction(Exec exec) {
-        return null;
-    }
-
-    private Block buildBlock(Environment environment) {
-        return null;
+        ProgramResult result = program.getResult();
+        logger.info("Validating results");
+        logger.info("Done!");
     }
 }
