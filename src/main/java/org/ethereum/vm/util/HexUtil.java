@@ -29,6 +29,10 @@ public class HexUtil {
         return Hex.toHexString(data);
     }
 
+    public static String toHexStringWith0x(byte[] data) {
+        return "0x" + toHexString(data);
+    }
+
     public static String toHexString(byte b) {
         return toHexString(new byte[] { b });
     }

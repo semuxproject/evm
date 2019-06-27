@@ -17,6 +17,11 @@
  */
 package org.ethereum.vm.client;
 
+import java.io.IOException;
+import java.math.BigInteger;
+import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
+
 import org.ethereum.vm.DataWord;
 import org.ethereum.vm.TestTransactionBase;
 import org.ethereum.vm.util.ByteArrayUtil;
@@ -25,11 +30,6 @@ import org.ethereum.vm.util.HexUtil;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-
-import java.io.IOException;
-import java.math.BigInteger;
-import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
 
 public class Erc20Test extends TestTransactionBase {
 

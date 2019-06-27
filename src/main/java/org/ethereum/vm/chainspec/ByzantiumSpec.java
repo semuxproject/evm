@@ -22,7 +22,7 @@ import org.ethereum.vm.OpCode;
 import org.ethereum.vm.client.Transaction;
 import org.ethereum.vm.program.exception.OutOfGasException;
 
-public class ByzantiumSpec extends AbstractSpecs {
+public class ByzantiumSpec extends AbstractSpec {
 
     private static class FeeScheduleByzantium extends FeeSchedule {
         public int getBALANCE() {

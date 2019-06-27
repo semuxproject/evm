@@ -31,7 +31,5 @@ public interface Block {
 
     long getNumber();
 
-    default BigInteger getDifficulty() {
-        return BigInteger.ZERO;
-    }
+    BigInteger getDifficulty();
 }

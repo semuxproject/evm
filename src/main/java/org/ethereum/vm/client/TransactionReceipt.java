@@ -79,8 +79,17 @@ public class TransactionReceipt {
 
     @Override
     public String toString() {
-        return "TransactionReceipt{" + "success=" + success + ", gasUsed=" + gasUsed + ", returnData="
-                + Hex.toHexString(returnData) + ", deletedAccounts=" + deletedAccounts + ", logs=" + logs + "}"
-                + internalTransactions.stream().map(tx -> "\n|--" + tx.toString()).collect(Collectors.joining());
+        StringBuilder sb = new StringBuilder();
+        for (InternalTransaction tx : internalTransactions) {
+            sb.append("\n|--").append(tx.toString());
+        }
+
+        return "TransactionReceipt{"
+                + "success=" + success
+                + ", gasUsed=" + gasUsed
+                + ", returnData=" + Hex.toHexString(returnData)
+                + ", deletedAccounts=" + deletedAccounts + ", "
+                + "logs=" + logs + "}"
+                + sb.toString();
     }
 }
