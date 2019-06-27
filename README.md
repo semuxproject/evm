@@ -19,6 +19,8 @@ It's light-weight and can be easily integrated into other projects.
 ## Build from source
 
 ```
+git clone --recursive https://github.com/semuxproject/evm
+cd evm
 mvn install
 ```
 
@@ -32,4 +34,4 @@ mvn formatter:format license:format findbugs:check
 
 ## License
 
-This projected is licensed in [LGPLv3](./LICENSE).
+This projected is licensed under [LGPLv3](./LICENSE).
