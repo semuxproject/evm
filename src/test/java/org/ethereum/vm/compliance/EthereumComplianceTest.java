@@ -15,22 +15,15 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.ethereum.vm.test;
+package org.ethereum.vm.compliance;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.ethereum.vm.client.Block;
-import org.ethereum.vm.client.BlockStore;
-import org.ethereum.vm.client.BlockStoreMock;
-import org.ethereum.vm.client.Repository;
-import org.ethereum.vm.client.RepositoryMock;
-import org.ethereum.vm.client.Transaction;
-import org.ethereum.vm.client.TransactionExecutor;
-import org.ethereum.vm.client.TransactionReceipt;
-import org.ethereum.vm.test.api.Address;
-import org.ethereum.vm.test.api.Environment;
-import org.ethereum.vm.test.api.Exec;
-import org.ethereum.vm.test.api.TestCase;
+import org.ethereum.vm.client.*;
+import org.ethereum.vm.compliance.spec.Address;
+import org.ethereum.vm.compliance.spec.Environment;
+import org.ethereum.vm.compliance.spec.Exec;
+import org.ethereum.vm.compliance.spec.TestCase;
 import org.junit.Assert;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -41,9 +34,9 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-public class TestCompliance {
+public class EthereumComplianceTest {
 
-    private static Logger logger = LoggerFactory.getLogger(TestCompliance.class);
+    private static Logger logger = LoggerFactory.getLogger(EthereumComplianceTest.class);
     ObjectMapper objectMapper = new ObjectMapper();
 
     @Test
@@ -52,16 +45,15 @@ public class TestCompliance {
         TypeReference<HashMap<String, TestCase>> typeRef = new TypeReference<HashMap<String, TestCase>>() {
         };
 
-        File rootTestDirectory = new File("./src/test/resources/tests");
+        File rootTestDirectory = new File("./src/test/resources/tests/VMTests");
         for (File file : rootTestDirectory.listFiles()) {
             if (file.isDirectory()) {
                 for (File test : file.listFiles()) {
                     if (test.isFile()) {
                         HashMap<String, TestCase> suite = objectMapper.readValue(test, typeRef);
                         for (Map.Entry<String, TestCase> testCase : suite.entrySet()) {
-                            String testName = file.getName() + " - " + test.getName() + testCase.getKey();
-                            // WIP TODO
-                            // runTest(testName, testCase.getValue());
+                            String testName = file.getName() + " - " + testCase.getKey();
+                            runTest(testName, testCase.getValue());
                         }
                     }
                 }
@@ -76,7 +68,7 @@ public class TestCompliance {
      * @param testCase
      */
     private void runTest(String testName, TestCase testCase) {
-        logger.info("running " + testName);
+        logger.info("Running " + testName);
 
         Transaction transaction = buildTransaction(testCase.getExec());
         Block block = buildBlock(testCase.getEnvironment());
@@ -89,7 +81,6 @@ public class TestCompliance {
         Repository expectedRepository = buildRepository(testCase.getPost());
 
         Assert.assertEquals(expectedRepository, repository);
-
     }
 
     private BlockStore buildBlockStore() {
