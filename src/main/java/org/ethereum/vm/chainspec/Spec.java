@@ -19,7 +19,6 @@ package org.ethereum.vm.chainspec;
 
 import org.ethereum.vm.FeeSchedule;
 import org.ethereum.vm.OpCode;
-import org.ethereum.vm.PrecompiledContracts;
 import org.ethereum.vm.client.Transaction;
 import org.ethereum.vm.program.exception.OutOfGasException;
 
@@ -45,7 +44,7 @@ public interface Spec {
      *
      * @return
      */
-    PrecompiledContracts precompiledContracts();
+    PrecompiledContracts getPrecompiledContracts();
 
     /**
      * Returns the gas limit for an internal CALL.

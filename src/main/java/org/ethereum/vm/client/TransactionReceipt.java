@@ -18,7 +18,6 @@
 package org.ethereum.vm.client;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.bouncycastle.util.encoders.Hex;
 import org.ethereum.vm.LogInfo;

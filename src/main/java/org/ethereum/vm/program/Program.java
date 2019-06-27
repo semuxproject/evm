@@ -32,10 +32,9 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.ethereum.vm.DataWord;
 import org.ethereum.vm.MessageCall;
 import org.ethereum.vm.OpCode;
-import org.ethereum.vm.PrecompiledContracts;
+import org.ethereum.vm.chainspec.PrecompiledContract;
 import org.ethereum.vm.VM;
 import org.ethereum.vm.chainspec.Spec;
-import org.ethereum.vm.client.PrecompiledContractContext;
 import org.ethereum.vm.client.Repository;
 import org.ethereum.vm.client.Transaction;
 import org.ethereum.vm.program.exception.BytecodeExecutionException;
@@ -321,7 +320,7 @@ public class Program {
 
     /**
      * Create contract for {@link OpCode#CREATE2}
-     * 
+     *
      * @param value
      *            Endowment
      * @param memStart
@@ -364,7 +363,7 @@ public class Program {
     /**
      * All stages required to create contract on provided address after initial
      * check
-     * 
+     *
      * @param value
      *            Endowment
      * @param programCode

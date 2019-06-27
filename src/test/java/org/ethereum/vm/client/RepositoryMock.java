@@ -22,14 +22,13 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.ethereum.vm.DataWord;
-import org.ethereum.vm.chainspec.PrecompiledContractContextByzantium;
+import org.ethereum.vm.chainspec.PrecompiledContractContext;
 import org.ethereum.vm.util.ByteArrayWrapper;
 
 public class RepositoryMock implements Repository {
 
     private Map<ByteArrayWrapper, Account> accounts = new HashMap<>();
     private RepositoryMock parent;
-    private PrecompiledContractContext context = new PrecompiledContractContextByzantium();
 
     public RepositoryMock() {
         this(null);
@@ -63,7 +62,8 @@ public class RepositoryMock implements Repository {
 
     @Override
     public PrecompiledContractContext getContext() {
-        return context;
+        return new PrecompiledContractContext() {
+        };
     }
 
     @Override

@@ -32,6 +32,8 @@ import org.ethereum.vm.DataWord;
 import org.ethereum.vm.LogInfo;
 import org.ethereum.vm.VM;
 import org.ethereum.vm.chainspec.AbstractSpec;
+import org.ethereum.vm.chainspec.PrecompiledContract;
+import org.ethereum.vm.chainspec.PrecompiledContracts;
 import org.ethereum.vm.chainspec.Spec;
 import org.ethereum.vm.client.BlockStore;
 import org.ethereum.vm.client.BlockStoreMock;
@@ -131,6 +133,10 @@ public class EthereumComplianceTest {
         boolean isStaticCall = false;
 
         Spec spec = new AbstractSpec() {
+            @Override
+            public PrecompiledContracts getPrecompiledContracts() {
+                return address -> null;
+            }
         };
         VM vm = new VM(spec);
         ProgramInvoke programInvoke = new ProgramInvokeImpl(address, origin, caller, gas, gasPrice, value, data,

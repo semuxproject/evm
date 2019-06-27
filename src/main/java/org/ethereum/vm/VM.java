@@ -27,8 +27,8 @@ import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.ethereum.vm.chainspec.PrecompiledContract;
 import org.ethereum.vm.chainspec.Spec;
-import org.ethereum.vm.client.PrecompiledContractContext;
 import org.ethereum.vm.program.Program;
 import org.ethereum.vm.program.Stack;
 import org.ethereum.vm.program.exception.ExceptionFactory;
@@ -1071,7 +1071,7 @@ public class VM {
                 MessageCall msg = new MessageCall(op, adjustedCallGas, codeAddress, value, inDataOffs, inDataSize,
                         outDataOffs, outDataSize);
 
-                PrecompiledContract contract = spec.precompiledContracts().getContractForAddress(codeAddress, spec);
+                PrecompiledContract contract = spec.getPrecompiledContracts().getContractForAddress(codeAddress);
 
                 if (contract != null) {
                     program.callToPrecompiledAddress(msg, contract, program.getRepository());

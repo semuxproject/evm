@@ -20,9 +20,15 @@ package org.ethereum.vm.client;
 import java.math.BigInteger;
 
 import org.ethereum.vm.DataWord;
+import org.ethereum.vm.chainspec.PrecompiledContractContext;
 
 public interface Repository {
 
+    /**
+     * Returns the context for precompiled contract.
+     *
+     * @return
+     */
     PrecompiledContractContext getContext();
 
     /**

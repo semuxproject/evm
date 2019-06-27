@@ -15,11 +15,12 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.ethereum.vm;
+package org.ethereum.vm.chainspec;
 
-import org.ethereum.vm.chainspec.Spec;
-import org.ethereum.vm.client.PrecompiledContractContext;
+import org.apache.commons.lang3.tuple.Pair;
 
-public interface PrecompiledContracts<C extends PrecompiledContractContext> {
-    PrecompiledContract<C> getContractForAddress(DataWord address, Spec spec);
+public abstract class PrecompiledContract {
+    public abstract long getGasForData(byte[] data);
+
+    public abstract Pair<Boolean, byte[]> execute(byte[] data, PrecompiledContractContext context);
 }

@@ -33,10 +33,6 @@ import java.math.BigInteger;
 
 import org.apache.commons.lang3.tuple.Pair;
 import org.ethereum.vm.DataWord;
-import org.ethereum.vm.PrecompiledContract;
-import org.ethereum.vm.PrecompiledContracts;
-import org.ethereum.vm.chainspec.Spec;
-import org.ethereum.vm.client.PrecompiledContractContext;
 import org.ethereum.vm.crypto.ECKey;
 import org.ethereum.vm.crypto.zksnark.BN128;
 import org.ethereum.vm.crypto.zksnark.BN128Fp;
@@ -47,7 +43,7 @@ import org.ethereum.vm.crypto.zksnark.Fp2;
 import org.ethereum.vm.crypto.zksnark.PairingCheck;
 import org.ethereum.vm.util.HashUtil;
 
-public class PrecompiledContractsByzantium implements PrecompiledContracts {
+public class ByzantiumPrecompiledContracts implements PrecompiledContracts {
 
     private static final ECRecover ecRecover = new ECRecover();
     private static final Sha256 sha256 = new Sha256();
@@ -68,7 +64,7 @@ public class PrecompiledContractsByzantium implements PrecompiledContracts {
     private static final DataWord altBN128PairingAddr = DataWord.of(8);
 
     @Override
-    public PrecompiledContract getContractForAddress(DataWord address, Spec spec) {
+    public PrecompiledContract getContractForAddress(DataWord address) {
 
         if (address.equals(ecRecoverAddr)) {
             return ecRecover;
@@ -155,7 +151,7 @@ public class PrecompiledContractsByzantium implements PrecompiledContracts {
 
         @Override
         public Pair<Boolean, byte[]> execute(byte[] data, PrecompiledContractContext context) {
-            byte[] result = null;
+            byte[] result;
             if (data == null) {
                 result = HashUtil.ripemd160(EMPTY_BYTE_ARRAY);
             } else {

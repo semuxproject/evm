@@ -68,7 +68,7 @@ public interface ProgramInvoke {
     /**
      * Returns the deposited value by the instruction/transaction responsible for
      * this execution.
-     * 
+     *
      * @return the call value in {@link org.ethereum.vm.client.Unit#WEI}
      */
     DataWord getValue();
@@ -160,7 +160,6 @@ public interface ProgramInvoke {
 
     /**
      * Returns the original repository.
-     *
      */
     Repository getOriginalRepository();
 
