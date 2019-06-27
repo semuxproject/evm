@@ -73,7 +73,8 @@ public class EthereumComplianceTest {
         File rootTestDirectory = new File("./src/test/resources/tests/VMTests");
         List<File> files = Files.walk(rootTestDirectory.toPath())
                 .map(p -> p.toFile())
-                .filter(f -> f.getName().endsWith(".json"))
+                .filter(f -> f.getName().endsWith(".json")
+                        && !f.getAbsolutePath().contains("vmPerformance"))
                 .collect(Collectors.toList());
 
         for (File file : files) {
