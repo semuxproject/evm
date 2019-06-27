@@ -43,7 +43,7 @@
                         <include>src/test/**/*.java</include>
                     </includes>
                     <excludes>
-                        <exclude>src/test/org/web3j</exclude>
+                        <exclude>src/test/java/org/web3j/rlp/*.java</exclude>
                     </excludes>
                 </configuration>
             </plugin>
