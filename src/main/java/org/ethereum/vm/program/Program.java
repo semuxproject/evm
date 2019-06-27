@@ -35,6 +35,7 @@ import org.ethereum.vm.OpCode;
 import org.ethereum.vm.PrecompiledContracts;
 import org.ethereum.vm.VM;
 import org.ethereum.vm.chainspec.Spec;
+import org.ethereum.vm.client.PrecompiledContractContext;
 import org.ethereum.vm.client.Repository;
 import org.ethereum.vm.client.Transaction;
 import org.ethereum.vm.program.exception.BytecodeExecutionException;
@@ -601,7 +602,7 @@ public class Program {
         }
     }
 
-    public void callToPrecompiledAddress(MessageCall msg, PrecompiledContracts.PrecompiledContract contract) {
+    public void callToPrecompiledAddress(MessageCall msg, PrecompiledContract contract, Repository repository) {
         returnDataBuffer = null; // reset return buffer right before the call
 
         if (getCallDepth() == MAX_DEPTH) {
@@ -637,7 +638,7 @@ public class Program {
             this.stackPushZero();
             track.rollback();
         } else {
-            Pair<Boolean, byte[]> out = contract.execute(data);
+            Pair<Boolean, byte[]> out = contract.execute(data, repository.getContext());
 
             if (out.getLeft()) {
                 this.refundGas(msg.getGas() - requiredGas, "refund gas from pre-compiled call");

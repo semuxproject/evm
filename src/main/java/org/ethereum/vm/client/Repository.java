@@ -23,6 +23,8 @@ import org.ethereum.vm.DataWord;
 
 public interface Repository {
 
+    PrecompiledContractContext getContext();
+
     /**
      * Checks whether an account exists.
      *

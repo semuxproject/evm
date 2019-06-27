@@ -15,11 +15,22 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.ethereum.vm;
+package org.ethereum.vm.chainspec;
 
-import org.ethereum.vm.chainspec.Spec;
 import org.ethereum.vm.client.PrecompiledContractContext;
 
-public interface PrecompiledContracts<C extends PrecompiledContractContext> {
-    PrecompiledContract<C> getContractForAddress(DataWord address, Spec spec);
+/**
+ * Byzantium's precompiled contracts do not require any additional context, so
+ * this class is a no-op.
+ */
+public class PrecompiledContractContextByzantium implements PrecompiledContractContext {
+    @Override
+    public void commit() {
+
+    }
+
+    @Override
+    public void rollback() {
+
+    }
 }
