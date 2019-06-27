@@ -17,51 +17,22 @@
  */
 package org.ethereum.vm.compliance.spec;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.fasterxml.jackson.annotation.JsonAnyGetter;
-import com.fasterxml.jackson.annotation.JsonAnySetter;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
-@JsonInclude(JsonInclude.Include.NON_NULL)
-@JsonPropertyOrder({
-        "_info",
-        "callcreates",
-        "env",
-        "exec",
-        "gas",
-        "logs",
-        "out",
-        "post",
-        "pre"
-})
 public class TestCase {
 
-    @JsonProperty("_info")
     private Info info;
-    @JsonProperty("callcreates")
     private List<Object> callcreates = null;
-    @JsonProperty("env")
     private Environment environment;
-    @JsonProperty("exec")
     private Exec exec;
-    @JsonProperty("gas")
     private String gas;
-    @JsonProperty("logs")
     private String logs;
-    @JsonProperty("out")
     private String out;
-    @JsonProperty("post")
     private Map<String, Account> post;
-    @JsonProperty("pre")
     private Map<String, Account> pre;
-    @JsonIgnore
-    private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
     @JsonProperty("_info")
     public Info getInfo() {
@@ -73,12 +44,10 @@ public class TestCase {
         this.info = info;
     }
 
-    @JsonProperty("callcreates")
     public List<Object> getCallcreates() {
         return callcreates;
     }
 
-    @JsonProperty("callcreates")
     public void setCallcreates(List<Object> callcreates) {
         this.callcreates = callcreates;
     }
@@ -93,74 +62,51 @@ public class TestCase {
         this.environment = environment;
     }
 
-    @JsonProperty("exec")
     public Exec getExec() {
         return exec;
     }
 
-    @JsonProperty("exec")
     public void setExec(Exec exec) {
         this.exec = exec;
     }
 
-    @JsonProperty("gas")
     public String getGas() {
         return gas;
     }
 
-    @JsonProperty("gas")
     public void setGas(String gas) {
         this.gas = gas;
     }
 
-    @JsonProperty("logs")
     public String getLogs() {
         return logs;
     }
 
-    @JsonProperty("logs")
     public void setLogs(String logs) {
         this.logs = logs;
     }
 
-    @JsonProperty("out")
     public String getOut() {
         return out;
     }
 
-    @JsonProperty("out")
     public void setOut(String out) {
         this.out = out;
     }
 
-    @JsonProperty("post")
     public Map<String, Account> getPost() {
         return post;
     }
 
-    @JsonProperty("post")
     public void setPost(Map<String, Account> post) {
         this.post = post;
     }
 
-    @JsonProperty("pre")
     public Map<String, Account> getPre() {
         return pre;
     }
 
-    @JsonProperty("pre")
     public void setPre(Map<String, Account> pre) {
         this.pre = pre;
     }
-
-    @JsonAnyGetter
-    public Map<String, Object> getAdditionalProperties() {
-        return this.additionalProperties;
-    }
-
-    @JsonAnySetter
-    public void setAdditionalProperty(String name, Object value) {
-        this.additionalProperties.put(name, value);
-    }
-
 }
