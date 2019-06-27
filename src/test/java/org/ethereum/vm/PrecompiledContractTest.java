@@ -41,7 +41,8 @@ public class PrecompiledContractTest {
     @Test
     public void identityTest1() {
         DataWord addr = DataWord.of("0000000000000000000000000000000000000000000000000000000000000004");
-        PrecompiledContract<PrecompiledContractContextByzantium> contract = precompiledContracts.getContractForAddress(addr, spec);
+        PrecompiledContract<PrecompiledContractContextByzantium> contract = precompiledContracts
+                .getContractForAddress(addr, spec);
         byte[] data = HexUtil.fromHexString("112233445566");
         byte[] expected = HexUtil.fromHexString("112233445566");
 
@@ -53,7 +54,8 @@ public class PrecompiledContractTest {
     @Test
     public void sha256Test1() {
         DataWord addr = DataWord.of("0000000000000000000000000000000000000000000000000000000000000002");
-        PrecompiledContract<PrecompiledContractContextByzantium> contract = precompiledContracts.getContractForAddress(addr, spec);
+        PrecompiledContract<PrecompiledContractContextByzantium> contract = precompiledContracts
+                .getContractForAddress(addr, spec);
         byte[] data = null;
         String expected = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855";
 
@@ -66,7 +68,8 @@ public class PrecompiledContractTest {
     public void sha256Test2() {
 
         DataWord addr = DataWord.of("0000000000000000000000000000000000000000000000000000000000000002");
-        PrecompiledContract<PrecompiledContractContextByzantium> contract = precompiledContracts.getContractForAddress(addr, spec);
+        PrecompiledContract<PrecompiledContractContextByzantium> contract = precompiledContracts
+                .getContractForAddress(addr, spec);
         byte[] data = EMPTY_BYTE_ARRAY;
         String expected = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855";
 
@@ -79,7 +82,8 @@ public class PrecompiledContractTest {
     public void sha256Test3() {
 
         DataWord addr = DataWord.of("0000000000000000000000000000000000000000000000000000000000000002");
-        PrecompiledContract<PrecompiledContractContextByzantium> contract = precompiledContracts.getContractForAddress(addr, spec);
+        PrecompiledContract<PrecompiledContractContextByzantium> contract = precompiledContracts
+                .getContractForAddress(addr, spec);
         byte[] data = HexUtil.fromHexString("112233");
         String expected = "49ee2bf93aac3b1fb4117e59095e07abe555c3383b38d608da37680a406096e8";
 
@@ -91,7 +95,8 @@ public class PrecompiledContractTest {
     @Test
     public void Ripempd160Test1() {
         DataWord addr = DataWord.of("0000000000000000000000000000000000000000000000000000000000000003");
-        PrecompiledContract<PrecompiledContractContextByzantium> contract = precompiledContracts.getContractForAddress(addr, spec);
+        PrecompiledContract<PrecompiledContractContextByzantium> contract = precompiledContracts
+                .getContractForAddress(addr, spec);
         byte[] data = HexUtil.fromHexString("0000000000000000000000000000000000000000000000000000000000000001");
         String expected = "000000000000000000000000ae387fcfeb723c3f5964509af111cf5a67f30661";
 
@@ -120,7 +125,8 @@ public class PrecompiledContractTest {
                 + "46eabf35680328e26ef4579caf8aeb2c"
                 + "f9ece05dbf67a4f3d1f28c7b1d0e3546");
         DataWord addr = DataWord.of("0000000000000000000000000000000000000000000000000000000000000001");
-        PrecompiledContract<PrecompiledContractContextByzantium> contract = precompiledContracts.getContractForAddress(addr, spec);
+        PrecompiledContract<PrecompiledContractContextByzantium> contract = precompiledContracts
+                .getContractForAddress(addr, spec);
         String expected2 = "0000000000000000000000007f8b3b04bf34618f4a1723fba96b5db211279a2b";
 
         byte[] result = contract.execute(data, context).getRight();
@@ -131,7 +137,8 @@ public class PrecompiledContractTest {
     public void modExpTest() {
         DataWord addr = DataWord.of("0000000000000000000000000000000000000000000000000000000000000005");
 
-        PrecompiledContract<PrecompiledContractContextByzantium> contract = precompiledContracts.getContractForAddress(addr, spec);
+        PrecompiledContract<PrecompiledContractContextByzantium> contract = precompiledContracts
+                .getContractForAddress(addr, spec);
         assertNotNull(contract);
 
         byte[] data1 = HexUtil.fromHexString(
