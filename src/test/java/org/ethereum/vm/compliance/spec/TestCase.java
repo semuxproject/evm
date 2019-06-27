@@ -32,7 +32,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 @JsonPropertyOrder({
         "_info",
         "callcreates",
-        "environment",
+        "env",
         "exec",
         "gas",
         "logs",
@@ -57,9 +57,9 @@ public class TestCase {
     @JsonProperty("out")
     private String out;
     @JsonProperty("post")
-    private Map<String, Address> post;
+    private Map<String, Account> post;
     @JsonProperty("pre")
-    private Map<String, Address> pre;
+    private Map<String, Account> pre;
     @JsonIgnore
     private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
@@ -83,12 +83,12 @@ public class TestCase {
         this.callcreates = callcreates;
     }
 
-    @JsonProperty("environment")
+    @JsonProperty("env")
     public Environment getEnvironment() {
         return environment;
     }
 
-    @JsonProperty("environment")
+    @JsonProperty("env")
     public void setEnvironment(Environment environment) {
         this.environment = environment;
     }
@@ -134,22 +134,22 @@ public class TestCase {
     }
 
     @JsonProperty("post")
-    public Map<String, Address> getPost() {
+    public Map<String, Account> getPost() {
         return post;
     }
 
     @JsonProperty("post")
-    public void setPost(Map<String, Address> post) {
+    public void setPost(Map<String, Account> post) {
         this.post = post;
     }
 
     @JsonProperty("pre")
-    public Map<String, Address> getPre() {
+    public Map<String, Account> getPre() {
         return pre;
     }
 
     @JsonProperty("pre")
-    public void setPre(Map<String, Address> pre) {
+    public void setPre(Map<String, Account> pre) {
         this.pre = pre;
     }
 

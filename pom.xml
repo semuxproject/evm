@@ -42,6 +42,9 @@
                         <include>src/main/**/*.java</include>
                         <include>src/test/**/*.java</include>
                     </includes>
+                    <excludes>
+                        <exclude>src/test/org/web3j</exclude>
+                    </excludes>
                 </configuration>
             </plugin>
 

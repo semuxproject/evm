@@ -15,25 +15,10 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.ethereum.vm.util;
+package org.web3j.rlp;
 
-import org.bouncycastle.util.encoders.Hex;
-
-public class HexUtil {
-
-    public static byte[] fromHexString(String hex) {
-        return Hex.decode(hex.startsWith("0x") ? hex.substring(2) : hex);
-    }
-
-    public static String toHexString(byte[] data) {
-        return Hex.toHexString(data);
-    }
-
-    public static String toHexStringWith0x(byte[] data) {
-        return "0x" + toHexString(data);
-    }
-
-    public static String toHexString(byte b) {
-        return toHexString(new byte[] { b });
-    }
+/**
+ * Base RLP type.
+ */
+public interface RlpType {
 }

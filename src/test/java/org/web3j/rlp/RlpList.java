@@ -15,25 +15,26 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.ethereum.vm.util;
+package org.web3j.rlp;
 
-import org.bouncycastle.util.encoders.Hex;
+import java.util.Arrays;
+import java.util.List;
 
-public class HexUtil {
+/**
+ * RLP list type.
+ */
+public class RlpList implements RlpType {
+    private final List<RlpType> values;
 
-    public static byte[] fromHexString(String hex) {
-        return Hex.decode(hex.startsWith("0x") ? hex.substring(2) : hex);
+    public RlpList(RlpType... values) {
+        this.values = Arrays.asList(values);
     }
 
-    public static String toHexString(byte[] data) {
-        return Hex.toHexString(data);
+    public RlpList(List<RlpType> values) {
+        this.values = values;
     }
 
-    public static String toHexStringWith0x(byte[] data) {
-        return "0x" + toHexString(data);
-    }
-
-    public static String toHexString(byte b) {
-        return toHexString(new byte[] { b });
+    public List<RlpType> getValues() {
+        return values;
     }
 }

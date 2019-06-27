@@ -34,7 +34,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
         "nonce",
         "storage"
 })
-public class Address {
+public class Account {
 
     @JsonProperty("balance")
     private String balance;
