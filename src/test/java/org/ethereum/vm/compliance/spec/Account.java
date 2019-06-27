@@ -15,37 +15,47 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.ethereum.vm.chainspec;
+package org.ethereum.vm.compliance.spec;
 
-public abstract class AbstractSpecs implements Spec {
+import java.util.Map;
 
-    @Override
-    public int maxContractSize() {
-        return Integer.MAX_VALUE;
+public class Account {
+
+    private String balance;
+    private String code;
+    private String nonce;
+    private Map<String, String> storage;
+
+    public String getBalance() {
+        return balance;
     }
 
-    @Override
-    public boolean createEmptyContractOnOOG() {
-        return true;
+    public void setBalance(String balance) {
+        this.balance = balance;
     }
 
-    @Override
-    public boolean eip1052() {
-        return false;
+    public String getCode() {
+        return code;
     }
 
-    @Override
-    public boolean eip145() {
-        return false;
+    public void setCode(String code) {
+        this.code = code;
     }
 
-    @Override
-    public boolean eip1283() {
-        return false;
+    public String getNonce() {
+        return nonce;
     }
 
-    @Override
-    public boolean eip1014() {
-        return false;
+    public void setNonce(String nonce) {
+        this.nonce = nonce;
     }
+
+    public Map<String, String> getStorage() {
+        return storage;
+    }
+
+    public void setStorage(Map<String, String> storage) {
+        this.storage = storage;
+    }
+
 }
