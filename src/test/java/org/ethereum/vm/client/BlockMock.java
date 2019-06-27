@@ -17,6 +17,8 @@
  */
 package org.ethereum.vm.client;
 
+import java.math.BigInteger;
+
 public class BlockMock implements Block {
 
     private long number;
@@ -56,5 +58,10 @@ public class BlockMock implements Block {
     @Override
     public long getNumber() {
         return number;
+    }
+
+    @Override
+    public BigInteger getDifficulty() {
+        return BigInteger.ONE;
     }
 }
