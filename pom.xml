@@ -30,6 +30,33 @@
                 <version>3.7.0</version>
             </plugin>
 
+            <!-- code coverage -->
+            <plugin>
+                <groupId>org.eluder.coveralls</groupId>
+                <artifactId>coveralls-maven-plugin</artifactId>
+                <version>4.3.0</version>
+                <configuration>
+                    <sourceDirectories>
+                        <sourceDirectory>${basedir}/src/gen/java</sourceDirectory>
+                    </sourceDirectories>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>cobertura-maven-plugin</artifactId>
+                <version>2.7</version>
+                <configuration>
+                    <format>xml</format>
+                    <maxmem>256m</maxmem>
+                    <aggregate>true</aggregate>
+                    <quiet>true</quiet>
+                    <instrumentation>
+                        <ignoreTrivial>true</ignoreTrivial>
+                    </instrumentation>
+                    <check />
+                </configuration>
+            </plugin>
+
             <!-- license header check -->
             <plugin>
                 <groupId>com.mycila</groupId>
