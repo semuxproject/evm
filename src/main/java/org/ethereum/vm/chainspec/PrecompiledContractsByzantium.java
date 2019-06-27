@@ -36,6 +36,7 @@ import org.ethereum.vm.DataWord;
 import org.ethereum.vm.PrecompiledContract;
 import org.ethereum.vm.PrecompiledContracts;
 import org.ethereum.vm.chainspec.Spec;
+import org.ethereum.vm.client.PrecompiledContractContext;
 import org.ethereum.vm.crypto.ECKey;
 import org.ethereum.vm.crypto.zksnark.BN128;
 import org.ethereum.vm.crypto.zksnark.BN128Fp;
@@ -117,7 +118,7 @@ public class PrecompiledContractsByzantium implements PrecompiledContracts {
         }
 
         @Override
-        public Pair<Boolean, byte[]> execute(byte[] data) {
+        public Pair<Boolean, byte[]> execute(byte[] data, PrecompiledContractContext context) {
             return Pair.of(true, data);
         }
     }
@@ -135,7 +136,7 @@ public class PrecompiledContractsByzantium implements PrecompiledContracts {
         }
 
         @Override
-        public Pair<Boolean, byte[]> execute(byte[] data) {
+        public Pair<Boolean, byte[]> execute(byte[] data, PrecompiledContractContext context) {
             return Pair.of(true, HashUtil.sha256(data == null ? EMPTY_BYTE_ARRAY : data));
         }
     }
@@ -153,7 +154,7 @@ public class PrecompiledContractsByzantium implements PrecompiledContracts {
         }
 
         @Override
-        public Pair<Boolean, byte[]> execute(byte[] data) {
+        public Pair<Boolean, byte[]> execute(byte[] data, PrecompiledContractContext context) {
             byte[] result = null;
             if (data == null) {
                 result = HashUtil.ripemd160(EMPTY_BYTE_ARRAY);
@@ -173,7 +174,7 @@ public class PrecompiledContractsByzantium implements PrecompiledContracts {
         }
 
         @Override
-        public Pair<Boolean, byte[]> execute(byte[] data) {
+        public Pair<Boolean, byte[]> execute(byte[] data, PrecompiledContractContext context) {
             byte[] h = new byte[32];
             byte[] v = new byte[32];
             byte[] r = new byte[32];
@@ -249,7 +250,7 @@ public class PrecompiledContractsByzantium implements PrecompiledContracts {
         }
 
         @Override
-        public Pair<Boolean, byte[]> execute(byte[] data) {
+        public Pair<Boolean, byte[]> execute(byte[] data, PrecompiledContractContext context) {
             if (data == null) {
                 return Pair.of(true, EMPTY_BYTE_ARRAY);
             }
@@ -342,7 +343,7 @@ public class PrecompiledContractsByzantium implements PrecompiledContracts {
         }
 
         @Override
-        public Pair<Boolean, byte[]> execute(byte[] data) {
+        public Pair<Boolean, byte[]> execute(byte[] data, PrecompiledContractContext context) {
             if (data == null) {
                 data = EMPTY_BYTE_ARRAY;
             }
@@ -391,7 +392,7 @@ public class PrecompiledContractsByzantium implements PrecompiledContracts {
         }
 
         @Override
-        public Pair<Boolean, byte[]> execute(byte[] data) {
+        public Pair<Boolean, byte[]> execute(byte[] data, PrecompiledContractContext context) {
             if (data == null) {
                 data = EMPTY_BYTE_ARRAY;
             }
@@ -448,7 +449,7 @@ public class PrecompiledContractsByzantium implements PrecompiledContracts {
         }
 
         @Override
-        public Pair<Boolean, byte[]> execute(byte[] data) {
+        public Pair<Boolean, byte[]> execute(byte[] data, PrecompiledContractContext context) {
             if (data == null) {
                 data = EMPTY_BYTE_ARRAY;
             }

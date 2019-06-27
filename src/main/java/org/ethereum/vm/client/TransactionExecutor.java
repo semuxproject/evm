@@ -174,7 +174,7 @@ public class TransactionExecutor {
                 return;
             } else {
                 gasLeft = gasLeft.subtract(spendingGas);
-                Pair<Boolean, byte[]> out = precompiledContract.execute(tx.getData());
+                Pair<Boolean, byte[]> out = precompiledContract.execute(tx.getData(), track.getContext());
 
                 if (!out.getLeft()) {
                     logger.warn("Error executing precompiled contract 0x{}", toHexString(targetAddress));

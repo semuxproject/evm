@@ -26,6 +26,7 @@ import static org.junit.Assert.assertNotNull;
 import java.math.BigInteger;
 
 import org.ethereum.vm.chainspec.ByzantiumSpec;
+import org.ethereum.vm.chainspec.PrecompiledContractContextByzantium;
 import org.ethereum.vm.chainspec.PrecompiledContractsByzantium;
 import org.ethereum.vm.crypto.ECKey;
 import org.ethereum.vm.util.HexUtil;
@@ -33,17 +34,18 @@ import org.junit.Test;
 
 public class PrecompiledContractTest {
 
-    PrecompiledContracts precompiledContracts = new PrecompiledContractsByzantium();
+    PrecompiledContractsByzantium precompiledContracts = new PrecompiledContractsByzantium();
     ByzantiumSpec spec = new ByzantiumSpec();
+    PrecompiledContractContextByzantium context = new PrecompiledContractContextByzantium();
 
     @Test
     public void identityTest1() {
         DataWord addr = DataWord.of("0000000000000000000000000000000000000000000000000000000000000004");
-        PrecompiledContract contract = precompiledContracts.getContractForAddress(addr, spec);
+        PrecompiledContract<PrecompiledContractContextByzantium> contract = precompiledContracts.getContractForAddress(addr, spec);
         byte[] data = HexUtil.fromHexString("112233445566");
         byte[] expected = HexUtil.fromHexString("112233445566");
 
-        byte[] result = contract.execute(data).getRight();
+        byte[] result = contract.execute(data, context).getRight();
 
         assertArrayEquals(expected, result);
     }
@@ -51,11 +53,11 @@ public class PrecompiledContractTest {
     @Test
     public void sha256Test1() {
         DataWord addr = DataWord.of("0000000000000000000000000000000000000000000000000000000000000002");
-        PrecompiledContract contract = precompiledContracts.getContractForAddress(addr, spec);
+        PrecompiledContract<PrecompiledContractContextByzantium> contract = precompiledContracts.getContractForAddress(addr, spec);
         byte[] data = null;
         String expected = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855";
 
-        byte[] result = contract.execute(data).getRight();
+        byte[] result = contract.execute(data, context).getRight();
 
         assertEquals(expected, HexUtil.toHexString(result));
     }
@@ -64,11 +66,11 @@ public class PrecompiledContractTest {
     public void sha256Test2() {
 
         DataWord addr = DataWord.of("0000000000000000000000000000000000000000000000000000000000000002");
-        PrecompiledContract contract = precompiledContracts.getContractForAddress(addr, spec);
+        PrecompiledContract<PrecompiledContractContextByzantium> contract = precompiledContracts.getContractForAddress(addr, spec);
         byte[] data = EMPTY_BYTE_ARRAY;
         String expected = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855";
 
-        byte[] result = contract.execute(data).getRight();
+        byte[] result = contract.execute(data, context).getRight();
 
         assertEquals(expected, HexUtil.toHexString(result));
     }
@@ -77,11 +79,11 @@ public class PrecompiledContractTest {
     public void sha256Test3() {
 
         DataWord addr = DataWord.of("0000000000000000000000000000000000000000000000000000000000000002");
-        PrecompiledContract contract = precompiledContracts.getContractForAddress(addr, spec);
+        PrecompiledContract<PrecompiledContractContextByzantium> contract = precompiledContracts.getContractForAddress(addr, spec);
         byte[] data = HexUtil.fromHexString("112233");
         String expected = "49ee2bf93aac3b1fb4117e59095e07abe555c3383b38d608da37680a406096e8";
 
-        byte[] result = contract.execute(data).getRight();
+        byte[] result = contract.execute(data, context).getRight();
 
         assertEquals(expected, HexUtil.toHexString(result));
     }
@@ -89,11 +91,11 @@ public class PrecompiledContractTest {
     @Test
     public void Ripempd160Test1() {
         DataWord addr = DataWord.of("0000000000000000000000000000000000000000000000000000000000000003");
-        PrecompiledContract contract = precompiledContracts.getContractForAddress(addr, spec);
+        PrecompiledContract<PrecompiledContractContextByzantium> contract = precompiledContracts.getContractForAddress(addr, spec);
         byte[] data = HexUtil.fromHexString("0000000000000000000000000000000000000000000000000000000000000001");
         String expected = "000000000000000000000000ae387fcfeb723c3f5964509af111cf5a67f30661";
 
-        byte[] result = contract.execute(data).getRight();
+        byte[] result = contract.execute(data, context).getRight();
 
         assertEquals(expected, HexUtil.toHexString(result));
     }
@@ -118,10 +120,10 @@ public class PrecompiledContractTest {
                 + "46eabf35680328e26ef4579caf8aeb2c"
                 + "f9ece05dbf67a4f3d1f28c7b1d0e3546");
         DataWord addr = DataWord.of("0000000000000000000000000000000000000000000000000000000000000001");
-        PrecompiledContract contract = precompiledContracts.getContractForAddress(addr, spec);
+        PrecompiledContract<PrecompiledContractContextByzantium> contract = precompiledContracts.getContractForAddress(addr, spec);
         String expected2 = "0000000000000000000000007f8b3b04bf34618f4a1723fba96b5db211279a2b";
 
-        byte[] result = contract.execute(data).getRight();
+        byte[] result = contract.execute(data, context).getRight();
         assertEquals(expected2, HexUtil.toHexString(result));
     }
 
@@ -129,7 +131,7 @@ public class PrecompiledContractTest {
     public void modExpTest() {
         DataWord addr = DataWord.of("0000000000000000000000000000000000000000000000000000000000000005");
 
-        PrecompiledContract contract = precompiledContracts.getContractForAddress(addr, spec);
+        PrecompiledContract<PrecompiledContractContextByzantium> contract = precompiledContracts.getContractForAddress(addr, spec);
         assertNotNull(contract);
 
         byte[] data1 = HexUtil.fromHexString(
@@ -142,7 +144,7 @@ public class PrecompiledContractTest {
 
         assertEquals(13056, contract.getGasForData(data1));
 
-        byte[] res1 = contract.execute(data1).getRight();
+        byte[] res1 = contract.execute(data1, context).getRight();
         assertEquals(32, res1.length);
         assertEquals(BigInteger.ONE, bytesToBigInteger(res1));
 
@@ -155,7 +157,7 @@ public class PrecompiledContractTest {
 
         assertEquals(13056, contract.getGasForData(data2));
 
-        byte[] res2 = contract.execute(data2).getRight();
+        byte[] res2 = contract.execute(data2, context).getRight();
         assertEquals(32, res2.length);
         assertEquals(BigInteger.ZERO, bytesToBigInteger(res2));
 
@@ -180,7 +182,7 @@ public class PrecompiledContractTest {
 
         assertEquals(768, contract.getGasForData(data4));
 
-        byte[] res4 = contract.execute(data4).getRight();
+        byte[] res4 = contract.execute(data4, context).getRight();
         assertEquals(32, res4.length);
         assertEquals(new BigInteger("26689440342447178617115869845918039756797228267049433585260346420242739014315"),
                 bytesToBigInteger(res4));
@@ -197,7 +199,7 @@ public class PrecompiledContractTest {
 
         assertEquals(768, contract.getGasForData(data5));
 
-        byte[] res5 = contract.execute(data5).getRight();
+        byte[] res5 = contract.execute(data5, context).getRight();
         assertEquals(32, res5.length);
         assertEquals(new BigInteger("26689440342447178617115869845918039756797228267049433585260346420242739014315"),
                 bytesToBigInteger(res5));
@@ -229,10 +231,10 @@ public class PrecompiledContractTest {
 
         assertEquals(0, contract.getGasForData(data8));
 
-        byte[] res8 = contract.execute(data8).getRight();
+        byte[] res8 = contract.execute(data8, context).getRight();
         assertArrayEquals(EMPTY_BYTE_ARRAY, res8);
 
         assertEquals(0, contract.getGasForData(null));
-        assertArrayEquals(EMPTY_BYTE_ARRAY, contract.execute(null).getRight());
+        assertArrayEquals(EMPTY_BYTE_ARRAY, contract.execute(null, context).getRight());
     }
 }

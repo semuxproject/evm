@@ -28,6 +28,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.ethereum.vm.chainspec.Spec;
+import org.ethereum.vm.client.PrecompiledContractContext;
 import org.ethereum.vm.program.Program;
 import org.ethereum.vm.program.Stack;
 import org.ethereum.vm.program.exception.ExceptionFactory;
@@ -1073,7 +1074,7 @@ public class VM {
                 PrecompiledContract contract = spec.precompiledContracts().getContractForAddress(codeAddress, spec);
 
                 if (contract != null) {
-                    program.callToPrecompiledAddress(msg, contract);
+                    program.callToPrecompiledAddress(msg, contract, program.getRepository());
                 } else {
                     program.callToAddress(msg);
                 }

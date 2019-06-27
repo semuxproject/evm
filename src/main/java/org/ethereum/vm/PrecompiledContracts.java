@@ -18,7 +18,8 @@
 package org.ethereum.vm;
 
 import org.ethereum.vm.chainspec.Spec;
+import org.ethereum.vm.client.PrecompiledContractContext;
 
-public interface PrecompiledContracts {
-    PrecompiledContract getContractForAddress(DataWord address, Spec spec);
+public interface PrecompiledContracts<C extends PrecompiledContractContext> {
+    PrecompiledContract<C> getContractForAddress(DataWord address, Spec spec);
 }

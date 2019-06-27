@@ -18,9 +18,10 @@
 package org.ethereum.vm;
 
 import org.apache.commons.lang3.tuple.Pair;
+import org.ethereum.vm.client.PrecompiledContractContext;
 
-public abstract class PrecompiledContract {
+public abstract class PrecompiledContract<C extends PrecompiledContractContext> {
     public abstract long getGasForData(byte[] data);
 
-    public abstract Pair<Boolean, byte[]> execute(byte[] data);
+    public abstract Pair<Boolean, byte[]> execute(byte[] data, C context);
 }
