@@ -15,25 +15,30 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.ethereum.vm;
+package org.ethereum.vm.client;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
 
+import java.io.IOException;
+import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 
-import org.ethereum.vm.client.Transaction;
-import org.ethereum.vm.client.TransactionExecutor;
-import org.ethereum.vm.client.TransactionReceipt;
+import org.ethereum.vm.DataWord;
+import org.ethereum.vm.TestTransactionBase;
 import org.ethereum.vm.util.ByteArrayUtil;
 import org.ethereum.vm.util.HashUtil;
 import org.ethereum.vm.util.HexUtil;
+import org.junit.Assert;
 import org.junit.Test;
 
-public class PrecompiledContractsTest extends TestTransactionBase {
+public class PrecompiledContractCallTest extends TestTransactionBase {
+
+    private byte[] owner = HexUtil.fromHexString("23a6049381fd2cfb0661d9de206613b83d53d7df");
+    private long gas = 10_000_000L;
 
     @Test
     public void testECRecover() {
@@ -67,5 +72,11 @@ public class PrecompiledContractsTest extends TestTransactionBase {
 
         assertTrue(receipt.isSuccess());
         assertEquals(DataWord.of("7156526fbd7a3c72969b54f64e42c10fbb768c8a"), DataWord.of(receipt.getReturnData()));
+    }
+
+    @Test
+    public void testZK() throws IOException {
+        repository.addBalance(owner, premine);
+        createContract("solidity/verifier.con", owner, nonce, gas);
     }
 }
