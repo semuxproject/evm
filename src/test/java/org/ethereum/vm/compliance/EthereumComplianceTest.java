@@ -32,7 +32,6 @@ import org.ethereum.vm.DataWord;
 import org.ethereum.vm.LogInfo;
 import org.ethereum.vm.VM;
 import org.ethereum.vm.chainspec.AbstractSpec;
-import org.ethereum.vm.chainspec.PrecompiledContract;
 import org.ethereum.vm.chainspec.PrecompiledContracts;
 import org.ethereum.vm.chainspec.Spec;
 import org.ethereum.vm.client.BlockStore;
@@ -72,7 +71,7 @@ public class EthereumComplianceTest {
         TypeReference<HashMap<String, TestCase>> typeRef = new TypeReference<HashMap<String, TestCase>>() {
         };
 
-        File rootTestDirectory = new File("./src/test/resources/tests/VMTests");
+        File rootTestDirectory = new File("src/test/resources/VMTests");
         List<File> files = Files.walk(rootTestDirectory.toPath())
                 .map(p -> p.toFile())
                 .filter(f -> f.getName().endsWith(".json")

@@ -1,3 +1,0 @@
-[submodule "src/test/resources/tests"]
-	path = src/test/resources/tests
-	url = https://github.com/ethereum/tests

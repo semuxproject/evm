@@ -90,19 +90,6 @@
                     </directories>
                 </configuration>
             </plugin>
-
-            <!-- FindBugs -->
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>findbugs-maven-plugin</artifactId>
-                <version>3.0.5</version>
-                <configuration>
-                    <effort>Max</effort>
-                    <threshold>High</threshold>
-                    <xmlOutput>true</xmlOutput>
-                    <excludeFilterFile>${project.basedir}/findbugs-exclude.xml</excludeFilterFile>
-                </configuration>
-            </plugin>
         </plugins>
     </build>
 

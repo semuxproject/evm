@@ -173,7 +173,6 @@ public class TransactionExecutor {
                 // no endowment
                 logger.warn("Out of Gas calling precompiled contract: required {}, gasLeft = {}", spendingGas, gasLeft);
                 gasLeft = BigInteger.ZERO;
-                return;
             } else {
                 gasLeft = gasLeft.subtract(spendingGas);
                 Pair<Boolean, byte[]> out = precompiledContract.execute(tx.getData(), track.getContext());
@@ -181,7 +180,6 @@ public class TransactionExecutor {
                 if (!out.getLeft()) {
                     logger.warn("Error executing precompiled contract 0x{}", toHexString(targetAddress));
                     gasLeft = BigInteger.ZERO;
-                    return;
                 }
             }
         } else {

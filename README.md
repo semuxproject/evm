@@ -27,7 +27,7 @@ It's light-weight and can be easily integrated into other projects.
 ## Build from source
 
 ```
-git clone --recursive https://github.com/semuxproject/evm
+git clone https://github.com/semuxproject/evm
 cd evm
 mvn install
 ```
@@ -35,8 +35,9 @@ mvn install
 
 ## Code style
 
+To format the source code, run the following command:
 ```
-mvn formatter:format license:format findbugs:check
+mvn formatter:format license:format
 ```
 
 

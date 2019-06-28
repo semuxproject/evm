@@ -131,7 +131,7 @@ public class TransactionExecutorTest extends TestTransactionBase {
                 - OpCode.Tier.VeryLowTier.asInt() * 7 // 7 push ops
                 - fs.getCALL() // call
                 - fs.getVT_CALL() // extra: value transfer
-                - (fs.getMEMORY() * memWords + memWords * memWords / 512 - 0) // memory expansion
+                - (fs.getMEMORY() * memWords + memWords * memWords / 512) // memory expansion
         ;
         assertEquals(availableGas - availableGas / 64 + fs.getSTIPEND_CALL(),
                 receipt.getInternalTransactions().get(0).getGas());

@@ -23,7 +23,6 @@ import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
 
 import java.io.IOException;
-import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 
@@ -32,7 +31,6 @@ import org.ethereum.vm.TestTransactionBase;
 import org.ethereum.vm.util.ByteArrayUtil;
 import org.ethereum.vm.util.HashUtil;
 import org.ethereum.vm.util.HexUtil;
-import org.junit.Assert;
 import org.junit.Test;
 
 public class PrecompiledContractCallTest extends TestTransactionBase {

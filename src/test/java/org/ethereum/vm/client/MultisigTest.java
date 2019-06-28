@@ -62,13 +62,12 @@ public class MultisigTest extends TestTransactionBase {
         // let another user confirm
         confirmTransaction(contractAddress, user2, txid);
         isConfirmed = isConfirmed(contractAddress, txid);
-        // Assert.assertTrue(isConfirmed);
-        boolean success = executeTransaction(contractAddress, txid, 3);
+        Assert.assertTrue(isConfirmed);
+        executeTransaction(contractAddress, txid, 3);
 
         BigInteger balanceFinal = repository.getBalance(user4);
 
         Assert.assertEquals(toSend, balanceFinal);
-        int i = 0;
     }
 
     private boolean isConfirmed(byte[] contractAddress, byte[] txid) {

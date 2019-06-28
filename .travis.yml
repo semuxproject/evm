@@ -2,15 +2,14 @@ language: java
 
 matrix:
   include:
-    # License, formatter, and FindBugs check
-    - env: NAME="License, formatter, and FindBugs check"
+    # Code style and license header check
+    - env: NAME="Code style and license header check"
       os: linux
       sudo: false
       jdk: openjdk8
       script:
         - mvn license:check
         - mvn formatter:validate
-        - mvn findbugs:check
 
     # Coverage report
     - env: NAME="Coverage report"

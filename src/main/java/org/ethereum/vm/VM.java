@@ -237,13 +237,11 @@ public class VM {
 
             // These all operate on memory and therefore potentially expand it:
             case MSTORE:
+            case MLOAD:
                 gasCost += calcMemGas(feeSchedule, oldMemSize, memNeeded(stack.peek(), DataWord.of(32)), 0);
                 break;
             case MSTORE8:
                 gasCost += calcMemGas(feeSchedule, oldMemSize, memNeeded(stack.peek(), DataWord.of(1)), 0);
-                break;
-            case MLOAD:
-                gasCost += calcMemGas(feeSchedule, oldMemSize, memNeeded(stack.peek(), DataWord.of(32)), 0);
                 break;
             case RETURN:
             case REVERT:
@@ -259,10 +257,6 @@ public class VM {
                 break;
             case CALLDATACOPY:
             case RETURNDATACOPY:
-                gasCost += calcMemGas(feeSchedule, oldMemSize,
-                        memNeeded(stack.peek(), stack.get(stack.size() - 3)),
-                        stack.get(stack.size() - 3).longValueSafe());
-                break;
             case CODECOPY:
                 gasCost += calcMemGas(feeSchedule, oldMemSize,
                         memNeeded(stack.peek(), stack.get(stack.size() - 3)),
