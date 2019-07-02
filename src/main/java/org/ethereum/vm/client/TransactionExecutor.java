@@ -31,6 +31,7 @@ import java.util.ArrayList;
 import org.ethereum.vm.DataWord;
 import org.ethereum.vm.VM;
 import org.ethereum.vm.chainspec.PrecompiledContract;
+import org.ethereum.vm.chainspec.PrecompiledContractContext;
 import org.ethereum.vm.chainspec.Spec;
 import org.ethereum.vm.program.Program;
 import org.ethereum.vm.program.ProgramResult;
@@ -175,7 +176,27 @@ public class TransactionExecutor {
                 gasLeft = BigInteger.ZERO;
             } else {
                 gasLeft = gasLeft.subtract(spendingGas);
-                Pair<Boolean, byte[]> out = precompiledContract.execute(tx.getData(), track.getContext());
+                Pair<Boolean, byte[]> out = precompiledContract.execute(new PrecompiledContractContext() {
+                    @Override
+                    public Repository getTrack() {
+                        return track;
+                    }
+
+                    @Override
+                    public byte[] getCaller() {
+                        return tx.getFrom();
+                    }
+
+                    @Override
+                    public BigInteger getValue() {
+                        return endowment;
+                    }
+
+                    @Override
+                    public byte[] getData() {
+                        return tx.getData();
+                    }
+                });
 
                 if (!out.getLeft()) {
                     logger.warn("Error executing precompiled contract 0x{}", toHexString(targetAddress));

@@ -22,7 +22,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.ethereum.vm.DataWord;
-import org.ethereum.vm.chainspec.PrecompiledContractContext;
 import org.ethereum.vm.util.ByteArrayWrapper;
 
 public class RepositoryMock implements Repository {
@@ -58,12 +57,6 @@ public class RepositoryMock implements Repository {
         } else {
             return null;
         }
-    }
-
-    @Override
-    public PrecompiledContractContext getContext() {
-        return new PrecompiledContractContext() {
-        };
     }
 
     @Override

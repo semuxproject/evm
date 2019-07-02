@@ -19,8 +19,9 @@ package org.ethereum.vm.chainspec;
 
 import org.ethereum.vm.util.Pair;
 
-public abstract class PrecompiledContract {
-    public abstract long getGasForData(byte[] data);
+public interface PrecompiledContract {
 
-    public abstract Pair<Boolean, byte[]> execute(byte[] data, PrecompiledContractContext context);
+    long getGasForData(byte[] data);
+
+    Pair<Boolean, byte[]> execute(PrecompiledContractContext invoke);
 }

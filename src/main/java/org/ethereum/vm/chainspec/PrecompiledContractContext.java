@@ -17,8 +17,39 @@
  */
 package org.ethereum.vm.chainspec;
 
-/**
- * Class to manage alternate behavior provided by precompiled contracts.
- */
+import java.math.BigInteger;
+
+import org.ethereum.vm.client.Repository;
+
 public interface PrecompiledContractContext {
+
+    /**
+     * Returns the repository track.
+     *
+     * @return the current repository track.
+     */
+    Repository getTrack();
+
+    /**
+     * Returns the caller's address.
+     *
+     * @return an address
+     */
+    byte[] getCaller();
+
+    /**
+     * Returns the value being transferred to this contract.
+     *
+     * NOTE: the transfer has been conducted.
+     *
+     * @return a value in {@link org.ethereum.vm.client.Unit#WEI}.
+     */
+    BigInteger getValue();
+
+    /**
+     * Returns the data passed to this contract.
+     *
+     * @return a byte array
+     */
+    byte[] getData();
 }

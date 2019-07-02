@@ -33,6 +33,7 @@ import org.ethereum.vm.MessageCall;
 import org.ethereum.vm.OpCode;
 import org.ethereum.vm.VM;
 import org.ethereum.vm.chainspec.PrecompiledContract;
+import org.ethereum.vm.chainspec.PrecompiledContractContext;
 import org.ethereum.vm.chainspec.Spec;
 import org.ethereum.vm.client.Repository;
 import org.ethereum.vm.client.Transaction;
@@ -637,7 +638,27 @@ public class Program {
             this.stackPushZero();
             track.rollback();
         } else {
-            Pair<Boolean, byte[]> out = contract.execute(data, repository.getContext());
+            Pair<Boolean, byte[]> out = contract.execute(new PrecompiledContractContext() {
+                @Override
+                public Repository getTrack() {
+                    return track;
+                }
+
+                @Override
+                public byte[] getCaller() {
+                    return senderAddress;
+                }
+
+                @Override
+                public BigInteger getValue() {
+                    return endowment;
+                }
+
+                @Override
+                public byte[] getData() {
+                    return data;
+                }
+            });
 
             if (out.getLeft()) {
                 this.refundGas(msg.getGas() - requiredGas, "refund gas from pre-compiled call");

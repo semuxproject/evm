@@ -26,6 +26,7 @@ import static org.junit.Assert.assertNotNull;
 import java.math.BigInteger;
 
 import org.ethereum.vm.DataWord;
+import org.ethereum.vm.client.Repository;
 import org.ethereum.vm.crypto.ECKey;
 import org.ethereum.vm.util.HexUtil;
 import org.junit.Test;
@@ -33,8 +34,31 @@ import org.junit.Test;
 public class ByzantiumPrecompiledContractsTest {
 
     ByzantiumPrecompiledContracts precompiledContracts = new ByzantiumPrecompiledContracts();
-    PrecompiledContractContext context = new PrecompiledContractContext() {
-    };
+    ByzantiumSpec spec = new ByzantiumSpec();
+
+    private PrecompiledContractContext wrapData(byte[] data) {
+        return new PrecompiledContractContext() {
+            @Override
+            public Repository getTrack() {
+                return null;
+            }
+
+            @Override
+            public byte[] getCaller() {
+                return new byte[20];
+            }
+
+            @Override
+            public BigInteger getValue() {
+                return BigInteger.ZERO;
+            }
+
+            @Override
+            public byte[] getData() {
+                return data;
+            }
+        };
+    }
 
     @Test
     public void identityTest1() {
@@ -43,7 +67,7 @@ public class ByzantiumPrecompiledContractsTest {
         byte[] data = HexUtil.fromHexString("112233445566");
         byte[] expected = HexUtil.fromHexString("112233445566");
 
-        byte[] result = contract.execute(data, context).getRight();
+        byte[] result = contract.execute(wrapData(data)).getRight();
 
         assertArrayEquals(expected, result);
     }
@@ -55,7 +79,7 @@ public class ByzantiumPrecompiledContractsTest {
         byte[] data = null;
         String expected = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855";
 
-        byte[] result = contract.execute(data, context).getRight();
+        byte[] result = contract.execute(wrapData(data)).getRight();
 
         assertEquals(expected, HexUtil.toHexString(result));
     }
@@ -68,7 +92,7 @@ public class ByzantiumPrecompiledContractsTest {
         byte[] data = EMPTY_BYTE_ARRAY;
         String expected = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855";
 
-        byte[] result = contract.execute(data, context).getRight();
+        byte[] result = contract.execute(wrapData(data)).getRight();
 
         assertEquals(expected, HexUtil.toHexString(result));
     }
@@ -81,7 +105,7 @@ public class ByzantiumPrecompiledContractsTest {
         byte[] data = HexUtil.fromHexString("112233");
         String expected = "49ee2bf93aac3b1fb4117e59095e07abe555c3383b38d608da37680a406096e8";
 
-        byte[] result = contract.execute(data, context).getRight();
+        byte[] result = contract.execute(wrapData(data)).getRight();
 
         assertEquals(expected, HexUtil.toHexString(result));
     }
@@ -93,7 +117,7 @@ public class ByzantiumPrecompiledContractsTest {
         byte[] data = HexUtil.fromHexString("0000000000000000000000000000000000000000000000000000000000000001");
         String expected = "000000000000000000000000ae387fcfeb723c3f5964509af111cf5a67f30661";
 
-        byte[] result = contract.execute(data, context).getRight();
+        byte[] result = contract.execute(wrapData(data)).getRight();
 
         assertEquals(expected, HexUtil.toHexString(result));
     }
@@ -121,7 +145,7 @@ public class ByzantiumPrecompiledContractsTest {
         PrecompiledContract contract = precompiledContracts.getContractForAddress(addr);
         String expected2 = "0000000000000000000000007f8b3b04bf34618f4a1723fba96b5db211279a2b";
 
-        byte[] result = contract.execute(data, context).getRight();
+        byte[] result = contract.execute(wrapData(data)).getRight();
         assertEquals(expected2, HexUtil.toHexString(result));
     }
 
@@ -141,7 +165,7 @@ public class ByzantiumPrecompiledContractsTest {
 
         assertEquals(13056, contract.getGasForData(data1));
 
-        byte[] res1 = contract.execute(data1, context).getRight();
+        byte[] res1 = contract.execute(wrapData(data1)).getRight();
         assertEquals(32, res1.length);
         assertEquals(BigInteger.ONE, bytesToBigInteger(res1));
 
@@ -154,7 +178,7 @@ public class ByzantiumPrecompiledContractsTest {
 
         assertEquals(13056, contract.getGasForData(data2));
 
-        byte[] res2 = contract.execute(data2, context).getRight();
+        byte[] res2 = contract.execute(wrapData(data2)).getRight();
         assertEquals(32, res2.length);
         assertEquals(BigInteger.ZERO, bytesToBigInteger(res2));
 
@@ -179,7 +203,7 @@ public class ByzantiumPrecompiledContractsTest {
 
         assertEquals(768, contract.getGasForData(data4));
 
-        byte[] res4 = contract.execute(data4, context).getRight();
+        byte[] res4 = contract.execute(wrapData(data4)).getRight();
         assertEquals(32, res4.length);
         assertEquals(new BigInteger("26689440342447178617115869845918039756797228267049433585260346420242739014315"),
                 bytesToBigInteger(res4));
@@ -196,7 +220,7 @@ public class ByzantiumPrecompiledContractsTest {
 
         assertEquals(768, contract.getGasForData(data5));
 
-        byte[] res5 = contract.execute(data5, context).getRight();
+        byte[] res5 = contract.execute(wrapData(data5)).getRight();
         assertEquals(32, res5.length);
         assertEquals(new BigInteger("26689440342447178617115869845918039756797228267049433585260346420242739014315"),
                 bytesToBigInteger(res5));
@@ -228,10 +252,10 @@ public class ByzantiumPrecompiledContractsTest {
 
         assertEquals(0, contract.getGasForData(data8));
 
-        byte[] res8 = contract.execute(data8, context).getRight();
+        byte[] res8 = contract.execute(wrapData(data8)).getRight();
         assertArrayEquals(EMPTY_BYTE_ARRAY, res8);
 
         assertEquals(0, contract.getGasForData(null));
-        assertArrayEquals(EMPTY_BYTE_ARRAY, contract.execute(null, context).getRight());
+        assertArrayEquals(EMPTY_BYTE_ARRAY, contract.execute(wrapData(null)).getRight());
     }
 }
