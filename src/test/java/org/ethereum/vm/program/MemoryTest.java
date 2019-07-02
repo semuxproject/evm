@@ -20,7 +20,6 @@ package org.ethereum.vm.program;
 import static java.lang.Math.ceil;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
 import java.util.Arrays;
 

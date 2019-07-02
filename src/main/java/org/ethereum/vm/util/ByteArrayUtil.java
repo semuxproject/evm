@@ -17,11 +17,27 @@
  */
 package org.ethereum.vm.util;
 
-import static org.apache.commons.lang3.ArrayUtils.EMPTY_BYTE_ARRAY;
-
 import java.math.BigInteger;
 
 public class ByteArrayUtil {
+
+    public static final byte[] EMPTY_BYTE_ARRAY = new byte[0];
+
+    public static int getLength(byte[] bytes) {
+        return bytes == null ? 0 : bytes.length;
+    }
+
+    public static boolean isEmpty(byte[] bytes) {
+        return bytes == null || bytes.length == 0;
+    }
+
+    public static boolean isNotEmpty(byte[] bytes) {
+        return !isEmpty(bytes);
+    }
+
+    public static byte[] nullToEmpty(byte[] bytes) {
+        return bytes == null ? EMPTY_BYTE_ARRAY : bytes;
+    }
 
     /**
      * Merges multiple array into a single one.

@@ -17,10 +17,10 @@
  */
 package org.ethereum.vm;
 
-import static org.apache.commons.lang3.ArrayUtils.EMPTY_BYTE_ARRAY;
 import static org.ethereum.vm.OpCode.CALL;
 import static org.ethereum.vm.OpCode.PUSH1;
 import static org.ethereum.vm.OpCode.REVERT;
+import static org.ethereum.vm.util.ByteArrayUtil.EMPTY_BYTE_ARRAY;
 import static org.ethereum.vm.util.VMUtil.getSizeInWords;
 
 import java.math.BigInteger;

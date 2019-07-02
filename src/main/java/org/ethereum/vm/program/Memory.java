@@ -19,7 +19,7 @@ package org.ethereum.vm.program;
 
 import static java.lang.Math.ceil;
 import static java.lang.Math.min;
-import static org.apache.commons.lang3.ArrayUtils.EMPTY_BYTE_ARRAY;
+import static org.ethereum.vm.util.ByteArrayUtil.EMPTY_BYTE_ARRAY;
 
 import java.util.LinkedList;
 import java.util.List;

@@ -15,12 +15,34 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.ethereum.vm.chainspec;
+package org.ethereum.vm.util;
 
-import org.ethereum.vm.util.Pair;
+public class Pair<K, V> {
+    private K left;
+    private V right;
 
-public abstract class PrecompiledContract {
-    public abstract long getGasForData(byte[] data);
+    public Pair(K left, V right) {
+        this.left = left;
+        this.right = right;
+    }
 
-    public abstract Pair<Boolean, byte[]> execute(byte[] data, PrecompiledContractContext context);
+    public K getLeft() {
+        return left;
+    }
+
+    public V getRight() {
+        return right;
+    }
+
+    public static <K, V> Pair of(K left, V right) {
+        return new Pair<>(left, right);
+    }
+
+    @Override
+    public String toString() {
+        return "Pair{" +
+                "left=" + left +
+                ", right=" + right +
+                '}';
+    }
 }

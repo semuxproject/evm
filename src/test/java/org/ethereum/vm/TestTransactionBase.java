@@ -17,7 +17,7 @@
  */
 package org.ethereum.vm;
 
-import static org.apache.commons.lang3.ArrayUtils.EMPTY_BYTE_ARRAY;
+import static org.ethereum.vm.util.ByteArrayUtil.EMPTY_BYTE_ARRAY;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;

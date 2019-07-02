@@ -17,21 +17,20 @@
  */
 package org.ethereum.vm.client;
 
-import static org.apache.commons.lang3.ArrayUtils.EMPTY_BYTE_ARRAY;
-import static org.apache.commons.lang3.ArrayUtils.getLength;
-import static org.apache.commons.lang3.ArrayUtils.isEmpty;
 import static org.ethereum.vm.util.BigIntegerUtil.isCovers;
 import static org.ethereum.vm.util.BigIntegerUtil.toBI;
 import static org.ethereum.vm.util.BigIntegerUtil.transfer;
+import static org.ethereum.vm.util.ByteArrayUtil.EMPTY_BYTE_ARRAY;
+import static org.ethereum.vm.util.ByteArrayUtil.getLength;
+import static org.ethereum.vm.util.ByteArrayUtil.isEmpty;
 import static org.ethereum.vm.util.HexUtil.toHexString;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
 
-import org.apache.commons.lang3.tuple.Pair;
 import org.ethereum.vm.DataWord;
-import org.ethereum.vm.chainspec.PrecompiledContract;
 import org.ethereum.vm.VM;
+import org.ethereum.vm.chainspec.PrecompiledContract;
 import org.ethereum.vm.chainspec.Spec;
 import org.ethereum.vm.program.Program;
 import org.ethereum.vm.program.ProgramResult;
@@ -41,6 +40,7 @@ import org.ethereum.vm.program.invoke.ProgramInvokeFactory;
 import org.ethereum.vm.program.invoke.ProgramInvokeFactoryImpl;
 import org.ethereum.vm.util.ByteArrayWrapper;
 import org.ethereum.vm.util.HashUtil;
+import org.ethereum.vm.util.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

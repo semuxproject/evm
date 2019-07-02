@@ -17,11 +17,11 @@
  */
 package org.ethereum.vm.chainspec;
 
-import static org.apache.commons.lang3.ArrayUtils.EMPTY_BYTE_ARRAY;
 import static org.ethereum.vm.util.BigIntegerUtil.addSafely;
 import static org.ethereum.vm.util.BigIntegerUtil.isLessThan;
 import static org.ethereum.vm.util.BigIntegerUtil.isZero;
 import static org.ethereum.vm.util.BigIntegerUtil.toBI;
+import static org.ethereum.vm.util.ByteArrayUtil.EMPTY_BYTE_ARRAY;
 import static org.ethereum.vm.util.ByteArrayUtil.bytesToBigInteger;
 import static org.ethereum.vm.util.ByteArrayUtil.numberOfLeadingZeros;
 import static org.ethereum.vm.util.ByteArrayUtil.parseBytes;
@@ -31,7 +31,6 @@ import static org.ethereum.vm.util.VMUtil.getSizeInWords;
 
 import java.math.BigInteger;
 
-import org.apache.commons.lang3.tuple.Pair;
 import org.ethereum.vm.DataWord;
 import org.ethereum.vm.crypto.ECKey;
 import org.ethereum.vm.crypto.zksnark.BN128;
@@ -42,6 +41,7 @@ import org.ethereum.vm.crypto.zksnark.Fp;
 import org.ethereum.vm.crypto.zksnark.Fp2;
 import org.ethereum.vm.crypto.zksnark.PairingCheck;
 import org.ethereum.vm.util.HashUtil;
+import org.ethereum.vm.util.Pair;
 
 public class ByzantiumPrecompiledContracts implements PrecompiledContracts {
 

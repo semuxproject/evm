@@ -17,7 +17,7 @@
  */
 package org.ethereum.vm.chainspec;
 
-import static org.apache.commons.lang3.ArrayUtils.EMPTY_BYTE_ARRAY;
+import static org.ethereum.vm.util.ByteArrayUtil.EMPTY_BYTE_ARRAY;
 import static org.ethereum.vm.util.ByteArrayUtil.bytesToBigInteger;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
@@ -26,10 +26,6 @@ import static org.junit.Assert.assertNotNull;
 import java.math.BigInteger;
 
 import org.ethereum.vm.DataWord;
-import org.ethereum.vm.chainspec.ByzantiumSpec;
-import org.ethereum.vm.chainspec.PrecompiledContract;
-import org.ethereum.vm.chainspec.ByzantiumPrecompiledContracts;
-import org.ethereum.vm.chainspec.PrecompiledContractContext;
 import org.ethereum.vm.crypto.ECKey;
 import org.ethereum.vm.util.HexUtil;
 import org.junit.Test;

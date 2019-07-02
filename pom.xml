@@ -108,13 +108,6 @@
             <version>1.61</version>
         </dependency>
 
-        <!-- Apache commons -->
-        <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-lang3</artifactId>
-            <version>3.7</version>
-        </dependency>
-
         <!-- Testing Libraries -->
         <dependency>
             <groupId>junit</groupId>

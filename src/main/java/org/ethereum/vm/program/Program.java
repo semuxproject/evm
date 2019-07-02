@@ -17,23 +17,22 @@
  */
 package org.ethereum.vm.program;
 
-import static org.apache.commons.lang3.ArrayUtils.EMPTY_BYTE_ARRAY;
-import static org.apache.commons.lang3.ArrayUtils.getLength;
-import static org.apache.commons.lang3.ArrayUtils.isEmpty;
-import static org.apache.commons.lang3.ArrayUtils.isNotEmpty;
-import static org.apache.commons.lang3.ArrayUtils.nullToEmpty;
 import static org.ethereum.vm.util.BigIntegerUtil.isNotCovers;
 import static org.ethereum.vm.util.BigIntegerUtil.transfer;
+import static org.ethereum.vm.util.ByteArrayUtil.EMPTY_BYTE_ARRAY;
+import static org.ethereum.vm.util.ByteArrayUtil.getLength;
+import static org.ethereum.vm.util.ByteArrayUtil.isEmpty;
+import static org.ethereum.vm.util.ByteArrayUtil.isNotEmpty;
+import static org.ethereum.vm.util.ByteArrayUtil.nullToEmpty;
 
 import java.math.BigInteger;
 import java.util.Arrays;
 
-import org.apache.commons.lang3.tuple.Pair;
 import org.ethereum.vm.DataWord;
 import org.ethereum.vm.MessageCall;
 import org.ethereum.vm.OpCode;
-import org.ethereum.vm.chainspec.PrecompiledContract;
 import org.ethereum.vm.VM;
+import org.ethereum.vm.chainspec.PrecompiledContract;
 import org.ethereum.vm.chainspec.Spec;
 import org.ethereum.vm.client.Repository;
 import org.ethereum.vm.client.Transaction;
@@ -45,6 +44,7 @@ import org.ethereum.vm.program.invoke.ProgramInvokeFactory;
 import org.ethereum.vm.program.invoke.ProgramInvokeFactoryImpl;
 import org.ethereum.vm.util.HashUtil;
 import org.ethereum.vm.util.HexUtil;
+import org.ethereum.vm.util.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
