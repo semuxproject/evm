@@ -99,7 +99,7 @@ public class ByzantiumPrecompiledContracts implements PrecompiledContracts {
         return res;
     }
 
-    public static class Identity extends PrecompiledContract {
+    public static class Identity implements PrecompiledContract {
 
         public Identity() {
         }
@@ -114,12 +114,12 @@ public class ByzantiumPrecompiledContracts implements PrecompiledContracts {
         }
 
         @Override
-        public Pair<Boolean, byte[]> execute(byte[] data, PrecompiledContractContext context) {
-            return Pair.of(true, data);
+        public Pair<Boolean, byte[]> execute(PrecompiledContractContext invoke) {
+            return Pair.of(true, invoke.getData());
         }
     }
 
-    public static class Sha256 extends PrecompiledContract {
+    public static class Sha256 implements PrecompiledContract {
         @Override
         public long getGasForData(byte[] data) {
             // gas charge for the execution:
@@ -132,12 +132,13 @@ public class ByzantiumPrecompiledContracts implements PrecompiledContracts {
         }
 
         @Override
-        public Pair<Boolean, byte[]> execute(byte[] data, PrecompiledContractContext context) {
+        public Pair<Boolean, byte[]> execute(PrecompiledContractContext invoke) {
+            byte[] data = invoke.getData();
             return Pair.of(true, HashUtil.sha256(data == null ? EMPTY_BYTE_ARRAY : data));
         }
     }
 
-    public static class Ripempd160 extends PrecompiledContract {
+    public static class Ripempd160 implements PrecompiledContract {
         @Override
         public long getGasForData(byte[] data) {
             // gas charge for the execution:
@@ -150,7 +151,8 @@ public class ByzantiumPrecompiledContracts implements PrecompiledContracts {
         }
 
         @Override
-        public Pair<Boolean, byte[]> execute(byte[] data, PrecompiledContractContext context) {
+        public Pair<Boolean, byte[]> execute(PrecompiledContractContext invoke) {
+            byte[] data = invoke.getData();
             byte[] result;
             if (data == null) {
                 result = HashUtil.ripemd160(EMPTY_BYTE_ARRAY);
@@ -162,7 +164,7 @@ public class ByzantiumPrecompiledContracts implements PrecompiledContracts {
         }
     }
 
-    public static class ECRecover extends PrecompiledContract {
+    public static class ECRecover implements PrecompiledContract {
 
         @Override
         public long getGasForData(byte[] data) {
@@ -170,7 +172,9 @@ public class ByzantiumPrecompiledContracts implements PrecompiledContracts {
         }
 
         @Override
-        public Pair<Boolean, byte[]> execute(byte[] data, PrecompiledContractContext context) {
+        public Pair<Boolean, byte[]> execute(PrecompiledContractContext invoke) {
+            byte[] data = invoke.getData();
+
             byte[] h = new byte[32];
             byte[] v = new byte[32];
             byte[] r = new byte[32];
@@ -216,7 +220,7 @@ public class ByzantiumPrecompiledContracts implements PrecompiledContracts {
      *
      * Returns an output as a byte array with the same length as the modulus
      */
-    public static class ModExp extends PrecompiledContract {
+    public static class ModExp implements PrecompiledContract {
 
         private static final BigInteger GQUAD_DIVISOR = BigInteger.valueOf(20);
 
@@ -246,7 +250,8 @@ public class ByzantiumPrecompiledContracts implements PrecompiledContracts {
         }
 
         @Override
-        public Pair<Boolean, byte[]> execute(byte[] data, PrecompiledContractContext context) {
+        public Pair<Boolean, byte[]> execute(PrecompiledContractContext invoke) {
+            byte[] data = invoke.getData();
             if (data == null) {
                 return Pair.of(true, EMPTY_BYTE_ARRAY);
             }
@@ -331,7 +336,7 @@ public class ByzantiumPrecompiledContracts implements PrecompiledContracts {
      * resulting point (x', y'), where x and y encoded as 32-byte left-padded
      * integers<br/>
      */
-    public static class BN128Addition extends PrecompiledContract {
+    public static class BN128Addition implements PrecompiledContract {
 
         @Override
         public long getGasForData(byte[] data) {
@@ -339,7 +344,8 @@ public class ByzantiumPrecompiledContracts implements PrecompiledContracts {
         }
 
         @Override
-        public Pair<Boolean, byte[]> execute(byte[] data, PrecompiledContractContext context) {
+        public Pair<Boolean, byte[]> execute(PrecompiledContractContext invoke) {
+            byte[] data = invoke.getData();
             if (data == null) {
                 data = EMPTY_BYTE_ARRAY;
             }
@@ -380,7 +386,7 @@ public class ByzantiumPrecompiledContracts implements PrecompiledContracts {
      * resulting point (x', y'), where x and y encoded as 32-byte left-padded
      * integers<br/>
      */
-    public static class BN128Multiplication extends PrecompiledContract {
+    public static class BN128Multiplication implements PrecompiledContract {
 
         @Override
         public long getGasForData(byte[] data) {
@@ -388,7 +394,8 @@ public class ByzantiumPrecompiledContracts implements PrecompiledContracts {
         }
 
         @Override
-        public Pair<Boolean, byte[]> execute(byte[] data, PrecompiledContractContext context) {
+        public Pair<Boolean, byte[]> execute(PrecompiledContractContext invoke) {
+            byte[] data = invoke.getData();
             if (data == null) {
                 data = EMPTY_BYTE_ARRAY;
             }
@@ -431,7 +438,7 @@ public class ByzantiumPrecompiledContracts implements PrecompiledContracts {
      * pairing product which is either 0 or 1, encoded as 32-byte left-padded
      * integer <br/>
      */
-    public static class BN128Pairing extends PrecompiledContract {
+    public static class BN128Pairing implements PrecompiledContract {
 
         private static final int PAIR_SIZE = 192;
 
@@ -445,7 +452,8 @@ public class ByzantiumPrecompiledContracts implements PrecompiledContracts {
         }
 
         @Override
-        public Pair<Boolean, byte[]> execute(byte[] data, PrecompiledContractContext context) {
+        public Pair<Boolean, byte[]> execute(PrecompiledContractContext invoke) {
+            byte[] data = invoke.getData();
             if (data == null) {
                 data = EMPTY_BYTE_ARRAY;
             }
