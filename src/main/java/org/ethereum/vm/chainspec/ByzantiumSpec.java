@@ -19,10 +19,9 @@ package org.ethereum.vm.chainspec;
 
 import org.ethereum.vm.FeeSchedule;
 import org.ethereum.vm.OpCode;
-import org.ethereum.vm.client.Transaction;
 import org.ethereum.vm.program.exception.OutOfGasException;
 
-public class ByzantiumSpec extends AbstractSpec {
+public class ByzantiumSpec extends BaseSpec {
 
     private static class FeeScheduleByzantium extends FeeSchedule {
         public int getBALANCE() {
@@ -69,6 +68,11 @@ public class ByzantiumSpec extends AbstractSpec {
         return feeSchedule;
     }
 
+    @Override
+    public PrecompiledContracts getPrecompiledContracts() {
+        return precompiledContracts;
+    }
+
     private static long maxAllowed(long available) {
         return available - available / 64;
     }
@@ -85,19 +89,7 @@ public class ByzantiumSpec extends AbstractSpec {
     }
 
     @Override
-    public long getTransactionCost(Transaction tx) {
-        FeeSchedule fs = getFeeSchedule();
-
-        long cost = tx.isCreate() ? fs.getTRANSACTION_CREATE_CONTRACT() : fs.getTRANSACTION();
-        for (byte b : tx.getData()) {
-            cost += (b == 0) ? fs.getTX_ZERO_DATA() : fs.getTX_NO_ZERO_DATA();
-        }
-
-        return cost;
-    }
-
-    @Override
-    public PrecompiledContracts getPrecompiledContracts() {
-        return precompiledContracts;
+    public int maxContractSize() {
+        return 0x6000;
     }
 }

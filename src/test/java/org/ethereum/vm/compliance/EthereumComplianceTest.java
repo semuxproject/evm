@@ -31,7 +31,7 @@ import java.util.stream.Collectors;
 import org.ethereum.vm.DataWord;
 import org.ethereum.vm.LogInfo;
 import org.ethereum.vm.VM;
-import org.ethereum.vm.chainspec.AbstractSpec;
+import org.ethereum.vm.chainspec.BaseSpec;
 import org.ethereum.vm.chainspec.PrecompiledContracts;
 import org.ethereum.vm.chainspec.Spec;
 import org.ethereum.vm.client.BlockStore;
@@ -131,7 +131,7 @@ public class EthereumComplianceTest {
         int callDepth = 0;
         boolean isStaticCall = false;
 
-        Spec spec = new AbstractSpec() {
+        Spec spec = new BaseSpec() {
             @Override
             public PrecompiledContracts getPrecompiledContracts() {
                 return address -> null;

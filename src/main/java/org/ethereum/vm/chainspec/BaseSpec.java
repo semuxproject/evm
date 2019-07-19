@@ -22,8 +22,29 @@ import org.ethereum.vm.OpCode;
 import org.ethereum.vm.client.Transaction;
 import org.ethereum.vm.program.exception.OutOfGasException;
 
-public abstract class AbstractSpec implements Spec {
+/**
+ * An abstract implementation of the chain spec, based on the Homestead code
+ * base.
+ *
+ *
+ * Ethereum forks in history:
+ *
+ * <ul>
+ * <li>Frontier</li>
+ * <li>Ice Age</li>
+ * <li>Homestead</li>
+ * <li>DAO</li>
+ * <li>Tangerine Whistle (EIP-150: IO-opcode gas changes, max call/create gas,
+ * EIP-158: state clearing)</li>
+ * <li>Spurious Dragon (EIP-160: EXP cost increase, EIP-161: State trie
+ * clearing, EIP-170 contract size limit)</li>
+ * <li>Byzantium</li>
+ * <li>Constantinople</li>
+ * </ul>
+ */
+public class BaseSpec implements Spec {
     private static final FeeSchedule feeSchedule = new FeeSchedule();
+    private static final PrecompiledContracts precompiledContracts = new BasePrecompiledContracts();
 
     @Override
     public FeeSchedule getFeeSchedule() {
@@ -31,18 +52,30 @@ public abstract class AbstractSpec implements Spec {
     }
 
     @Override
+    public PrecompiledContracts getPrecompiledContracts() {
+        return precompiledContracts;
+    }
+
+    @Override
     public long getCallGas(OpCode op, long requestedGas, long availableGas) throws OutOfGasException {
-        return 0;
+        return availableGas;
     }
 
     @Override
     public long getCreateGas(long availableGas) {
-        return 0;
+        return availableGas;
     }
 
     @Override
     public long getTransactionCost(Transaction tx) {
-        return 0;
+        FeeSchedule fs = getFeeSchedule();
+
+        long cost = tx.isCreate() ? fs.getTRANSACTION_CREATE_CONTRACT() : fs.getTRANSACTION();
+        for (byte b : tx.getData()) {
+            cost += (b == 0) ? fs.getTX_ZERO_DATA() : fs.getTX_NO_ZERO_DATA();
+        }
+
+        return cost;
     }
 
     @Override
@@ -52,7 +85,7 @@ public abstract class AbstractSpec implements Spec {
 
     @Override
     public boolean createEmptyContractOnOOG() {
-        return true;
+        return false;
     }
 
     @Override
