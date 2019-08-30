@@ -60,7 +60,6 @@ public class TransactionExecutor {
     private final Spec spec;
     private final ProgramInvokeFactory invokeFactory;
     private final long gasUsedInTheBlock;
-    private final boolean localCall;
 
     private VM vm;
     private Program program;
@@ -68,12 +67,12 @@ public class TransactionExecutor {
     private ProgramResult result = new ProgramResult();
     private BigInteger gasLeft;
 
-    public TransactionExecutor(Transaction tx, Block block, Repository repo, BlockStore blockStore, boolean localCall) {
-        this(tx, block, repo, blockStore, Spec.DEFAULT, new ProgramInvokeFactoryImpl(), 0, localCall);
+    public TransactionExecutor(Transaction tx, Block block, Repository repo, BlockStore blockStore) {
+        this(tx, block, repo, blockStore, Spec.DEFAULT, new ProgramInvokeFactoryImpl(), 0);
     }
 
     public TransactionExecutor(Transaction tx, Block block, Repository repo, BlockStore blockStore,
-            Spec spec, ProgramInvokeFactory invokeFactory, long gasUsedInTheBlock, boolean localCall) {
+            Spec spec, ProgramInvokeFactory invokeFactory, long gasUsedInTheBlock) {
         this.tx = tx;
         this.block = block;
         this.basicTxCost = spec.getTransactionCost(tx);
@@ -85,7 +84,6 @@ public class TransactionExecutor {
         this.spec = spec;
         this.invokeFactory = invokeFactory;
         this.gasUsedInTheBlock = gasUsedInTheBlock;
-        this.localCall = localCall;
 
         this.gasLeft = BigInteger.valueOf(tx.getGas());
     }
@@ -94,15 +92,9 @@ public class TransactionExecutor {
      * Do basic validation, e.g. nonce, balance and gas check, and prepare this
      * executor.
      *
-     * The <code>ReadyToExecute</code> flag will be set to true on success.
-     *
      * @return true if the transaction is ready to prepare; otherwise false.
      */
     protected boolean init() {
-        if (localCall) {
-            return true;
-        }
-
         BigInteger txGas = BigInteger.valueOf(tx.getGas());
         BigInteger blockGasLimit = BigInteger.valueOf(block.getGasLimit());
 
@@ -139,15 +131,13 @@ public class TransactionExecutor {
      * Executes the transaction.
      */
     protected void prepare() {
-        if (!localCall) {
-            // increase nonce
-            repo.increaseNonce(tx.getFrom());
+        // increase nonce
+        repo.increaseNonce(tx.getFrom());
 
-            // charge gas cost
-            BigInteger txGasLimit = BigInteger.valueOf(tx.getGas());
-            BigInteger txGasCost = tx.getGasPrice().multiply(txGasLimit);
-            repo.addBalance(tx.getFrom(), txGasCost.negate());
-        }
+        // charge gas cost
+        BigInteger txGasLimit = BigInteger.valueOf(tx.getGas());
+        BigInteger txGasCost = tx.getGasPrice().multiply(txGasLimit);
+        repo.addBalance(tx.getFrom(), txGasCost.negate());
 
         if (tx.isCreate()) {
             create();
@@ -169,7 +159,7 @@ public class TransactionExecutor {
             long requiredGas = precompiledContract.getGasForData(tx.getData());
 
             BigInteger spendingGas = BigInteger.valueOf(requiredGas).add(BigInteger.valueOf(basicTxCost));
-            if (!localCall && gasLeft.compareTo(spendingGas) < 0) {
+            if (gasLeft.compareTo(spendingGas) < 0) {
                 // no refund
                 // no endowment
                 logger.warn("Out of Gas calling precompiled contract: required {}, gasLeft = {}", spendingGas, gasLeft);

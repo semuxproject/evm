@@ -33,6 +33,7 @@ public class TransferTest extends TestTransactionBase {
 
     @Test
     public void testTransfer() throws IOException {
+        long nonce = 0;
 
         repository.addBalance(address, premine);
         byte[] contractAddress = createContract("solidity/transfer.con", address, nonce, gas);
@@ -49,7 +50,7 @@ public class TransferTest extends TestTransactionBase {
 
         Transaction transaction = new TransactionMock(false, address, contractAddress, nonce, value, methodData, gas,
                 gasPrice);
-        TransactionExecutor executor = new TransactionExecutor(transaction, block, repository, blockStore, false);
+        TransactionExecutor executor = new TransactionExecutor(transaction, block, repository, blockStore);
         TransactionReceipt receipt = executor.run();
 
         BigInteger balanceAfter = repository.getBalance(caller);
@@ -59,6 +60,7 @@ public class TransferTest extends TestTransactionBase {
 
     @Test
     public void testSend() throws IOException {
+        long nonce = 0;
 
         repository.addBalance(address, premine);
         byte[] contractAddress = createContract("solidity/transfer.con", address, nonce, gas);
@@ -75,7 +77,7 @@ public class TransferTest extends TestTransactionBase {
 
         Transaction transaction = new TransactionMock(false, address, contractAddress, nonce, value, methodData, gas,
                 gasPrice);
-        TransactionExecutor executor = new TransactionExecutor(transaction, block, repository, blockStore, false);
+        TransactionExecutor executor = new TransactionExecutor(transaction, block, repository, blockStore);
         TransactionReceipt receipt = executor.run();
 
         BigInteger balanceAfter = repository.getBalance(caller);
@@ -85,6 +87,7 @@ public class TransferTest extends TestTransactionBase {
 
     @Test
     public void testTr() throws IOException {
+        long nonce = 0;
 
         repository.addBalance(address, premine);
         byte[] contractAddress = createContract("solidity/transfer.con", address, nonce, gas);
@@ -101,7 +104,7 @@ public class TransferTest extends TestTransactionBase {
 
         Transaction transaction = new TransactionMock(false, address, contractAddress, nonce, value, methodData, gas,
                 gasPrice);
-        TransactionExecutor executor = new TransactionExecutor(transaction, block, repository, blockStore, false);
+        TransactionExecutor executor = new TransactionExecutor(transaction, block, repository, blockStore);
         TransactionReceipt receipt = executor.run();
 
         BigInteger balanceAfter = repository.getBalance(caller);

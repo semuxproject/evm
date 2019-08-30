@@ -17,6 +17,8 @@
  */
 package org.ethereum.vm.client;
 
+import static org.junit.Assert.*;
+
 import java.io.IOException;
 import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
@@ -26,115 +28,113 @@ import org.ethereum.vm.DataWord;
 import org.ethereum.vm.TestTransactionBase;
 import org.ethereum.vm.util.ByteArrayUtil;
 import org.ethereum.vm.util.HashUtil;
-import org.junit.Assert;
 import org.junit.Test;
 
 public class MultisigTest extends TestTransactionBase {
 
-    protected final byte[] user2 = address(3);
-    protected final byte[] user3 = address(4);
-    protected final byte[] user4 = address(5);
-    private long gas = 4_000_000L;
+    private long gas = 5_000_000L;
+    private BigInteger gasPrice = BigInteger.TEN;
 
     @Test
     public void testMultisig() throws IOException {
-
+        byte[] user1 = address(1);
+        byte[] user2 = address(2);
+        byte[] user3 = address(3);
+        byte[] user4 = address(4);
+        repository.addBalance(user1, premine);
         repository.addBalance(user2, premine);
         repository.addBalance(user3, premine);
 
-        byte[] contractAddress = createContract("solidity/multisig.con", user2, nonce, gas);
+        long nonceUser1 = 0;
+        long nonceUser2 = 0;
+        long nonceUser3 = 0;
 
-        // make sure the contract is funded
-        repository.addBalance(contractAddress, premine);
+        byte[] code = readContract("solidity/multisig.con");
+        byte[] args = ByteArrayUtil.merge(
+                DataWord.of(64).getData(),
+                DataWord.of(2).getData(),
+                DataWord.of(3).getData(),
+                DataWord.of(user1).getData(),
+                DataWord.of(user2).getData(),
+                DataWord.of(user3).getData());
+        byte[] contractAddress = createContract(code, args, user1, nonceUser1++, gas);
 
-        nonce++;
+        byte[] sendRecipient = user4;
+        BigInteger sendAmount = BigInteger.TEN.pow(18); // 1 SEM
+        repository.addBalance(contractAddress, sendAmount); // transfer to the contract
 
-        BigInteger toSend = premine.divide(BigInteger.TEN);
-        byte[] txid = createTransaction(contractAddress, user3, user4, toSend, 0);
+        // submit this transaction
+        byte[] txid = submitTransaction(contractAddress, sendRecipient, sendAmount, user1, nonceUser1++);
+
+        // let user1 confirm (confirmed by user1)
+        assertTrue(confirmTransaction(contractAddress, txid, user1, nonceUser1++));
 
         // try to commit
-        executeTransaction(contractAddress, txid, nonce);
-        // check balance of user 4
-        BigInteger balance = repository.getBalance(user4);
-        boolean isConfirmed = isConfirmed(contractAddress, txid);
-        Assert.assertFalse(isConfirmed);
+        executeTransaction(contractAddress, txid, user1, nonceUser1++);
+        assertFalse(isConfirmed(contractAddress, txid, user1, nonceUser1++));
+        assertEquals(BigInteger.ZERO, repository.getBalance(sendRecipient));
 
-        // let another user confirm
-        confirmTransaction(contractAddress, user2, txid);
-        isConfirmed = isConfirmed(contractAddress, txid);
-        Assert.assertTrue(isConfirmed);
-        executeTransaction(contractAddress, txid, 3);
+        // let user2 confirm (confirmed by user2)
+        assertTrue(confirmTransaction(contractAddress, txid, user2, nonceUser2++));
 
-        BigInteger balanceFinal = repository.getBalance(user4);
-
-        Assert.assertEquals(toSend, balanceFinal);
+        // try to commit, again
+        executeTransaction(contractAddress, txid, user1, nonceUser1++);
+        assertTrue(isConfirmed(contractAddress, txid, user1, nonceUser1++));
+        assertEquals(sendAmount, repository.getBalance(sendRecipient));
     }
 
-    private boolean isConfirmed(byte[] contractAddress, byte[] txid) {
+    private boolean isConfirmed(byte[] contractAddress, byte[] txid, byte[] user, long nonce) {
         byte[] method = HashUtil.keccak256("isConfirmed(uint256)".getBytes(StandardCharsets.UTF_8));
         byte[] methodData = ByteArrayUtil.merge(Arrays.copyOf(method, 4),
                 DataWord.of(txid).getData());
 
-        Transaction transaction = new TransactionMock(false, user2, contractAddress, 2, value, methodData, gas,
+        Transaction transaction = new TransactionMock(false, user, contractAddress, nonce, value, methodData, gas,
                 gasPrice);
-        TransactionExecutor executor = new TransactionExecutor(transaction, block, repository, blockStore, true);
+        TransactionExecutor executor = new TransactionExecutor(transaction, block, repository, blockStore);
         TransactionReceipt receipt = executor.run();
-        Assert.assertTrue(receipt.isSuccess());
+        assertTrue(receipt.isSuccess());
 
         return !DataWord.of(receipt.getReturnData()).isZero();
     }
 
-    private boolean confirmTransaction(byte[] contractAddress, byte[] user, byte[] txid) {
+    private boolean confirmTransaction(byte[] contractAddress, byte[] txid, byte[] user, long nonce) {
         byte[] method = HashUtil.keccak256("confirmTransaction(uint256)".getBytes(StandardCharsets.UTF_8));
         byte[] methodData = ByteArrayUtil.merge(Arrays.copyOf(method, 4),
                 DataWord.of(txid).getData());
 
-        Transaction transaction = new TransactionMock(false, user, contractAddress, 2, value, methodData, gas,
+        Transaction transaction = new TransactionMock(false, user, contractAddress, nonce, value, methodData, gas,
                 gasPrice);
-        TransactionExecutor executor = new TransactionExecutor(transaction, block, repository, blockStore, false);
+        TransactionExecutor executor = new TransactionExecutor(transaction, block, repository, blockStore);
         TransactionReceipt receipt = executor.run();
 
         return receipt.isSuccess();
     }
 
-    private boolean executeTransaction(byte[] contractAddress, byte[] txid, long nonce) {
+    private boolean executeTransaction(byte[] contractAddress, byte[] txid, byte[] user, long nonce) {
 
         byte[] method = HashUtil.keccak256("executeTransaction(uint256)".getBytes(StandardCharsets.UTF_8));
         byte[] methodData = ByteArrayUtil.merge(Arrays.copyOf(method, 4),
                 DataWord.of(txid).getData());
 
-        Transaction transaction = new TransactionMock(false, user2, contractAddress, nonce, value, methodData, gas,
+        Transaction transaction = new TransactionMock(false, user, contractAddress, nonce, value, methodData, gas,
                 gasPrice);
-        TransactionExecutor executor = new TransactionExecutor(transaction, block, repository, blockStore, false);
+        TransactionExecutor executor = new TransactionExecutor(transaction, block, repository, blockStore);
         TransactionReceipt receipt = executor.run();
 
         return receipt.isSuccess();
     }
 
-    private void testFoo(byte[] contractAddress) {
-
-        byte[] method = HashUtil.keccak256("foo()".getBytes(StandardCharsets.UTF_8));
-        byte[] methodData = Arrays.copyOf(method, 4);
-
-        Transaction transaction = new TransactionMock(false, user2, contractAddress, 1, value, methodData, gas,
-                gasPrice);
-        TransactionExecutor executor = new TransactionExecutor(transaction, block, repository, blockStore, false);
-        TransactionReceipt receipt = executor.run();
-
-        Assert.assertTrue(receipt.isSuccess());
-    }
-
-    private byte[] createTransaction(byte[] contractAddress, byte[] from, byte[] to, BigInteger amount, long nonce) {
+    private byte[] submitTransaction(byte[] contractAddress, byte[] to, BigInteger amount, byte[] user, long nonce) {
         byte[] method = HashUtil.keccak256("submitTransaction(address,uint256)".getBytes(StandardCharsets.UTF_8));
         byte[] methodData = ByteArrayUtil.merge(Arrays.copyOf(method, 4),
                 DataWord.of(to).getData(), DataWord.of(amount).getData());
 
-        Transaction transaction = new TransactionMock(false, from, contractAddress, nonce, value, methodData, gas,
+        Transaction transaction = new TransactionMock(false, user, contractAddress, nonce, value, methodData, gas,
                 gasPrice);
-        TransactionExecutor executor = new TransactionExecutor(transaction, block, repository, blockStore, false);
+        TransactionExecutor executor = new TransactionExecutor(transaction, block, repository, blockStore);
         TransactionReceipt receipt = executor.run();
-        Assert.assertTrue(receipt.isSuccess());
-        Assert.assertNotNull(receipt.getReturnData());
+        assertTrue(receipt.isSuccess());
+        assertNotNull(receipt.getReturnData());
         return receipt.getReturnData();
     }
 }

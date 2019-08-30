@@ -188,7 +188,6 @@ contract MultiSigWallet {
     returns (uint transactionId)
     {
         transactionId = addTransaction(destination, value);
-        confirmTransaction(transactionId);
         return transactionId;
     }
 
@@ -202,7 +201,6 @@ contract MultiSigWallet {
     {
         confirmations[transactionId][msg.sender] = true;
         emit Confirmation(msg.sender, transactionId);
-        executeTransaction(transactionId);
     }
 
     /// @dev Allows an owner to revoke a confirmation for a transaction.

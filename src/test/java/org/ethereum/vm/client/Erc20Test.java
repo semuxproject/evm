@@ -44,15 +44,15 @@ public class Erc20Test extends TestTransactionBase {
 
     @Test
     public void testErc20Token() throws IOException {
-        byte[] contractAddress = createContract("solidity/erc20.con", erc20owner, nonce, gas);
+        byte[] contractAddress = createContract("solidity/erc20.con", erc20owner, 0L, gas);
 
         // check balance
         byte[] method = HashUtil.keccak256("balanceOf(address)".getBytes(StandardCharsets.UTF_8));
         byte[] methodData = ByteArrayUtil.merge(Arrays.copyOf(method, 4), DataWord.of(erc20owner).getData());
 
-        transaction = new TransactionMock(false, erc20owner, contractAddress, nonce + 1, value, methodData, gas,
+        transaction = new TransactionMock(false, erc20owner, contractAddress, 1L, value, methodData, gas,
                 gasPrice);
-        TransactionExecutor executor = new TransactionExecutor(transaction, block, repository, blockStore, false);
+        TransactionExecutor executor = new TransactionExecutor(transaction, block, repository, blockStore);
         TransactionReceipt receipt = executor.run();
         Assert.assertTrue(receipt.isSuccess());
         BigInteger balance = DataWord.of(receipt.getReturnData()).value();
@@ -62,9 +62,9 @@ public class Erc20Test extends TestTransactionBase {
         method = HashUtil.keccak256("transfer(address,uint256)".getBytes(StandardCharsets.UTF_8));
         methodData = ByteArrayUtil.merge(Arrays.copyOf(method, 4), DataWord.of(address).getData(),
                 DataWord.of(BigInteger.TEN).getData());
-        transaction = new TransactionMock(false, erc20owner, contractAddress, nonce + 2, value, methodData, gas,
+        transaction = new TransactionMock(false, erc20owner, contractAddress, 2L, value, methodData, gas,
                 gasPrice);
-        executor = new TransactionExecutor(transaction, block, repository, blockStore, false);
+        executor = new TransactionExecutor(transaction, block, repository, blockStore);
         receipt = executor.run();
         Assert.assertTrue(receipt.isSuccess());
 
@@ -72,9 +72,9 @@ public class Erc20Test extends TestTransactionBase {
         method = HashUtil.keccak256("balanceOf(address)".getBytes(StandardCharsets.UTF_8));
         methodData = ByteArrayUtil.merge(Arrays.copyOf(method, 4), DataWord.of(address).getData());
 
-        transaction = new TransactionMock(false, erc20owner, contractAddress, nonce + 3, value, methodData, gas,
+        transaction = new TransactionMock(false, erc20owner, contractAddress, 3L, value, methodData, gas,
                 gasPrice);
-        executor = new TransactionExecutor(transaction, block, repository, blockStore, false);
+        executor = new TransactionExecutor(transaction, block, repository, blockStore);
         receipt = executor.run();
         Assert.assertTrue(receipt.isSuccess());
         balance = DataWord.of(receipt.getReturnData()).value();

@@ -64,8 +64,9 @@ public class PrecompiledContractCallTest extends TestTransactionBase {
         Transaction tx = spy(transaction);
         when(tx.getTo()).thenReturn(contractAddress);
         when(tx.getData()).thenReturn(data);
+        when(tx.getNonce()).thenReturn(1L);
 
-        TransactionExecutor executor = new TransactionExecutor(tx, block, repository, blockStore, true);
+        TransactionExecutor executor = new TransactionExecutor(tx, block, repository, blockStore);
         TransactionReceipt receipt = executor.run();
 
         assertTrue(receipt.isSuccess());
@@ -75,6 +76,6 @@ public class PrecompiledContractCallTest extends TestTransactionBase {
     @Test
     public void testZK() throws IOException {
         repository.addBalance(owner, premine);
-        createContract("solidity/verifier.con", owner, nonce, gas);
+        createContract("solidity/verifier.con", owner, 0, gas);
     }
 }

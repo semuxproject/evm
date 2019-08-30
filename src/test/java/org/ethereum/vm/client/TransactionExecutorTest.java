@@ -52,7 +52,7 @@ public class TransactionExecutorTest extends TestTransactionBase {
         when(transaction.getValue()).thenReturn(Unit.ETH);
         when(transaction.getGas()).thenReturn(21_000L + 1000L);
 
-        TransactionExecutor executor = new TransactionExecutor(transaction, block, repository, blockStore, false);
+        TransactionExecutor executor = new TransactionExecutor(transaction, block, repository, blockStore);
         TransactionReceipt receipt = executor.run();
         System.out.println(receipt);
 
@@ -85,7 +85,7 @@ public class TransactionExecutorTest extends TestTransactionBase {
         Transaction tx = spy(transaction);
         when(tx.getData()).thenReturn(data);
 
-        TransactionExecutor executor = new TransactionExecutor(tx, block, repository, blockStore, false);
+        TransactionExecutor executor = new TransactionExecutor(tx, block, repository, blockStore);
         TransactionReceipt receipt = executor.run();
 
         assertTrue(receipt.isSuccess());
@@ -118,7 +118,7 @@ public class TransactionExecutorTest extends TestTransactionBase {
         repository.saveCode(address, code);
         repository.addBalance(address, BigInteger.ONE.multiply(Unit.ETH));
 
-        TransactionExecutor executor = new TransactionExecutor(transaction, block, repository, blockStore, false);
+        TransactionExecutor executor = new TransactionExecutor(transaction, block, repository, blockStore);
         TransactionReceipt receipt = executor.run();
 
         assertTrue(receipt.isSuccess());
@@ -155,8 +155,9 @@ public class TransactionExecutorTest extends TestTransactionBase {
         Transaction tx = spy(transaction);
         when(tx.getTo()).thenReturn(contractAddress);
         when(tx.getData()).thenReturn(data);
+        when(tx.getNonce()).thenReturn(1L);
 
-        TransactionExecutor executor = new TransactionExecutor(tx, block, repository, blockStore, true);
+        TransactionExecutor executor = new TransactionExecutor(tx, block, repository, blockStore);
         TransactionReceipt receipt = executor.run();
         assertTrue(receipt.isSuccess());
         assertEquals(DataWord.ONE, DataWord.of(receipt.getReturnData()));
@@ -188,8 +189,9 @@ public class TransactionExecutorTest extends TestTransactionBase {
         Transaction tx = spy(transaction);
         when(tx.getTo()).thenReturn(contractAddress);
         when(tx.getData()).thenReturn(data);
+        when(tx.getNonce()).thenReturn(1L);
 
-        TransactionExecutor executor = new TransactionExecutor(tx, block, repository, blockStore, true);
+        TransactionExecutor executor = new TransactionExecutor(tx, block, repository, blockStore);
         TransactionReceipt receipt = executor.run();
 
         assertTrue(receipt.isSuccess());
@@ -206,7 +208,7 @@ public class TransactionExecutorTest extends TestTransactionBase {
         repository.saveCode(address, code);
         repository.addBalance(address, Unit.ETH);
 
-        TransactionExecutor executor = new TransactionExecutor(transaction, block, repository, blockStore, false);
+        TransactionExecutor executor = new TransactionExecutor(transaction, block, repository, blockStore);
         TransactionReceipt receipt = executor.run();
         System.out.println(receipt);
 
@@ -241,7 +243,7 @@ public class TransactionExecutorTest extends TestTransactionBase {
         Transaction tx = spy(transaction);
         when(tx.getData()).thenReturn(methodSignature);
 
-        TransactionExecutor executor = new TransactionExecutor(tx, block, repository, blockStore, false);
+        TransactionExecutor executor = new TransactionExecutor(tx, block, repository, blockStore);
         TransactionReceipt receipt = executor.run();
 
         assertTrue(receipt.isSuccess());

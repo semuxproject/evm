@@ -18,6 +18,7 @@
 package org.ethereum.vm;
 
 import static org.ethereum.vm.util.ByteArrayUtil.EMPTY_BYTE_ARRAY;
+import static org.ethereum.vm.util.ByteArrayUtil.merge;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
@@ -47,8 +48,6 @@ import org.junit.Before;
 public class TestTransactionBase extends TestBase {
 
     protected final BigInteger premine = BigInteger.valueOf(100L).multiply(Unit.ETH);
-    protected final boolean isCreate = false;
-    protected long nonce = 0;
 
     // by default, it's a CALL transaction with 1 million gas and empty payload
     protected Transaction transaction;
@@ -57,7 +56,7 @@ public class TestTransactionBase extends TestBase {
     @Before
     public void setup() {
         super.setup();
-        transaction = new TransactionMock(isCreate, caller, address, nonce, value, data, gas, gasPrice);
+        transaction = new TransactionMock(false, caller, address, 0, value, data, gas, gasPrice);
         block = new BlockMock(number, prevHash, coinbase, timestamp, gasLimit);
         repository.addBalance(caller, premine);
     }
@@ -74,7 +73,7 @@ public class TestTransactionBase extends TestBase {
         when(tx.getTo()).thenReturn(EMPTY_BYTE_ARRAY);
         when(tx.getData()).thenReturn(ByteArrayUtil.merge(HexUtil.fromHexString(code), arguments));
 
-        TransactionExecutor executor = new TransactionExecutor(tx, block, repository, blockStore, false);
+        TransactionExecutor executor = new TransactionExecutor(tx, block, repository, blockStore);
         TransactionReceipt receipt = executor.run();
 
         assertTrue(receipt.isSuccess());
@@ -91,24 +90,19 @@ public class TestTransactionBase extends TestBase {
         return HexUtil.fromHexString(lines.get(0));
     }
 
-    /**
-     * Create a contract and return it's address
-     * 
-     * @param contractLocation
-     * @param address
-     * @param nonce
-     * @return
-     * @throws IOException
-     */
-    protected byte[] createContract(String contractLocation, byte[] address, long nonce, long gas) throws IOException {
-        byte[] data = readContract(contractLocation);
+    protected byte[] createContract(byte[] code, byte[] args, byte[] address, long nonce, long gas) throws IOException {
+        byte[] data = merge(code, args);
         byte[] contractAddress = HashUtil.calcNewAddress(address, nonce);
 
         Transaction transaction = new TransactionMock(true, address, address, nonce, value, data, gas, gasPrice);
-        TransactionExecutor executor = new TransactionExecutor(transaction, block, repository, blockStore, false);
+        TransactionExecutor executor = new TransactionExecutor(transaction, block, repository, blockStore);
         TransactionReceipt receipt = executor.run();
         Assert.assertTrue(receipt.isSuccess());
 
         return contractAddress;
+    }
+
+    protected byte[] createContract(String contractLocation, byte[] address, long nonce, long gas) throws IOException {
+        return createContract(readContract(contractLocation), new byte[0], address, nonce, gas);
     }
 }
