@@ -36,8 +36,7 @@ public class TransferTest extends TestTransactionBase {
         long nonce = 0;
 
         repository.addBalance(address, premine);
-        byte[] contractAddress = createContract("solidity/transfer.con", address, nonce, gas);
-        nonce++;
+        byte[] contractAddress = createContract("solidity/transfer.con", address, nonce++, gas);
         repository.addBalance(contractAddress, premine);
 
         // call method to transfer to 'caller'
@@ -86,7 +85,7 @@ public class TransferTest extends TestTransactionBase {
     }
 
     @Test
-    public void testTr() throws IOException {
+    public void testTransfer2() throws IOException {
         long nonce = 0;
 
         repository.addBalance(address, premine);

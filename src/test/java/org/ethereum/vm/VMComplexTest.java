@@ -70,7 +70,7 @@ public class VMComplexTest extends TestBase {
                 vm.step(program);
             }
         } catch (RuntimeException e) {
-            program.setRuntimeFailure(e);
+            program.setException(e);
         }
 
         long gasUsed = program.getResult().getGasUsed();

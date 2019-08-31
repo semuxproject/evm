@@ -27,7 +27,6 @@ import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.ethereum.vm.chainspec.PrecompiledContract;
 import org.ethereum.vm.chainspec.Spec;
 import org.ethereum.vm.program.Program;
 import org.ethereum.vm.program.Stack;
@@ -303,11 +302,11 @@ public class VM {
                         stack.get(stack.size() - opOff - 3)); // out offset+size
                 gasCost += calcMemGas(feeSchedule, oldMemSize, in.max(out), 0);
 
-                if (gasCost > program.getAvailableGas()) {
-                    throw ExceptionFactory.notEnoughOpGas(op, gasCost, program.getAvailableGas());
+                if (gasCost > program.getGasLeft()) {
+                    throw ExceptionFactory.notEnoughOpGas(op, gasCost, program.getGasLeft());
                 }
 
-                long available = program.getAvailableGas();
+                long available = program.getGasLeft();
                 adjustedCallGas = spec.getCallGas(op, callGasWord.longValueSafe(), available - gasCost);
                 gasCost += adjustedCallGas;
                 break;
@@ -330,8 +329,8 @@ public class VM {
 
                 BigInteger dataSize = stack.get(stack.size() - 2).value();
                 BigInteger dataCost = dataSize.multiply(BigInteger.valueOf(feeSchedule.getLOG_DATA_GAS()));
-                if (BigInteger.valueOf(program.getAvailableGas()).compareTo(dataCost) < 0) {
-                    throw ExceptionFactory.notEnoughOpGas(op, dataCost.longValue(), program.getAvailableGas());
+                if (BigInteger.valueOf(program.getGasLeft()).compareTo(dataCost) < 0) {
+                    throw ExceptionFactory.notEnoughOpGas(op, dataCost.longValue(), program.getGasLeft());
                 }
 
                 gasCost = feeSchedule.getLOG_GAS() +
@@ -961,7 +960,7 @@ public class VM {
             }
                 break;
             case GAS: {
-                long gasLeft = program.getAvailableGas();
+                long gasLeft = program.getGasLeft();
 
                 program.stackPush(DataWord.of(gasLeft));
                 program.step();
@@ -1062,16 +1061,8 @@ public class VM {
 
                 program.memoryExpand(outDataOffs, outDataSize);
 
-                MessageCall msg = new MessageCall(op, adjustedCallGas, codeAddress, value, inDataOffs, inDataSize,
-                        outDataOffs, outDataSize);
-
-                PrecompiledContract contract = spec.getPrecompiledContracts().getContractForAddress(codeAddress);
-
-                if (contract != null) {
-                    program.callToPrecompiledAddress(msg, contract, program.getRepository());
-                } else {
-                    program.callToAddress(msg);
-                }
+                program.callContract(op, adjustedCallGas, codeAddress, value, inDataOffs, inDataSize, outDataOffs,
+                        outDataSize);
 
                 program.step();
             }
@@ -1088,7 +1079,7 @@ public class VM {
                 program.stop();
 
                 if (op == REVERT) {
-                    program.getResult().setRevert();
+                    program.setRevert(true);
                 }
             }
                 break;
@@ -1121,7 +1112,7 @@ public class VM {
             }
 
         } catch (RuntimeException e) {
-            program.setRuntimeFailure(e);
+            program.setException(e);
         } catch (StackOverflowError soe) {
             logger.error("\n !!! StackOverflowError: update your java run command with -Xss2M !!!\n", soe);
             System.exit(-1);

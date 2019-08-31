@@ -30,7 +30,6 @@ public class InternalTransaction implements Transaction {
 
     private boolean rejected = false;
 
-    private Transaction parentTx;
     private int depth;
     private int index;
     private OpCode type;
@@ -43,10 +42,9 @@ public class InternalTransaction implements Transaction {
     private long gas;
     private BigInteger gasPrice;
 
-    public InternalTransaction(Transaction parentTx, int depth, int index, OpCode type,
+    public InternalTransaction(int depth, int index, OpCode type,
             byte[] from, byte[] to, long nonce, BigInteger value, byte[] data,
             long gas, BigInteger gasPrice) {
-        this.parentTx = parentTx;
         this.depth = depth;
         this.index = index;
         this.type = type;
@@ -66,10 +64,6 @@ public class InternalTransaction implements Transaction {
 
     public boolean isRejected() {
         return rejected;
-    }
-
-    public Transaction getParentTransaction() {
-        return parentTx;
     }
 
     public int getDepth() {

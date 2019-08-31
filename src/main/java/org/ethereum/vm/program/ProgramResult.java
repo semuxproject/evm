@@ -32,19 +32,33 @@ import org.ethereum.vm.util.ByteArrayWrapper;
  */
 public class ProgramResult {
 
+    private long gasLimit; // immutable
+
     private long gasUsed = 0;
     private byte[] returnData = EMPTY_BYTE_ARRAY;
     private RuntimeException exception = null;
     private boolean revert = false;
 
+    // fields below can be merged
     private List<InternalTransaction> internalTransactions = new ArrayList<>();
-
     private Set<ByteArrayWrapper> deleteAccounts = new HashSet<>();
     private List<LogInfo> logInfoList = new ArrayList<>();
     private long futureRefund = 0;
 
+    private ProgramResult(long gasLimit) {
+        this.gasLimit = gasLimit;
+    }
+
+    public long getGasLimit() {
+        return gasLimit;
+    }
+
     public long getGasUsed() {
         return gasUsed;
+    }
+
+    public long getGasLeft() {
+        return gasLimit - gasUsed;
     }
 
     public void spendGas(long gas) {
@@ -53,6 +67,10 @@ public class ProgramResult {
 
     public void refundGas(long gas) {
         gasUsed -= gas;
+    }
+
+    public void drainGas() {
+        gasUsed = gasLimit;
     }
 
     public void setReturnData(byte[] returnData) {
@@ -71,8 +89,8 @@ public class ProgramResult {
         this.exception = exception;
     }
 
-    public void setRevert() {
-        this.revert = true;
+    public void setRevert(boolean isRevert) {
+        this.revert = isRevert;
     }
 
     public boolean isRevert() {
@@ -117,6 +135,10 @@ public class ProgramResult {
         internalTransactions.addAll(txs);
     }
 
+    public void resetInternalTransactions() {
+        internalTransactions.clear();
+    }
+
     public void rejectInternalTransactions() {
         for (InternalTransaction internalTx : internalTransactions) {
             internalTx.reject();
@@ -145,7 +167,15 @@ public class ProgramResult {
         }
     }
 
-    public static ProgramResult createEmpty() {
-        return new ProgramResult();
+    public static ProgramResult createEmptyResult(long gasLimit) {
+        ProgramResult result = new ProgramResult(gasLimit);
+        return result;
+    }
+
+    public static ProgramResult createExceptionResult(long gasLimit, RuntimeException exception) {
+        ProgramResult result = new ProgramResult(gasLimit);
+        result.setException(exception);
+        result.drainGas();
+        return result;
     }
 }
