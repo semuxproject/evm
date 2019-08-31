@@ -764,35 +764,35 @@ public class VM {
             }
                 break;
             case COINBASE: {
-                DataWord coinbase = program.getCoinbase();
+                DataWord coinbase = program.getBlockCoinbase();
 
                 program.stackPush(coinbase);
                 program.step();
             }
                 break;
             case TIMESTAMP: {
-                DataWord timestamp = program.getTimestamp();
+                DataWord timestamp = program.getBlockTimestamp();
 
                 program.stackPush(timestamp);
                 program.step();
             }
                 break;
             case NUMBER: {
-                DataWord number = program.getNumber();
+                DataWord number = program.getBlockNumber();
 
                 program.stackPush(number);
                 program.step();
             }
                 break;
             case DIFFICULTY: {
-                DataWord difficulty = program.getDifficulty();
+                DataWord difficulty = program.getBlockDifficulty();
 
                 program.stackPush(difficulty);
                 program.step();
             }
                 break;
             case GASLIMIT: {
-                DataWord gaslimit = program.getGasLimit();
+                DataWord gaslimit = program.getBlockGasLimit();
 
                 program.stackPush(gaslimit);
                 program.step();

@@ -432,7 +432,7 @@ public class Program {
             byte[] code = result.getReturnData();
             long storageCost = getLength(code) * spec.getFeeSchedule().getCREATE_DATA();
 
-            long afterSpend = programInvoke.getGas() - result.getGasUsed() - storageCost;
+            long afterSpend = programInvoke.getGasLimit() - result.getGasUsed() - storageCost;
             if (afterSpend < 0) {
                 if (!spec.createEmptyContractOnOOG()) {
                     result.setException(ExceptionFactory.notEnoughSpendingGas("No gas to return just created contract",
@@ -722,9 +722,10 @@ public class Program {
     }
 
     public DataWord getBlockHash(int index) {
-        return index < this.getNumber().longValue() && index >= Math.max(256, this.getNumber().intValue()) - 256
-                ? DataWord.of(this.invoke.getBlockStore().getBlockHashByNumber(index))
-                : DataWord.ZERO;
+        return index < this.getBlockNumber().longValue()
+                && index >= Math.max(256, this.getBlockNumber().intValue()) - 256
+                        ? DataWord.of(this.invoke.getBlockStore().getBlockHashByNumber(index))
+                        : DataWord.ZERO;
     }
 
     public DataWord getBalance(DataWord address) {
@@ -745,7 +746,7 @@ public class Program {
     }
 
     public long getAvailableGas() {
-        return invoke.getGas() - getResult().getGasUsed();
+        return invoke.getGasLimit() - getResult().getGasUsed();
     }
 
     public DataWord getCallValue() {
@@ -793,24 +794,24 @@ public class Program {
         return getOriginalRepository().getStorageRow(getOwnerAddress().getLast20Bytes(), key);
     }
 
-    public DataWord getCoinbase() {
-        return invoke.getCoinbase();
+    public DataWord getBlockCoinbase() {
+        return invoke.getBlockCoinbase();
     }
 
-    public DataWord getTimestamp() {
-        return invoke.getTimestamp();
+    public DataWord getBlockTimestamp() {
+        return invoke.getBlockTimestamp();
     }
 
-    public DataWord getNumber() {
-        return invoke.getNumber();
+    public DataWord getBlockNumber() {
+        return invoke.getBlockNumber();
     }
 
-    public DataWord getDifficulty() {
-        return invoke.getDifficulty();
+    public DataWord getBlockDifficulty() {
+        return invoke.getBlockDifficulty();
     }
 
-    public DataWord getGasLimit() {
-        return invoke.getGaslimit();
+    public DataWord getBlockGasLimit() {
+        return invoke.getBlockGasLimit();
     }
 
     public boolean isStaticCall() {
@@ -826,7 +827,7 @@ public class Program {
     }
 
     public DataWord getPrevHash() {
-        return invoke.getPrevHash();
+        return invoke.getBlockPrevHash();
     }
 
     public int verifyJumpDest(DataWord nextPC) {

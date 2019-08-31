@@ -32,12 +32,12 @@ public class ProgramInvokeImpl implements ProgramInvoke {
      */
     private final DataWord address, origin, caller, gasPrice, value;
     private final byte[] data;
-    private final long gas;
+    private final long gasLimit;
 
     /**
      * Block environment
      */
-    private final DataWord prevHash, coinbase, timestamp, number, difficulty, gaslimit;
+    private final DataWord blockPrevHash, blockCoinbase, blockTimestamp, blockNumber, blockDifficulty, blockGasLimit;
 
     /**
      * Database environment
@@ -50,8 +50,8 @@ public class ProgramInvokeImpl implements ProgramInvoke {
     private boolean isStaticCall;
 
     public ProgramInvokeImpl(DataWord address, DataWord origin, DataWord caller,
-            long gas, DataWord gasPrice, DataWord value, byte[] data, DataWord prevHash,
-            DataWord coinbase, DataWord timestamp, DataWord number, DataWord difficulty,
+            long gas, DataWord gasPrice, DataWord value, byte[] data, DataWord blockPrevHash,
+            DataWord blockCoinbase, DataWord blockTimestamp, DataWord blockNumber, DataWord blockDifficulty,
             DataWord gasLimit, Repository repository, Repository originalRepository, BlockStore blockStore,
             int callDepth, boolean isStaticCall) {
 
@@ -62,11 +62,11 @@ public class ProgramInvokeImpl implements ProgramInvoke {
         Objects.requireNonNull(value);
         Objects.requireNonNull(data);
 
-        Objects.requireNonNull(prevHash);
-        Objects.requireNonNull(coinbase);
-        Objects.requireNonNull(timestamp);
-        Objects.requireNonNull(number);
-        Objects.requireNonNull(difficulty);
+        Objects.requireNonNull(blockPrevHash);
+        Objects.requireNonNull(blockCoinbase);
+        Objects.requireNonNull(blockTimestamp);
+        Objects.requireNonNull(blockNumber);
+        Objects.requireNonNull(blockDifficulty);
         Objects.requireNonNull(gasLimit);
 
         Objects.requireNonNull(repository);
@@ -75,17 +75,17 @@ public class ProgramInvokeImpl implements ProgramInvoke {
         this.address = address;
         this.origin = origin;
         this.caller = caller;
-        this.gas = gas;
+        this.gasLimit = gas;
         this.gasPrice = gasPrice;
         this.value = value;
         this.data = data;
 
-        this.prevHash = prevHash;
-        this.coinbase = coinbase;
-        this.timestamp = timestamp;
-        this.number = number;
-        this.difficulty = difficulty;
-        this.gaslimit = gasLimit;
+        this.blockPrevHash = blockPrevHash;
+        this.blockCoinbase = blockCoinbase;
+        this.blockTimestamp = blockTimestamp;
+        this.blockNumber = blockNumber;
+        this.blockDifficulty = blockDifficulty;
+        this.blockGasLimit = gasLimit;
 
         this.repository = repository;
         this.originalRepository = originalRepository;
@@ -111,8 +111,8 @@ public class ProgramInvokeImpl implements ProgramInvoke {
     }
 
     @Override
-    public long getGas() {
-        return gas;
+    public long getGasLimit() {
+        return gasLimit;
     }
 
     @Override
@@ -179,33 +179,33 @@ public class ProgramInvokeImpl implements ProgramInvoke {
     }
 
     @Override
-    public DataWord getPrevHash() {
-        return prevHash;
+    public DataWord getBlockPrevHash() {
+        return blockPrevHash;
     }
 
     @Override
-    public DataWord getCoinbase() {
-        return coinbase;
+    public DataWord getBlockCoinbase() {
+        return blockCoinbase;
     }
 
     @Override
-    public DataWord getTimestamp() {
-        return timestamp;
+    public DataWord getBlockTimestamp() {
+        return blockTimestamp;
     }
 
     @Override
-    public DataWord getNumber() {
-        return number;
+    public DataWord getBlockNumber() {
+        return blockNumber;
     }
 
     @Override
-    public DataWord getDifficulty() {
-        return difficulty;
+    public DataWord getBlockDifficulty() {
+        return blockDifficulty;
     }
 
     @Override
-    public DataWord getGaslimit() {
-        return gaslimit;
+    public DataWord getBlockGasLimit() {
+        return blockGasLimit;
     }
 
     @Override
@@ -239,16 +239,16 @@ public class ProgramInvokeImpl implements ProgramInvoke {
                 "address=" + address +
                 ", origin=" + origin +
                 ", caller=" + caller +
-                ", gas=" + gas +
+                ", gasLimit=" + gasLimit +
                 ", gasPrice=" + gasPrice +
                 ", value=" + value +
                 ", data=" + HexUtil.toHexString(data) +
-                ", prevHash=" + prevHash +
-                ", coinbase=" + coinbase +
-                ", timestamp=" + timestamp +
-                ", number=" + number +
-                ", difficulty=" + difficulty +
-                ", gaslimit=" + gaslimit +
+                ", blockPrevHash=" + blockPrevHash +
+                ", blockCoinbase=" + blockCoinbase +
+                ", blockTimestamp=" + blockTimestamp +
+                ", blockNumber=" + blockNumber +
+                ", blockDifficulty=" + blockDifficulty +
+                ", blockGasLimit=" + blockGasLimit +
                 ", repository=" + repository +
                 ", blockStore=" + blockStore +
                 ", callDepth=" + callDepth +

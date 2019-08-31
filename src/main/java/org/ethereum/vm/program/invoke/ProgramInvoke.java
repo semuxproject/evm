@@ -56,7 +56,7 @@ public interface ProgramInvoke {
      *
      * @return gas limit
      */
-    long getGas();
+    long getGasLimit();
 
     /**
      * Returns the gas price.
@@ -110,42 +110,42 @@ public interface ProgramInvoke {
      *
      * @return a block hash.
      */
-    DataWord getPrevHash();
+    DataWord getBlockPrevHash();
 
     /**
      * Returns the miner address of this block.
      *
      * @return an address, right-aligned.
      */
-    DataWord getCoinbase();
+    DataWord getBlockCoinbase();
 
     /**
      * Returns the timestamp of this block.
      *
      * @return the timestamp.
      */
-    DataWord getTimestamp();
+    DataWord getBlockTimestamp();
 
     /**
      * Returns the number of this block.
      *
      * @return the block number
      */
-    DataWord getNumber();
+    DataWord getBlockNumber();
 
     /**
      * Returns the difficulty of this block.
      *
      * @return the block difficulty
      */
-    DataWord getDifficulty();
+    DataWord getBlockDifficulty();
 
     /**
      * Returns the gas limit of this block.
      *
      * @return the block gas limit
      */
-    DataWord getGaslimit();
+    DataWord getBlockGasLimit();
 
     // ===========================
     // Database context

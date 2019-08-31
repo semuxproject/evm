@@ -67,11 +67,11 @@ public class ProgramInvokeFactoryImpl implements ProgramInvokeFactory {
         DataWord gasPrice = program.getGasPrice();
 
         DataWord prevHash = program.getPrevHash();
-        DataWord coinbase = program.getCoinbase();
-        DataWord timestamp = program.getTimestamp();
-        DataWord number = program.getNumber();
-        DataWord difficulty = program.getDifficulty();
-        DataWord gasLimit = program.getGasLimit();
+        DataWord coinbase = program.getBlockCoinbase();
+        DataWord timestamp = program.getBlockTimestamp();
+        DataWord number = program.getBlockNumber();
+        DataWord difficulty = program.getBlockDifficulty();
+        DataWord gasLimit = program.getBlockGasLimit();
 
         Repository originalRepository = program.getOriginalRepository();
 
