@@ -173,8 +173,8 @@ public class TransactionExecutor {
         result.setReturnData(invokeResult.getReturnData());
         result.setException(invokeResult.getException());
         result.setRevert(invokeResult.isRevert());
-        result.resetInternalTransactions();
-        result.addInternalTransactions(invokeResult.getInternalTransactions());
+        result.setInternalTransactions(new ArrayList<>(invokeResult.getInternalTransactions()));
+        // others have been merged after the invocation
 
         return result;
 

@@ -42,7 +42,7 @@ public class ProgramResult {
     // fields below can be merged
     private List<InternalTransaction> internalTransactions = new ArrayList<>();
     private Set<ByteArrayWrapper> deleteAccounts = new HashSet<>();
-    private List<LogInfo> logInfoList = new ArrayList<>();
+    private List<LogInfo> logs = new ArrayList<>();
     private long futureRefund = 0;
 
     private ProgramResult(long gasLimit) {
@@ -87,6 +87,11 @@ public class ProgramResult {
 
     public void setException(RuntimeException exception) {
         this.exception = exception;
+
+        // if there is an exception, the return data should always be EMPTY
+        if (exception != null) {
+            this.returnData = EMPTY_BYTE_ARRAY;
+        }
     }
 
     public void setRevert(boolean isRevert) {
@@ -110,17 +115,21 @@ public class ProgramResult {
     }
 
     public List<LogInfo> getLogs() {
-        return logInfoList;
+        return logs;
     }
 
-    public void addLogInfo(LogInfo logInfo) {
-        logInfoList.add(logInfo);
+    public void addLogInfo(LogInfo log) {
+        logs.add(log);
     }
 
-    public void addLogs(List<LogInfo> logInfos) {
-        for (LogInfo log : logInfos) {
+    public void addLogs(List<LogInfo> logs) {
+        for (LogInfo log : logs) {
             addLogInfo(log);
         }
+    }
+
+    public void setLogs(List<LogInfo> logs) {
+        this.logs = logs;
     }
 
     public List<InternalTransaction> getInternalTransactions() {
@@ -135,8 +144,8 @@ public class ProgramResult {
         internalTransactions.addAll(txs);
     }
 
-    public void resetInternalTransactions() {
-        internalTransactions.clear();
+    public void setInternalTransactions(List<InternalTransaction> txs) {
+        this.internalTransactions = txs;
     }
 
     public void rejectInternalTransactions() {

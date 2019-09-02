@@ -449,6 +449,7 @@ public class Program {
             long storageCost = getLength(code) * spec.getFeeSchedule().getCREATE_DATA();
 
             if (result.getGasLeft() < storageCost) {
+                result.setReturnData(EMPTY_BYTE_ARRAY);
                 if (!spec.createEmptyContractOnOOG()) {
                     result.setException(ExceptionFactory.notEnoughSpendingGas("No gas to return just created contract",
                             storageCost, this));
@@ -456,6 +457,7 @@ public class Program {
                     track.saveCode(newAddress, EMPTY_BYTE_ARRAY);
                 }
             } else if (getLength(code) > spec.maxContractSize()) {
+                result.setReturnData(EMPTY_BYTE_ARRAY);
                 result.setException(ExceptionFactory.notEnoughSpendingGas("Contract size too large: "
                         + getLength(result.getReturnData()), storageCost, this));
             } else {
@@ -534,7 +536,8 @@ public class Program {
             if (requiredGas > msg.getGas()) {
                 track.rollback();
                 stackPushZero();
-                result = ProgramResult.createExceptionResult(msg.getGas(), new OutOfGasException("Insufficient Gas"));
+                result = ProgramResult.createExceptionResult(msg.getGas(),
+                        new OutOfGasException("Precompiled out-of-gas"));
             } else {
                 Pair<Boolean, byte[]> out = contract.execute(new PrecompiledContractContext() {
                     @Override
@@ -559,9 +562,11 @@ public class Program {
                 });
                 result = ProgramResult.createEmptyResult(msg.getGas());
                 result.spendGas(requiredGas);
-                result.setReturnData(out.getRight());
                 if (!out.getLeft()) {
+                    result.setReturnData(EMPTY_BYTE_ARRAY);
                     result.setException(new PrecompiledFailureException());
+                } else {
+                    result.setReturnData(out.getRight());
                 }
             }
         } else {
