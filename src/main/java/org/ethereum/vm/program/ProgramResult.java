@@ -37,7 +37,7 @@ public class ProgramResult {
     private long gasUsed = 0;
     private byte[] returnData = EMPTY_BYTE_ARRAY;
     private RuntimeException exception = null;
-    private boolean revert = false;
+    private boolean isRevert = false;
 
     // fields below can be merged
     private List<InternalTransaction> internalTransactions = new ArrayList<>();
@@ -69,10 +69,6 @@ public class ProgramResult {
         gasUsed -= gas;
     }
 
-    public void drainGas() {
-        gasUsed = gasLimit;
-    }
-
     public void setReturnData(byte[] returnData) {
         this.returnData = returnData;
     }
@@ -89,17 +85,24 @@ public class ProgramResult {
         this.exception = exception;
 
         // if there is an exception, the return data should always be EMPTY
+        // and all gas should be consumed
         if (exception != null) {
+            this.gasUsed = gasLimit;
             this.returnData = EMPTY_BYTE_ARRAY;
         }
     }
 
     public void setRevert(boolean isRevert) {
-        this.revert = isRevert;
+        this.isRevert = isRevert;
+
+        // if there is a REVERT, the return data should always be EMPTY
+        if (isRevert) {
+            this.returnData = EMPTY_BYTE_ARRAY;
+        }
     }
 
     public boolean isRevert() {
-        return revert;
+        return isRevert;
     }
 
     public Set<ByteArrayWrapper> getDeleteAccounts() {
@@ -184,7 +187,6 @@ public class ProgramResult {
     public static ProgramResult createExceptionResult(long gasLimit, RuntimeException exception) {
         ProgramResult result = new ProgramResult(gasLimit);
         result.setException(exception);
-        result.drainGas();
         return result;
     }
 }

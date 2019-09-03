@@ -1018,8 +1018,9 @@ public class VM {
                 DataWord value = program.stackPop();
                 DataWord inOffset = program.stackPop();
                 DataWord inSize = program.stackPop();
+                long gas = spec.getCreateGas(program.getGasLeft());
 
-                program.createContract(value, inOffset, inSize);
+                program.createContract(value, inOffset, inSize, gas);
 
                 program.step();
             }
@@ -1032,8 +1033,9 @@ public class VM {
                 DataWord inOffset = program.stackPop();
                 DataWord inSize = program.stackPop();
                 DataWord salt = program.stackPop();
+                long gas = spec.getCreateGas(program.getGasLeft());
 
-                program.createContract2(value, inOffset, inSize, salt);
+                program.createContract2(value, inOffset, inSize, salt, gas);
 
                 program.step();
             }

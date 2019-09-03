@@ -309,7 +309,7 @@ public class Program {
     /**
      * Create contract for {@link OpCode#CREATE}
      */
-    public ProgramResult createContract(DataWord value, DataWord memStart, DataWord memSize) {
+    public ProgramResult createContract(DataWord value, DataWord memStart, DataWord memSize, long gas) {
         resetReturnDataBuffer();
 
         byte[] senderAddress = this.getOwnerAddress().getLast20Bytes();
@@ -325,7 +325,7 @@ public class Program {
         byte[] contractAddress = HashUtil.calcNewAddress(senderAddress, nonce);
         byte[] programCode = memoryChunk(memStart.intValue(), memSize.intValue());
 
-        ProgramResult callResult = createContractImpl(value, programCode, contractAddress);
+        ProgramResult callResult = createContractImpl(value, programCode, contractAddress, gas);
         setReturnDataBuffer(callResult.getReturnData());
         return callResult;
     }
@@ -333,7 +333,7 @@ public class Program {
     /**
      * Create contract for {@link OpCode#CREATE2}
      */
-    public ProgramResult createContract2(DataWord value, DataWord memStart, DataWord memSize, DataWord salt) {
+    public ProgramResult createContract2(DataWord value, DataWord memStart, DataWord memSize, DataWord salt, long gas) {
         resetReturnDataBuffer();
 
         byte[] senderAddress = this.getOwnerAddress().getLast20Bytes();
@@ -348,7 +348,7 @@ public class Program {
         byte[] programCode = memoryChunk(memStart.intValue(), memSize.intValue());
         byte[] contractAddress = HashUtil.calcSaltAddress(senderAddress, programCode, salt.getData());
 
-        ProgramResult callResult = createContractImpl(value, programCode, contractAddress);
+        ProgramResult callResult = createContractImpl(value, programCode, contractAddress, gas);
         setReturnDataBuffer(callResult.getReturnData());
         return callResult;
     }
@@ -391,12 +391,11 @@ public class Program {
      * @param newAddress
      *            Contract address
      */
-    private ProgramResult createContractImpl(DataWord value, byte[] programCode, byte[] newAddress) {
+    private ProgramResult createContractImpl(DataWord value, byte[] programCode, byte[] newAddress, long gas) {
         byte[] senderAddress = this.getOwnerAddress().getLast20Bytes();
         boolean contractAlreadyExists = getRepository().exists(newAddress);
 
         // [1] SPEND GAS
-        long gas = spec.getCreateGas(getGasLeft());
         spendGas(gas, "internal call - create");
 
         // [2] UPDATE THE NONCE
@@ -443,17 +442,18 @@ public class Program {
             result = ProgramResult.createEmptyResult(gas);
         }
 
-        // [7] POST EXECUTION PROCESSING
+        // [7] SAVE THE CONTRACT CODE
         if (result.getException() == null && !result.isRevert()) {
             byte[] code = result.getReturnData();
             long storageCost = getLength(code) * spec.getFeeSchedule().getCREATE_DATA();
 
             if (result.getGasLeft() < storageCost) {
-                result.setReturnData(EMPTY_BYTE_ARRAY);
                 if (!spec.createEmptyContractOnOOG()) {
+                    result.setReturnData(EMPTY_BYTE_ARRAY);
                     result.setException(ExceptionFactory.notEnoughSpendingGas("No gas to return just created contract",
                             storageCost, this));
                 } else {
+                    // free of charge; return data un-touched
                     track.saveCode(newAddress, EMPTY_BYTE_ARRAY);
                 }
             } else if (getLength(code) > spec.maxContractSize()) {
@@ -464,10 +464,13 @@ public class Program {
                 result.spendGas(storageCost);
                 track.saveCode(newAddress, code);
             }
+        }
 
+        // [8] POST EXECUTION PROCESSING
+        if (result.getException() == null && !result.isRevert()) {
+            // commit changes
             track.commit();
-
-            // IN SUCCESS PUSH THE ADDRESS INTO THE STACK
+            // in success push the address into the stack
             stackPush(DataWord.of(newAddress));
         } else {
             if (logger.isDebugEnabled()) {
@@ -483,7 +486,7 @@ public class Program {
             stackPushZero();
         }
 
-        // [8] REFUND THE REMAIN GAS
+        // [9] REFUND THE REMAIN GAS
         if (result.getException() == null) {
             long refundGas = result.getGasLeft();
             if (refundGas > 0) {
@@ -491,7 +494,7 @@ public class Program {
             }
         }
 
-        // [9] MERGE RESULT INTO PARENT
+        // [10] MERGE RESULT INTO PARENT
         getResult().merge(result);
 
         return result;
@@ -591,9 +594,9 @@ public class Program {
 
         // [7] POST EXECUTION PROCESSING
         if (result.getException() == null && !result.isRevert()) {
+            // commit changes
             track.commit();
-
-            // IN SUCCESS PUSH ONE INTO THE STACK
+            // in success push one into the stack
             stackPushOne();
         } else {
             if (logger.isDebugEnabled()) {

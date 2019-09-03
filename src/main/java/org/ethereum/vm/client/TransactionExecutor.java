@@ -112,11 +112,12 @@ public class TransactionExecutor {
      * Executes the transaction.
      */
     protected ProgramResult execute() {
-        // charge the gas
+        // [PRE-INVOKE] debit the gas from the sender's account
         repo.addBalance(tx.getFrom(), tx.getGasPrice().multiply(BigInteger.valueOf(tx.getGas())).negate());
 
-        byte[] ops = EMPTY_BYTE_ARRAY; // no code
-        ProgramInvoke invoke = invokeFactory.createProgramInvoke(tx, block, repo, blockStore); // phantom invoke
+        // phantom invoke
+        byte[] ops = EMPTY_BYTE_ARRAY;
+        ProgramInvoke invoke = invokeFactory.createProgramInvoke(tx, block, repo, blockStore);
         Program program = new Program(ops, invoke, spec);
 
         // [1] spend basic transaction cost
@@ -127,10 +128,12 @@ public class TransactionExecutor {
         byte[] txData = tx.getData();
         program.memorySave(0, txData); // write the tx data into memory
         if (tx.isCreate()) {
+            long gas = program.getGasLeft();
+
             // nonce and gas spending are within the createContract method
 
             invokeResult = program.createContract(DataWord.of(tx.getValue()), DataWord.ZERO,
-                    DataWord.of(txData.length));
+                    DataWord.of(txData.length), gas);
         } else {
             OpCode type = OpCode.CALL;
             long gas = program.getGasLeft();
@@ -165,10 +168,7 @@ public class TransactionExecutor {
             program.resetFutureRefund();
         }
 
-        // refund the sender for remaining gas
-        repo.addBalance(tx.getFrom(), tx.getGasPrice().multiply(BigInteger.valueOf(program.getGasLeft())));
-
-        // [4] make the final result
+        // [4] fix the program's result
         ProgramResult result = program.getResult();
         result.setReturnData(invokeResult.getReturnData());
         result.setException(invokeResult.getException());
@@ -176,10 +176,10 @@ public class TransactionExecutor {
         result.setInternalTransactions(new ArrayList<>(invokeResult.getInternalTransactions()));
         // others have been merged after the invocation
 
-        return result;
+        // [POST-INVOKE] credit the sender for remaining gas
+        repo.addBalance(tx.getFrom(), tx.getGasPrice().multiply(BigInteger.valueOf(program.getGasLeft())));
 
-        // TODO: test success, exception and revert
-        // TODO: test future refund
+        return result;
     }
 
     /**
