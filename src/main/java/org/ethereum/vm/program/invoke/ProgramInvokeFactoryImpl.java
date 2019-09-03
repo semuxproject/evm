@@ -25,7 +25,6 @@ import org.ethereum.vm.client.BlockStore;
 import org.ethereum.vm.client.Repository;
 import org.ethereum.vm.client.Transaction;
 import org.ethereum.vm.program.Program;
-import org.ethereum.vm.util.HashUtil;
 
 public class ProgramInvokeFactoryImpl implements ProgramInvokeFactory {
 
@@ -33,7 +32,9 @@ public class ProgramInvokeFactoryImpl implements ProgramInvokeFactory {
     public ProgramInvoke createProgramInvoke(Transaction tx, Block block, Repository repository,
             BlockStore blockStore) {
 
-        byte[] address = tx.isCreate() ? HashUtil.calcNewAddress(tx.getFrom(), tx.getNonce()) : tx.getTo();
+        // creates an phantom invoke, from the sender to the sender, at depth -1
+
+        byte[] address = tx.getFrom();
         byte[] origin = tx.getFrom();
         byte[] caller = tx.getFrom();
         long gas = tx.getGas();
@@ -49,12 +50,13 @@ public class ProgramInvokeFactoryImpl implements ProgramInvokeFactory {
         long gasLimit = block.getGasLimit();
 
         Repository originalRepository = repository.clone();
+        int callDepth = -1;
 
         return new ProgramInvokeImpl(DataWord.of(address), DataWord.of(origin), DataWord.of(caller),
                 gas, DataWord.of(gasPrice), DataWord.of(callValue), callData,
                 DataWord.of(prevHash), DataWord.of(coinbase), DataWord.of(timestamp), DataWord.of(number),
                 DataWord.of(difficulty), DataWord.of(gasLimit),
-                repository, originalRepository, blockStore, 0, false);
+                repository, originalRepository, blockStore, callDepth, false);
     }
 
     @Override
@@ -66,7 +68,7 @@ public class ProgramInvokeFactoryImpl implements ProgramInvokeFactory {
         DataWord origin = program.getOriginAddress();
         DataWord gasPrice = program.getGasPrice();
 
-        DataWord prevHash = program.getPrevHash();
+        DataWord prevHash = program.getBlockPrevHash();
         DataWord coinbase = program.getBlockCoinbase();
         DataWord timestamp = program.getBlockTimestamp();
         DataWord number = program.getBlockNumber();
@@ -74,9 +76,10 @@ public class ProgramInvokeFactoryImpl implements ProgramInvokeFactory {
         DataWord gasLimit = program.getBlockGasLimit();
 
         Repository originalRepository = program.getOriginalRepository();
+        int callDepth = program.getCallDepth() + 1;
 
         return new ProgramInvokeImpl(toAddress, origin, callerAddress, gas, gasPrice, value, data,
                 prevHash, coinbase, timestamp, number, difficulty, gasLimit,
-                repository, originalRepository, blockStore, program.getCallDepth() + 1, isStaticCall);
+                repository, originalRepository, blockStore, callDepth, isStaticCall);
     }
 }

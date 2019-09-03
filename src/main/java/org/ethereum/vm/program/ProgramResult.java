@@ -32,19 +32,33 @@ import org.ethereum.vm.util.ByteArrayWrapper;
  */
 public class ProgramResult {
 
+    private long gasLimit; // immutable
+
     private long gasUsed = 0;
     private byte[] returnData = EMPTY_BYTE_ARRAY;
     private RuntimeException exception = null;
-    private boolean revert = false;
+    private boolean isRevert = false;
 
+    // fields below can be merged
     private List<InternalTransaction> internalTransactions = new ArrayList<>();
-
     private Set<ByteArrayWrapper> deleteAccounts = new HashSet<>();
-    private List<LogInfo> logInfoList = new ArrayList<>();
+    private List<LogInfo> logs = new ArrayList<>();
     private long futureRefund = 0;
+
+    private ProgramResult(long gasLimit) {
+        this.gasLimit = gasLimit;
+    }
+
+    public long getGasLimit() {
+        return gasLimit;
+    }
 
     public long getGasUsed() {
         return gasUsed;
+    }
+
+    public long getGasLeft() {
+        return gasLimit - gasUsed;
     }
 
     public void spendGas(long gas) {
@@ -69,14 +83,26 @@ public class ProgramResult {
 
     public void setException(RuntimeException exception) {
         this.exception = exception;
+
+        // if there is an exception, the return data should always be EMPTY
+        // and all gas should be consumed
+        if (exception != null) {
+            this.gasUsed = gasLimit;
+            this.returnData = EMPTY_BYTE_ARRAY;
+        }
     }
 
-    public void setRevert() {
-        this.revert = true;
+    public void setRevert(boolean isRevert) {
+        this.isRevert = isRevert;
+
+        // if there is a REVERT, the return data should always be EMPTY
+        if (isRevert) {
+            this.returnData = EMPTY_BYTE_ARRAY;
+        }
     }
 
     public boolean isRevert() {
-        return revert;
+        return isRevert;
     }
 
     public Set<ByteArrayWrapper> getDeleteAccounts() {
@@ -92,17 +118,21 @@ public class ProgramResult {
     }
 
     public List<LogInfo> getLogs() {
-        return logInfoList;
+        return logs;
     }
 
-    public void addLogInfo(LogInfo logInfo) {
-        logInfoList.add(logInfo);
+    public void addLogInfo(LogInfo log) {
+        logs.add(log);
     }
 
-    public void addLogs(List<LogInfo> logInfos) {
-        for (LogInfo log : logInfos) {
+    public void addLogs(List<LogInfo> logs) {
+        for (LogInfo log : logs) {
             addLogInfo(log);
         }
+    }
+
+    public void setLogs(List<LogInfo> logs) {
+        this.logs = logs;
     }
 
     public List<InternalTransaction> getInternalTransactions() {
@@ -115,6 +145,10 @@ public class ProgramResult {
 
     public void addInternalTransactions(List<InternalTransaction> txs) {
         internalTransactions.addAll(txs);
+    }
+
+    public void setInternalTransactions(List<InternalTransaction> txs) {
+        this.internalTransactions = txs;
     }
 
     public void rejectInternalTransactions() {
@@ -145,7 +179,14 @@ public class ProgramResult {
         }
     }
 
-    public static ProgramResult createEmpty() {
-        return new ProgramResult();
+    public static ProgramResult createEmptyResult(long gasLimit) {
+        ProgramResult result = new ProgramResult(gasLimit);
+        return result;
+    }
+
+    public static ProgramResult createExceptionResult(long gasLimit, RuntimeException exception) {
+        ProgramResult result = new ProgramResult(gasLimit);
+        result.setException(exception);
+        return result;
     }
 }

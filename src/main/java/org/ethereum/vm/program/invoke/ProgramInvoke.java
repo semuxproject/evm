@@ -175,7 +175,7 @@ public interface ProgramInvoke {
     // ===========================
 
     /**
-     * Returns the current call depth. It should return 0 for a normal transaction.
+     * Returns the current call depth.
      *
      * @return the call depth.
      */

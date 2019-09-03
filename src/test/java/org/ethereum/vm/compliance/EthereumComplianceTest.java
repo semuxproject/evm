@@ -141,7 +141,7 @@ public class EthereumComplianceTest {
         ProgramInvoke programInvoke = new ProgramInvokeImpl(address, origin, caller, gas, gasPrice, value, data,
                 prevHash, coinbase, timestamp, number, difficulty, gasLimit, repository, originalRepository, blockStore,
                 callDepth, isStaticCall);
-        Program program = new Program(code, programInvoke, null, spec);
+        Program program = new Program(code, programInvoke, spec);
 
         vm.play(program);
 
