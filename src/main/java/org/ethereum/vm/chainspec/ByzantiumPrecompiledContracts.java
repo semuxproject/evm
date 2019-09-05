@@ -79,8 +79,8 @@ public class ByzantiumPrecompiledContracts extends BasePrecompiledContracts {
         }
 
         @Override
-        public Pair<Boolean, byte[]> execute(PrecompiledContractContext invoke) {
-            byte[] data = invoke.getData();
+        public Pair<Boolean, byte[]> execute(PrecompiledContractContext context) {
+            byte[] data = context.getInternalTransaction().getData();
             if (data == null) {
                 data = EMPTY_BYTE_ARRAY;
             }
@@ -129,8 +129,8 @@ public class ByzantiumPrecompiledContracts extends BasePrecompiledContracts {
         }
 
         @Override
-        public Pair<Boolean, byte[]> execute(PrecompiledContractContext invoke) {
-            byte[] data = invoke.getData();
+        public Pair<Boolean, byte[]> execute(PrecompiledContractContext context) {
+            byte[] data = context.getInternalTransaction().getData();
             if (data == null) {
                 data = EMPTY_BYTE_ARRAY;
             }
@@ -187,8 +187,8 @@ public class ByzantiumPrecompiledContracts extends BasePrecompiledContracts {
         }
 
         @Override
-        public Pair<Boolean, byte[]> execute(PrecompiledContractContext invoke) {
-            byte[] data = invoke.getData();
+        public Pair<Boolean, byte[]> execute(PrecompiledContractContext context) {
+            byte[] data = context.getInternalTransaction().getData();
             if (data == null) {
                 data = EMPTY_BYTE_ARRAY;
             }

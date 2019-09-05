@@ -93,8 +93,8 @@ public class BasePrecompiledContracts implements PrecompiledContracts {
         }
 
         @Override
-        public Pair<Boolean, byte[]> execute(PrecompiledContractContext invoke) {
-            return Pair.of(true, invoke.getData());
+        public Pair<Boolean, byte[]> execute(PrecompiledContractContext context) {
+            return Pair.of(true, context.getInternalTransaction().getData());
         }
     }
 
@@ -111,8 +111,8 @@ public class BasePrecompiledContracts implements PrecompiledContracts {
         }
 
         @Override
-        public Pair<Boolean, byte[]> execute(PrecompiledContractContext invoke) {
-            byte[] data = invoke.getData();
+        public Pair<Boolean, byte[]> execute(PrecompiledContractContext context) {
+            byte[] data = context.getInternalTransaction().getData();
             return Pair.of(true, HashUtil.sha256(data == null ? EMPTY_BYTE_ARRAY : data));
         }
     }
@@ -130,8 +130,8 @@ public class BasePrecompiledContracts implements PrecompiledContracts {
         }
 
         @Override
-        public Pair<Boolean, byte[]> execute(PrecompiledContractContext invoke) {
-            byte[] data = invoke.getData();
+        public Pair<Boolean, byte[]> execute(PrecompiledContractContext context) {
+            byte[] data = context.getInternalTransaction().getData();
             byte[] result;
             if (data == null) {
                 result = HashUtil.ripemd160(EMPTY_BYTE_ARRAY);
@@ -151,8 +151,8 @@ public class BasePrecompiledContracts implements PrecompiledContracts {
         }
 
         @Override
-        public Pair<Boolean, byte[]> execute(PrecompiledContractContext invoke) {
-            byte[] data = invoke.getData();
+        public Pair<Boolean, byte[]> execute(PrecompiledContractContext context) {
+            byte[] data = context.getInternalTransaction().getData();
 
             byte[] h = new byte[32];
             byte[] v = new byte[32];
@@ -229,8 +229,8 @@ public class BasePrecompiledContracts implements PrecompiledContracts {
         }
 
         @Override
-        public Pair<Boolean, byte[]> execute(PrecompiledContractContext invoke) {
-            byte[] data = invoke.getData();
+        public Pair<Boolean, byte[]> execute(PrecompiledContractContext context) {
+            byte[] data = context.getInternalTransaction().getData();
             if (data == null) {
                 return Pair.of(true, EMPTY_BYTE_ARRAY);
             }

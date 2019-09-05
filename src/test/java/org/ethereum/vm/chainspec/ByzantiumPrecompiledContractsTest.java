@@ -22,40 +22,46 @@ import static org.ethereum.vm.util.ByteArrayUtil.bytesToBigInteger;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import java.math.BigInteger;
 
 import org.ethereum.vm.DataWord;
 import org.ethereum.vm.client.Repository;
 import org.ethereum.vm.crypto.ECKey;
+import org.ethereum.vm.program.InternalTransaction;
+import org.ethereum.vm.program.ProgramResult;
 import org.ethereum.vm.util.HexUtil;
 import org.junit.Test;
 
 public class ByzantiumPrecompiledContractsTest {
 
     ByzantiumPrecompiledContracts precompiledContracts = new ByzantiumPrecompiledContracts();
-    ByzantiumSpec spec = new ByzantiumSpec();
 
     private PrecompiledContractContext wrapData(byte[] data) {
         return new PrecompiledContractContext() {
+
+            private Repository repo = mock(Repository.class);
+            private ProgramResult result = mock(ProgramResult.class);
+            private InternalTransaction tx = mock(InternalTransaction.class);
+            {
+                when(tx.getData()).thenReturn(data);
+            }
+
             @Override
             public Repository getTrack() {
-                return null;
+                return repo;
             }
 
             @Override
-            public byte[] getCaller() {
-                return new byte[20];
+            public ProgramResult getResult() {
+                return result;
             }
 
             @Override
-            public BigInteger getValue() {
-                return BigInteger.ZERO;
-            }
-
-            @Override
-            public byte[] getData() {
-                return data;
+            public InternalTransaction getInternalTransaction() {
+                return tx;
             }
         };
     }

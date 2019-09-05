@@ -17,39 +17,30 @@
  */
 package org.ethereum.vm.chainspec;
 
-import java.math.BigInteger;
-
 import org.ethereum.vm.client.Repository;
+import org.ethereum.vm.program.InternalTransaction;
+import org.ethereum.vm.program.ProgramResult;
 
 public interface PrecompiledContractContext {
 
     /**
      * Returns the repository track.
      *
-     * @return the current repository track.
+     * @return the current repository track
      */
     Repository getTrack();
 
     /**
-     * Returns the caller's address.
+     * Returns the program result.
      *
-     * @return an address
+     * @return the current program result
      */
-    byte[] getCaller();
+    ProgramResult getResult();
 
     /**
-     * Returns the value being transferred to this contract.
+     * Returns the internal transaction.
      *
-     * NOTE: the transfer has been conducted.
-     *
-     * @return a value in {@link org.ethereum.vm.client.Unit#WEI}.
+     * @return an internal transaction to the precompiled contract
      */
-    BigInteger getValue();
-
-    /**
-     * Returns the data passed to this contract.
-     *
-     * @return a byte array
-     */
-    byte[] getData();
+    InternalTransaction getInternalTransaction();
 }

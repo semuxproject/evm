@@ -542,6 +542,8 @@ public class Program {
                 result = ProgramResult.createExceptionResult(msg.getGas(),
                         new OutOfGasException("Precompiled out-of-gas"));
             } else {
+                result = ProgramResult.createEmptyResult(msg.getGas());
+                result.spendGas(requiredGas);
                 Pair<Boolean, byte[]> out = contract.execute(new PrecompiledContractContext() {
                     @Override
                     public Repository getTrack() {
@@ -549,22 +551,15 @@ public class Program {
                     }
 
                     @Override
-                    public byte[] getCaller() {
-                        return senderAddress;
+                    public ProgramResult getResult() {
+                        return result;
                     }
 
                     @Override
-                    public BigInteger getValue() {
-                        return endowment;
-                    }
-
-                    @Override
-                    public byte[] getData() {
-                        return data;
+                    public InternalTransaction getInternalTransaction() {
+                        return internalTx;
                     }
                 });
-                result = ProgramResult.createEmptyResult(msg.getGas());
-                result.spendGas(requiredGas);
                 if (!out.getLeft()) {
                     result.setReturnData(EMPTY_BYTE_ARRAY);
                     result.setException(new PrecompiledFailureException());
