@@ -32,7 +32,7 @@ public class InternalTransaction implements Transaction {
 
     private int depth;
     private int index;
-    private OpCode type;
+    private String type;
 
     private byte[] from;
     private byte[] to;
@@ -42,7 +42,7 @@ public class InternalTransaction implements Transaction {
     private long gas;
     private BigInteger gasPrice;
 
-    public InternalTransaction(int depth, int index, OpCode type,
+    public InternalTransaction(int depth, int index, String type,
             byte[] from, byte[] to, long nonce, BigInteger value, byte[] data,
             long gas, BigInteger gasPrice) {
         this.depth = depth;
@@ -74,13 +74,14 @@ public class InternalTransaction implements Transaction {
         return index;
     }
 
-    public OpCode getType() {
+    public String getType() {
         return type;
     }
 
     @Override
     public boolean isCreate() {
-        return type == OpCode.CREATE;
+        // CREATE and CREATE2
+        return type.startsWith("CREATE");
     }
 
     @Override

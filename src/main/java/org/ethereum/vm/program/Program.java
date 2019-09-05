@@ -126,7 +126,7 @@ public class Program {
         int depth = getCallDepth();
         int index = getResult().getInternalTransactions().size();
 
-        InternalTransaction tx = new InternalTransaction(depth, index, type,
+        InternalTransaction tx = new InternalTransaction(depth, index, type.name(),
                 from, to, nonce, value, data, gas, getGasPrice().value());
         getResult().addInternalTransaction(tx);
 

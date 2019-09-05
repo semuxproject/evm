@@ -99,7 +99,7 @@ public class TransactionExecutorTest extends TestTransactionBase {
             InternalTransaction itx = txs.get(i);
             assertEquals(i, itx.getDepth());
             assertEquals(0, itx.getIndex());
-            assertEquals(OpCode.CALL, itx.getType());
+            assertEquals(OpCode.CALL.name(), itx.getType());
             assertEquals(i >= txs.size() - 2, itx.isRejected());
         }
     }
