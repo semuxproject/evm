@@ -6,30 +6,12 @@ matrix:
     - env: NAME="Code style and license header check"
       os: linux
       sudo: false
-      jdk: openjdk8
+      jdk: openjdk11
       script:
         - mvn license:check
         - mvn formatter:validate
 
-    # Coverage report
-    - env: NAME="Coverage report"
-      os: linux
-      sudo: false
-      jdk: openjdk8
-      script:
-        - mvn cobertura:cobertura
-      after_success:
-        - mvn coveralls:report
-
-    # Linux tests (Java 8 LTS)
-    - env: NAME="Linux tests (Java 8)"
-      os: linux
-      sudo: false
-      jdk: openjdk8
-      script:
-        - mvn test
-
-    # Linux tests (Java 11 LTS)
+    # Linux tests (Java 11)
     - env: NAME="Linux tests (Java 11)"
       os: linux
       sudo: false

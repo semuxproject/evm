@@ -1,7 +1,6 @@
 # EVM in Java
 
-[![Build Status](https://travis-ci.org/semuxproject/evm.svg?branch=master)](https://travis-ci.org/semuxproject/evm)
-[![Coverage Status](https://coveralls.io/repos/github/semuxproject/evm/badge.svg?branch=master)](https://coveralls.io/github/semuxproject/evm?branch=master)
+[![Build Status](https://travis-ci.com/semuxproject/evm.svg?branch=master)](https://travis-ci.com/semuxproject/evm)
 
 EVM in Java is a standalone EVM implementation, derived from the EthereumJ project.
 
